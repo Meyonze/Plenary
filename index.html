@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Plenary - 設備手帖</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#10151c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plenary">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 :root{--bg:#10151c;--panel:#1a212c;--line:#2b3545;--tx:#eef3f9;--sub:#a3b5cb;--ac:#e8765a;--warn:#f0ae57;--ng:#f0697a;--ok:#65d49a;--ac-bg:#2a1810;--ac-bg2:#4f2a1c;--tbl-line:#5a6e87}
 html{scrollbar-gutter:stable}
@@ -4510,6 +4516,13 @@ $("ac-zeta").addEventListener("input",acCalc);
 
 /* ========== 初期化 ========== */
 dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
 </script>
 </body>
 </html>
