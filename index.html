@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Plenary - 設備手帖</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#10151c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Plenary">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#10151c">
 <style>
 :root{--bg:#10151c;--panel:#1a212c;--line:#2b3545;--tx:#eef3f9;--sub:#a3b5cb;--ac:#e8765a;--warn:#f0ae57;--ng:#f0697a;--ok:#65d49a;--ac-bg:#2a1810;--ac-bg2:#4f2a1c;--tbl-line:#5a6e87}
 html{scrollbar-gutter:stable}
@@ -356,12 +356,12 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <h2>換気量計算<small>HVAC TOOLS 02</small></h2>
 
 <div class="card">
-  <div class="tabs" id="v-tabs">
-    <div class="tab on" data-vm="nc">換気回数法</div>
-    <div class="tab" data-vm="co2">CO₂基準法</div>
-    <div class="tab" data-vm="fire">火気使用室</div>
-    <div class="tab" data-vm="hood">厨房フード</div>
-    <div class="tab" data-vm="law">建築基準法(居室)</div>
+  <div class="tabs" id="v-tabs" style="overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none">
+    <div class="tab on" data-vm="nc" style="white-space:nowrap;flex-shrink:0">換気回数法</div>
+    <div class="tab" data-vm="co2" style="white-space:nowrap;flex-shrink:0">CO₂基準法</div>
+    <div class="tab" data-vm="fire" style="white-space:nowrap;flex-shrink:0">火気使用室</div>
+    <div class="tab" data-vm="hood" style="white-space:nowrap;flex-shrink:0">厨房フード</div>
+    <div class="tab" data-vm="law" style="white-space:nowrap;flex-shrink:0">建築基準法(居室)</div>
   </div>
 
   <div id="v-sec-vol">
