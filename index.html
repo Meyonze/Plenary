@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Plenary - 設備手帖</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#10151c">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Plenary">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 :root{--bg:#10151c;--panel:#1a212c;--line:#2b3545;--tx:#eef3f9;--sub:#a3b5cb;--ac:#e8765a;--warn:#f0ae57;--ng:#f0697a;--ok:#65d49a;--ac-bg:#2a1810;--ac-bg2:#4f2a1c;--tbl-line:#5a6e87}
 html{scrollbar-gutter:stable}
@@ -149,6 +143,14 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div class="im-logo">Plenary <span style="font-size:11px;font-weight:400;color:var(--sub)">v1.0</span></div>
     <div class="im-tagline">設備手帖 - 空調・衛生設備 計算ツール</div>
     <p>給排水衛生設備の現場でよく使う計算を1つにまとめたツールです。ダクトサイズから鋼材重量まで全14種を収録しています。</p>
+    <h4>インストール方法</h4>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:6px">ホーム画面に追加するとアプリとして使えます。オフラインでも動作します。</p>
+    <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.5" stroke-width="3"/></svg>iOS (Safari)</b>
+    <span style="font-size:12px">画面下部の共有ボタン(□↑)をタップ →「ホーム画面に追加」→「追加」</span></p>
+    <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Android (Chrome)</b>
+    <span style="font-size:12px">右上のメニュー(⋮)をタップ →「アプリをインストール」または「ホーム画面に追加」→「インストール」</span></p>
+    <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/></svg>PC (Chrome / Edge)</b>
+    <span style="font-size:12px">アドレスバー右端のインストールアイコン(⊕)をクリック →「インストール」。ブラウザのメニューから「Plenaryをインストール」でも可。インストールなしでブラウザのままでも利用できます。</span></p>
     <h4>主な出典・準拠規格</h4>
     <ul>
       <li>建築基準法・同施行令</li>
@@ -1444,9 +1446,12 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <h2>NC判定<small>HVAC TOOLS 12</small></h2>
 
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-    <label style="margin:0">オクターブバンドレベル [dB] <small style="color:var(--sub);font-size:11px">※dB(Z)・周波数重み付けなし</small></label>
-    <button type="button" id="nc-clear" class="btn-sm">クリア</button>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px">
+    <div>
+      <label style="margin:0">オクターブバンドレベル [dB]</label>
+      <div style="font-size:11px;color:var(--sub);margin-top:2px">※dB(Z)・周波数重み付けなし</div>
+    </div>
+    <button type="button" id="nc-clear" class="btn-sm" style="flex-shrink:0">クリア</button>
   </div>
   <div id="nc-inputs"></div>
   <div style="text-align:right;font-size:11px;color:var(--sub);margin-top:4px">参考値 dB(A): <b id="nc-dba-ref" style="color:var(--tx);font-size:14px">-</b></div>
@@ -4505,11 +4510,6 @@ $("ac-zeta").addEventListener("input",acCalc);
 
 /* ========== 初期化 ========== */
 dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
 </script>
 </body>
 </html>
