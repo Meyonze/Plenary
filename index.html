@@ -110,14 +110,14 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .chip b{font-size:17px;color:var(--ac);font-variant-numeric:tabular-nums;font-weight:700}
 .chip b small{font-size:10px;color:var(--sub);font-weight:400;margin-left:2px}
 .chip.on{border-color:var(--ac);background:var(--ac-bg)}
-@page{margin:10mm 6mm}
+@page{margin:10mm 8mm}
 @media print{
   *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
   #top-bar,#top-space,#home-btn,#usage-btn,#output-btn,#theme-toggle,#info-btn,#info-modal,#usage-modal,#home{display:none!important}
   .tool{display:none!important}
   .tool.on{display:block!important}
   button{display:none!important}
-  #content{max-width:none!important;margin:0!important;padding:10px 4px!important}
+  #content{max-width:560px!important;margin:0 auto!important;padding:10px 8px!important}
 }
 </style>
 </head>
@@ -146,7 +146,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 <div id="info-modal">
   <div class="im-card">
-    <div class="im-logo">Plenary <span style="font-size:11px;font-weight:400;color:var(--sub)">v1.0</span></div>
+    <div class="im-logo">Plenary <span style="font-size:11px;font-weight:400;color:var(--sub)">v1.01</span></div>
     <div class="im-tagline">設備手帖 - 空調・衛生設備 計算ツール</div>
     <p>給排水衛生設備の現場でよく使う計算を1つにまとめたツールです。ダクトサイズから鋼材重量まで全14種を収録しています。</p>
     <h4>インストール方法</h4>
@@ -1631,7 +1631,22 @@ $("home-btn").onclick=()=>{
 };
 $("info-btn").onclick=()=>$("info-modal").classList.add("on");
 $("info-modal").onclick=(e)=>{ if(e.target.id==="info-modal") $("info-modal").classList.remove("on"); };
-$("output-btn").onclick=()=>{ window.print(); };
+const TOOL_PRINT_NUM={duct:'01',vent:'02',grille:'03',conv:'04',psychro:'05',load:'06',water:'07',drain:'08',hanger:'09',noise:'10',noisesum:'11',nc:'12',steel:'13',airconv:'14'};
+$("output-btn").onclick=()=>{
+  const cur=document.querySelector(".tool.on");
+  const key=cur?cur.id.replace("tool-",""):"";
+  const num=TOOL_PRINT_NUM[key]||"00";
+  const now=new Date();
+  const yy=String(now.getFullYear()).slice(-2);
+  const mm=String(now.getMonth()+1).padStart(2,'0');
+  const dd=String(now.getDate()).padStart(2,'0');
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mi=String(now.getMinutes()).padStart(2,'0');
+  const orig=document.title;
+  document.title=`Plenary${num}_${yy}${mm}${dd}_${hh}${mi}`;
+  window.print();
+  setTimeout(()=>{ document.title=orig; },1000);
+};
 $("usage-btn").onclick=()=>{
   const cur=document.querySelector(".tool.on");
   if(!cur || cur.id==="home") return;
@@ -3781,7 +3796,8 @@ function ncDrawChart(bands, highlightLevel){
     const pts=NZ_BANDS.map((f,i)=>`${px(i).toFixed(1)},${py(Math.max(dbMin,NC_TABLE[L][i])).toFixed(1)}`).join(' ');
     s+=`<polyline points="${pts}" fill="none" stroke="var(--warn)" stroke-width="2.5"/>`;
     const lastY=py(Math.max(dbMin,NC_TABLE[L][n-1]));
-    s+=`<text x="${(plotRight+3)}" y="${(lastY+3).toFixed(1)}" fill="var(--warn)" font-size="9" font-weight="700">NC-${L}</text>`;
+    if(lastY>=plotTop-4&&lastY<=plotBottom+4)
+      s+=`<text x="${(plotRight+3)}" y="${(lastY+3).toFixed(1)}" fill="var(--warn)" font-size="7" font-weight="700">NC-${L}</text>`;
   }
   // MAF最小可聴範囲: 実値で描画し、下端(dbMin)にぶつかったらそこで切る
   const mafRaw=NZ_BANDS.map((f,i)=>({i,v:MAF_DB[f]}));
@@ -3944,6 +3960,7 @@ const STEEL_TYPES={
   ]},
   sq:{name:'角形鋼管(角パイプ)', items:[
     {label:'□-50×50×2.3', w:3.41},
+    {label:'□-50×50×3.2', w:4.67},
     {label:'□-60×60×2.3', w:4.13},
     {label:'□-75×75×2.3', w:5.18},
     {label:'□-75×75×3.2', w:7.10},
