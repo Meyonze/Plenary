@@ -16,16 +16,13 @@ html{scrollbar-gutter:stable}
 html.light{--bg:#eef1f5;--panel:#ffffff;--line:#d7dee6;--tx:#1b2430;--sub:#5c6b80;--ac:#c1502f;--warn:#b9690f;--ng:#c93a52;--ok:#178a5a;--ac-bg:#fce4da;--ac-bg2:#f5cab8;--tbl-line:#b6c3d1}
 body{transition:background-color .2s,color .2s}
 #top-bar{position:fixed;top:0;left:0;right:0;height:52px;background:var(--bg);border-bottom:1px solid var(--line);z-index:150;max-width:560px;margin:0 auto}
-/* 右ボタン群コンテナ */
-#right-btns{position:fixed;top:8px;right:max(8px,calc(50% - 280px + 8px));z-index:200;display:flex;align-items:center;gap:8px}
-#right-btns>div,#right-btns>button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--tx);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none;flex-shrink:0}
-#right-btns>div:active,#right-btns>button:active{opacity:.7}
-/* エクスポートメニュー */
-#export-menu{position:fixed;top:52px;right:max(8px,calc(50% - 280px + 8px));z-index:300;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;display:none;flex-direction:column;gap:2px;box-shadow:0 4px 20px rgba(0,0,0,.25);min-width:170px}
-#export-menu.on{display:flex}
-.em-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;border:none;background:none;color:var(--tx);font-size:13px;cursor:pointer;font-family:inherit;width:100%;text-align:left}
-.em-item:hover,.em-item:active{background:var(--bg)}
-.em-item-sub{font-size:10px;color:var(--sub);margin-left:auto}
+#theme-toggle{position:fixed;top:8px;right:max(52px, calc(50% - 280px + 52px));z-index:200;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--tx);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none}
+#usage-btn{position:fixed;top:8px;right:max(96px, calc(50% - 280px + 96px));z-index:200;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none}
+#usage-btn:active{opacity:.7}
+#output-btn{position:fixed;top:8px;right:max(140px, calc(50% - 280px + 140px));z-index:200;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none}
+#output-btn:active{opacity:.7}
+#info-btn{position:fixed;top:8px;right:max(8px, calc(50% - 280px + 8px));z-index:200;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none}
+#info-btn:active{opacity:.7}
 #info-modal,#usage-modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
 #info-modal.on,#usage-modal.on{display:flex}
 #info-modal .im-card,#usage-modal .im-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:380px;width:100%;max-height:80vh;overflow-y:auto}
@@ -48,12 +45,10 @@ body{transition:background-color .2s,color .2s}
 #home-btn:active{opacity:.7}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--tx);font-family:"Hiragino Kaku Gothic ProN",system-ui,sans-serif;font-size:14.5px;line-height:1.5;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere}
-#content{max-width:560px;margin:0 auto;padding:10px 12px 20px}
-/* 広告エリア */
-#ad-bar{max-width:560px;margin:20px auto 0;height:60px;background:var(--panel);border:1px solid var(--line);border-radius:8px;display:none;align-items:center;justify-content:center;overflow:hidden;font-size:11px;color:var(--sub)}
+#content{max-width:560px;margin:0 auto;padding:10px 12px 60px}
 #top-space{height:52px}
 .tool{display:none}.tool.on{display:block}
-h2{font-size:15px;letter-spacing:2px;color:var(--ac);font-weight:700;position:sticky;top:52px;background:var(--bg);padding:10px 0 8px;box-shadow:0 1px 0 var(--line);z-index:100;margin-bottom:10px}
+h2{font-size:15px;letter-spacing:2px;padding:2px 0 10px;color:var(--ac);font-weight:700}
 h2 small{color:var(--sub);font-size:11px;letter-spacing:1px;margin-left:6px;font-weight:400}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
 .card-title{font-size:12px;color:var(--sub);letter-spacing:1px;margin-bottom:4px}
@@ -71,14 +66,14 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .res-main{display:flex;align-items:baseline;gap:0;padding:2px 0}
 .res-main b{font-size:29px;color:var(--ac);font-variant-numeric:tabular-nums;font-weight:700}
 .res-main span{color:var(--sub);font-size:13px}
-.kv{display:flex;justify-content:space-between;align-items:baseline;padding:5px 2px;border-top:1px solid var(--line);font-size:14px;gap:6px}
+.kv{display:flex;justify-content:space-between;align-items:baseline;padding:5px 2px;border-top:1px solid var(--line);font-size:14px}
 .st-dim-table{line-height:1.2}
 .st-dim-table .kv{padding:2px 2px;font-size:11.5px}
 .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;min-width:0}
 .kv-grid .kv{min-width:0;border-top:1px solid var(--line);padding:5px 6px 5px 2px}
 .kv-grid .kv:nth-child(odd){border-right:1px solid var(--line)}
-.kv span:first-child{color:var(--sub);flex:1;min-width:0}
-.kv b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;text-align:right}
+.kv span:first-child{color:var(--sub)}
+.kv b{font-variant-numeric:tabular-nums;font-weight:600}
 .kv b.ok{color:var(--ok)}.kv b.warn{color:var(--warn)}.kv b.ng{color:var(--ng)}
 .note{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.6}
 .bar{height:5px;border-radius:2px;background:var(--line);position:relative;overflow:hidden;margin-top:6px}
@@ -98,8 +93,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .sel-list{display:flex;flex-direction:column;gap:3px;margin-top:6px}
 .sel-row:active{opacity:.7}
 .sel-row.active{border-color:var(--ac);background:var(--ac-bg)}
-.sel-row .sr-name{flex:1;font-weight:600;color:var(--tx);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sel-row .sr-badge{font-size:11px;padding:1px 5px;border-radius:4px;background:var(--line);color:var(--sub);white-space:nowrap;flex-shrink:0}
+.sel-row .sr-name{flex:1;font-weight:600;color:var(--tx)}
+.sel-row .sr-badge{font-size:11px;padding:1px 5px;border-radius:4px;background:var(--line);color:var(--sub)}
 .sel-row.active .sr-badge{background:var(--ac-bg2);color:var(--ac)}
 .formula-box{display:none;margin-top:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--sub);line-height:1.75}
 .formula-box.on{display:block}
@@ -118,109 +113,29 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 @page{margin:10mm 8mm}
 @media print{
   *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
-  #top-bar,#top-space,#home-btn,#right-btns,#usage-btn,#output-btn,#theme-toggle,#info-btn,#info-modal,#usage-modal,#home,#export-menu{display:none!important}
+  #top-bar,#top-space,#home-btn,#usage-btn,#output-btn,#theme-toggle,#info-btn,#info-modal,#usage-modal,#home{display:none!important}
   .tool{display:none!important}
   .tool.on{display:block!important}
   button{display:none!important}
-  #content{max-width:560px!important;margin:0 auto!important;padding:4px 8px 10px!important}
-  .pro-wm-block{display:block!important}
-  #report-header{display:block!important}
-  .rh-print{display:table!important}
-}
-/* 帳票ヘッダー */
-#report-header{display:none;margin-bottom:8px;border:1px solid #333;border-radius:4px;padding:6px 10px;font-family:"Hiragino Kaku Gothic ProN",sans-serif}
-.rh-top{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:6px}
-.rh-logo{font-size:16px;font-weight:800;letter-spacing:1px}
-.rh-title{font-size:14px;font-weight:700;flex:1;margin:0 12px}
-.rh-version{font-size:9px;color:#888}
-.rh-print{width:100%;border-collapse:collapse;font-size:11px}
-.rh-print th{color:#888;font-weight:400;text-align:left;padding:2px 6px 2px 0;white-space:nowrap;width:52px}
-.rh-print td{color:#222;padding:2px 12px 2px 0;border-bottom:1px dotted #ddd}
-.rh-print tr:last-child td{border-bottom:none}
-/* 参考値テーブル */
-.rp-table{width:100%;border-collapse:collapse;font-size:11.5px}
-.rp-table th{color:var(--sub);font-weight:400;text-align:left;padding:3px 4px;border-bottom:1px solid var(--line);font-size:11px}
-.rp-table td{padding:4px 4px;color:var(--tx);border-bottom:1px solid var(--line)}
-.rp-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
-.rp-table tr:last-child td{border-bottom:none}
-.modal-x-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--sub);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;flex-shrink:0}
-.modal-x-close:active{opacity:.7}
-/* ストックカード */
-.d-stock-card{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
-.d-stock-card.pinned{border-color:var(--ac);background:var(--panel)}
-.d-stock-card:active{opacity:.7}
-.d-stock-tag{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--line);color:var(--sub);margin-left:4px}
-.d-stock-tag.p1{background:#1a3a4a;color:#5bc4d9}.d-stock-tag.p2{background:#2a3a1a;color:#7dd95b}
-#save-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px}
-#save-modal.on{display:flex}
-.save-item{padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:var(--bg)}
-.save-item-name{font-size:13px;font-weight:600;color:var(--tx)}
-.save-item-meta{font-size:11px;color:var(--sub);margin-top:2px}
-.save-item-memo{font-size:11.5px;color:var(--sub);margin-top:3px;white-space:pre-wrap}
-/* ツールステータスバー */
-.tsb-btn{padding:0 11px;height:26px;background:var(--bg);border:1px solid var(--line);border-radius:13px;color:var(--sub);font-size:11.5px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;white-space:nowrap}
-.tsb-btn:active{opacity:.7}
-#pro-toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a212c;border:1px solid var(--ac);color:var(--tx);font-size:13px;padding:9px 18px;border-radius:24px;z-index:500;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none}
-#pro-toast.on{opacity:1}
-#pro-key-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px}
-#pro-key-modal.on{display:flex}
-.pro-key-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:340px;width:100%}
-.pro-lock-icon{font-size:9px;vertical-align:middle;opacity:.8}
-.pro-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.5px}
-.pro-badge.is-pro{background:#1a3a2a;color:#65d49a;border:1px solid #2a6a4a}
-.pro-badge.is-free{background:var(--line);color:var(--sub);border:1px solid var(--line)}
-.pro-lock-tab{position:relative;overflow:hidden}
-.pro-lock-tab::after{content:"🔒";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;pointer-events:none}
-/* Free版印刷透かし */
-#print-wm{display:none}
-@media print{
-  #print-wm.show-wm{
-    display:flex;flex-direction:column;justify-content:space-around;
-    position:fixed;top:-50%;left:-40%;width:180%;height:200%;
-    transform:rotate(-35deg);transform-origin:center center;
-    z-index:9999;pointer-events:none;
-    print-color-adjust:exact;-webkit-print-color-adjust:exact;
-    overflow:hidden;
-  }
-  .show-wm .pwm-row{display:flex;justify-content:space-around;padding:0}
-  .show-wm .pwm-t{
-    font-size:46px;font-weight:900;letter-spacing:6px;white-space:nowrap;
-    color:rgba(190,35,35,.38);font-family:sans-serif;
-    text-shadow:none;
-  }
+  #content{max-width:560px!important;margin:0 auto!important;padding:10px 8px!important}
 }
 </style>
 </head>
 <body>
 <div id="top-bar"></div>
-<!-- 印刷透かし(Free版のみ表示) -->
-<div id="print-wm" aria-hidden="true">
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-  <div class="pwm-row"><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span><span class="pwm-t">Plenary Free</span></div>
-</div>
 <div id="home-btn" title="ホームに戻る" style="display:none">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-3a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V10"/></svg>
   <span>ホームへ戻る</span>
 </div>
-<div id="right-btns">
-  <div id="usage-btn" title="使い方" style="display:none">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5C2 4.67 2.67 4 3.5 4H11v15H3.5C2.67 19 2 18.33 2 17.5z"/><path d="M22 5.5c0-.83-.67-1.5-1.5-1.5H13v15h7.5c.83 0 1.5-.67 1.5-1.5z"/></svg>
-  </div>
-  <div id="output-btn" title="出力" style="display:none">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
-  </div>
-  <div id="theme-toggle" title="ライト/ダーク切替"></div>
-  <div id="info-btn" title="このツールについて">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg>
-  </div>
+<div id="usage-btn" title="使い方" style="display:none">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5C2 4.67 2.67 4 3.5 4H11v15H3.5C2.67 19 2 18.33 2 17.5z"/><path d="M22 5.5c0-.83-.67-1.5-1.5-1.5H13v15h7.5c.83 0 1.5-.67 1.5-1.5z"/></svg>
 </div>
-<div id="export-menu">
-  <button class="em-item" id="em-pdf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>PDFで保存</button>
-  <button class="em-item" onclick="closeExportMenu();openSaveModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>セット保存</button>
+<div id="output-btn" title="PDFで保存" style="display:none">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
+</div>
+<div id="theme-toggle" title="ライト/ダーク切替"></div>
+<div id="info-btn" title="このツールについて">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg>
 </div>
 <div id="usage-modal">
   <div class="im-card">
@@ -229,67 +144,11 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <button class="im-close" onclick="document.getElementById('usage-modal').classList.remove('on')">閉じる</button>
   </div>
 </div>
-<!-- === 保存/呼び出しモーダル === -->
-<div id="save-modal">
-  <div class="pro-key-card" style="max-width:380px;position:relative">
-    <button class="modal-x-close" onclick="document.getElementById('save-modal').classList.remove('on')">×</button>
-    <div style="font-size:15px;font-weight:700;color:var(--ac);margin-bottom:10px" id="save-modal-title">入力セット保存</div>
-    <div class="tabs" id="save-tabs" style="margin-bottom:10px">
-      <div class="tab on" onclick="switchSaveTab('save')">保存する</div>
-      <div class="tab" onclick="switchSaveTab('load')">呼び出し</div>
-    </div>
-    <div id="save-form-area">
-      <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:3px">保存名</label>
-      <input id="save-name-inp" type="text" placeholder="例: ○○邸 2F給気ダクト"
-        style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:7px 10px;font-size:14px;margin-bottom:8px">
-      <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:3px">メモ（任意）</label>
-      <textarea id="save-memo-inp" placeholder="判断理由・条件など" rows="2"
-        style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:7px 10px;font-size:13px;resize:vertical;font-family:inherit"></textarea>
-      <button onclick="doSave()" style="margin-top:8px;width:100%;padding:9px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:700;cursor:pointer">保存する</button>
-    </div>
-    <div id="save-load-area" class="hidden">
-      <div id="save-list-el" style="max-height:320px;overflow-y:auto"></div>
-      <div class="note" style="margin-top:6px">現在のツールの保存データのみ表示</div>
-    </div>
-  </div>
-</div>
-<!-- === Pro ライセンスキーモーダル === -->
-<div id="pro-key-modal">
-  <div class="pro-key-card" style="position:relative">
-    <button class="modal-x-close" onclick="document.getElementById('pro-key-modal').classList.remove('on')">×</button>
-    <div style="font-size:16px;font-weight:700;color:var(--ac);margin-bottom:4px">Plenary Pro</div>
-    <div id="pro-key-status-line" style="font-size:12px;color:var(--sub);margin-bottom:14px"></div>
-    <div id="pro-key-form">
-      <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:4px">ライセンスキー</label>
-      <input id="pro-key-input" type="text" inputmode="text" placeholder="PLENARY-XXXX-XXXX" value="PLENARY-DEV-TEST"
-        style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:8px 10px;font-size:15px;font-family:monospace;letter-spacing:1px">
-      <div id="pro-key-err" style="font-size:11px;color:var(--ng);margin-top:4px;min-height:16px"></div>
-      <button onclick="activatePro()" style="margin-top:8px;width:100%;padding:10px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:700;cursor:pointer">有効化</button>
-    </div>
-    <div id="pro-key-active-box" style="display:none">
-      <div style="font-size:13px;color:var(--ok);margin-bottom:10px">✓ Pro版が有効です</div>
-      <div id="pro-deact-confirm" style="display:none;background:var(--bg);border:1px solid var(--ng);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:var(--tx)">
-        ライセンスを解除すると無料版に戻ります。よろしいですか？
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button onclick="deactivatePro()" style="flex:1;padding:7px;border-radius:6px;border:none;background:var(--ng);color:#fff;font-size:12px;cursor:pointer">解除する</button>
-          <button onclick="document.getElementById('pro-deact-confirm').style.display='none'" style="flex:1;padding:7px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--sub);font-size:12px;cursor:pointer">キャンセル</button>
-        </div>
-      </div>
-      <button onclick="document.getElementById('pro-deact-confirm').style.display='block'" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--sub);font-size:12px;cursor:pointer">ライセンスを解除する</button>
-    </div>
-    <div style="margin-top:10px;font-size:11px;color:var(--sub);line-height:1.6">
-      Pro版ではウォーターマークなし印刷・音響系全機能・詳細根拠表示が利用できます。<br>
-      <a href="https://meyonze.github.io/Plenary/" target="_blank" style="color:var(--ac)">購入方法はこちら</a>
-    </div>
-  </div>
-</div>
-<!-- Pro toast -->
-<div id="pro-toast">🔒 Pro版の機能です</div>
 <div id="info-modal">
   <div class="im-card">
-    <div class="im-logo">Plenary <span style="font-size:11px;font-weight:400;color:var(--sub)">v1.10</span></div>
+    <div class="im-logo">Plenary <span style="font-size:11px;font-weight:400;color:var(--sub)">v1.01</span></div>
     <div class="im-tagline">設備手帖 - 空調・衛生設備 計算ツール</div>
-    <p>空調・衛生・建築設備設計の現場でよく使う計算を1つにまとめたモバイルツールです。ダクトサイズから屋外騒音・鋼材重量まで全14種を収録しています。</p>
+    <p>給排水衛生設備の現場でよく使う計算を1つにまとめたツールです。ダクトサイズから鋼材重量まで全14種を収録しています。</p>
     <h4>インストール方法</h4>
     <p style="font-size:12px;color:var(--sub);margin-bottom:6px">ホーム画面に追加するとアプリとして使えます。オフラインでも動作します。</p>
     <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.5" stroke-width="3"/></svg>iOS (Safari)</b>
@@ -297,18 +156,17 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Android (Chrome)</b>
     <span style="font-size:12px">右上のメニュー(⋮)をタップ →「アプリをインストール」または「ホーム画面に追加」→「インストール」</span></p>
     <p><b style="font-size:12px;display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/></svg>PC (Chrome / Edge)</b>
-    <span style="font-size:12px">アドレスバー右端のインストールアイコン(⊕)をクリック →「インストール」</span></p>
+    <span style="font-size:12px">アドレスバー右端のインストールアイコン(⊕)をクリック →「インストール」。ブラウザのメニューから「Plenaryをインストール」でも可。インストールなしでブラウザのままでも利用できます。</span></p>
     <h4>主な出典・準拠規格</h4>
     <ul>
       <li>建築基準法・同施行令</li>
       <li>公共建築工事標準仕様書(機械設備工事編)</li>
-      <li>JIS G3192 / G3350 / G3466 / G3194 等</li>
+      <li>JIS(G3192, G3350, G3466, G3194 等)</li>
+      <li>HASS 102(建築設備工事監理指針 関連)</li>
       <li>SHASE-S(空気調和・衛生工学会規格)</li>
-      <li>ASHRAE Fundamentals</li>
-      <li>東京都環境確保条例・騒音規制法</li>
     </ul>
     <h4>ご利用にあたって</h4>
-    <p>本ツールの計算結果は概算・参考値です。実際の設計・施工にあたっては、最新の法令・規格・設計図書を必ずご確認ください。本ツールの利用により生じたいかなる損害についても作成者は責任を負いません。</p>
+    <p>本ツールの計算結果は概算・参考値です。実際の設計・施工にあたっては、最新の法令・規格・設計図書を必ずご確認ください。本ツールの利用により生じたいかなる損害・不利益についても、作成者は一切の責任を負いません。</p>
     <h4>作成者</h4>
     <p>Meyonze</p>
     <button class="im-close" onclick="document.getElementById('info-modal').classList.remove('on')">閉じる</button>
@@ -333,44 +191,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 })();
 </script>
 
-<!-- 帳票ヘッダー (印刷時のみ表示) -->
-<div id="report-header" aria-hidden="true">
-  <div class="rh-top">
-    <span class="rh-logo">Plenary</span>
-    <span class="rh-title" id="rh-tool-name"></span>
-    <span class="rh-version">HVAC Calculation Sheet</span>
-  </div>
-  <table class="rh-print">
-    <tr>
-      <th>物件名</th><td id="rh-project">—</td>
-      <th style="padding-left:8px">図番</th><td id="rh-drawing">—</td>
-    </tr>
-    <tr>
-      <th>作成者</th><td id="rh-author">—</td>
-      <th style="padding-left:8px">計算日</th><td id="rh-date">—</td>
-    </tr>
-  </table>
-</div>
-<!-- 帳票メタ入力モーダル -->
-<div id="report-modal" style="position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px">
-  <div class="pro-key-card" style="position:relative;max-width:360px">
-    <button class="modal-x-close" onclick="document.getElementById('report-modal').classList.remove('on');closeExportMenu()">×</button>
-    <div style="font-size:15px;font-weight:700;color:var(--ac);margin-bottom:12px">帳票 設定</div>
-    <div style="display:grid;grid-template-columns:60px 1fr;gap:6px 8px;align-items:center;font-size:13px">
-      <label style="color:var(--sub)">物件名</label>
-      <input id="rm-project" type="text" placeholder="○○邸新築工事" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
-      <label style="color:var(--sub)">図番</label>
-      <input id="rm-drawing" type="text" placeholder="E-01" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
-      <label style="color:var(--sub)">作成者</label>
-      <input id="rm-author" type="text" placeholder="笹倉エンジニアリング" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
-      <label style="color:var(--sub)">計算日</label>
-      <input id="rm-date" type="date" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
-    </div>
-    <button onclick="doReportPrint()" style="margin-top:14px;width:100%;padding:10px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:700;cursor:pointer">🖨️ 印刷する</button>
-    <div class="note" style="margin-top:8px">入力内容はデバイスに保存されます</div>
-  </div>
-</div>
-  <div id="content">
+<div id="content">
   <div id="top-space"></div>
 
 <!-- ==================== ホーム ==================== -->
@@ -380,9 +201,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M9.3,3 L14.7,3 L12,9 Z"/><path d="M9.3,3 L14.7,3 L12,9 Z" transform="rotate(90 12 12)"/><path d="M9.3,3 L14.7,3 L12,9 Z" transform="rotate(180 12 12)"/><path d="M9.3,3 L14.7,3 L12,9 Z" transform="rotate(270 12 12)"/><circle cx="12" cy="12" r="1.8"/></svg>
   </div>
   <div style="flex:1">
-    <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:baseline;justify-content:space-between">
       <span style="font-size:25px;font-weight:800;letter-spacing:1.5px;color:var(--tx)">Plenary</span>
-      
+      <span style="font-size:10px;color:var(--sub)">全14種</span>
     </div>
     <div style="font-size:11.5px;color:var(--sub);margin-top:2px">設備手帖 - 空調・衛生設備 計算ツール</div>
   </div>
@@ -410,7 +231,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="tool" id="tool-duct">
 <h2>ダクトサイズ計算<small>HVAC TOOLS 01</small></h2>
 
-
 <div class="card">
   <div class="tabs">
     <div class="tab on" data-dm="ef">等摩擦法</div>
@@ -420,7 +240,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <input id="d-q" class="q-input" type="number" inputmode="decimal" value="1000">
   <label>ダクト材質</label>
   <select id="d-mat">
-    <option value="0.00015">亜鉛鉄板 (ε=0.15 mm)</option>
+    <option value="0.00018">亜鉛鉄板 (ε=0.18 mm)</option>
     <option value="0.0015">塩ビダクト (ε=1.5 mm)</option>
     <option value="0.003">コンクリートダクト (ε=3.0 mm)</option>
     <option value="0.0009">グラスウールダクト (ε=0.9 mm)</option>
@@ -471,23 +291,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="card-title" style="margin-bottom:0">候補リスト <span style="font-size:10px;margin-left:4px">タップで詳細表示</span></div>
   <div id="d-sel-list" class="sel-grid"></div>
 </div>
-<button id="d-stock-btn-main" onclick="dAddStock()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--sub);font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:4px">＋ この条件をストック</button>
-
-<!-- === 検討ストック === -->
-<div id="d-stock-section" style="margin-top:4px">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-    <span style="font-size:11.5px;color:var(--sub);font-weight:600">検討ストック</span>
-    <span id="d-stock-count" style="font-size:11px;color:var(--sub)"></span>
-    <button id="d-compare-btn" class="btn-sm" style="margin-left:auto;display:none" onclick="dToggleCompare()">2案比較</button>
-  </div>
-  <div id="d-stock-list"></div>
-  <div id="d-compare-area" class="hidden">
-    <div class="card" style="margin-top:8px">
-      <div class="card-title">2案比較</div>
-      <div id="d-compare-table"></div>
-    </div>
-  </div>
-</div>
 
 <div class="card">
   <div class="card-title">板厚・フランジ(参考)</div>
@@ -528,25 +331,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="note" id="d-plate-note"></div>
 </div>
 
-<div class="note">空気 20℃ ρ=1.2 kg/m³, ν=1.5×10⁻⁵ m²/s。<span id="d-eps-note">亜鉛鉄板 ε=0.15 mm</span>(Colebrook近似)。<br>出典: ASHRAE Fundamentals / 建築設備設計基準(国土交通省) / JIS A 4010。概算用であり、最終決定は設計図書・法規によること。</div>
+<div class="note">空気 20℃ ρ=1.2 kg/m³, ν=1.5×10⁻⁵ m²/s。<span id="d-eps-note">亜鉛鉄板 ε=0.18 mm</span>(Colebrook近似)。<br>出典: ASHRAE Fundamentals / 建築設備設計基準(国土交通省) / JIS A 4010。概算用であり、最終決定は設計図書・法規によること。</div>
 
-<div class="card">
-  <div class="card-title">用途別 推奨風速 参考</div>
-  <table class="rp-table">
-    <thead><tr><th>用途・部位</th><th>推奨風速</th><th>騒音リスク</th></tr></thead>
-    <tbody>
-      <tr><td>主ダクト（一般空調）</td><td>4〜8 m/s</td><td>8超→要検討</td></tr>
-      <tr><td>居室系 主ダクト</td><td>4〜6 m/s</td><td>6超→騒音注意</td></tr>
-      <tr><td>分岐ダクト</td><td>3〜5 m/s</td><td>—</td></tr>
-      <tr><td>吹出口手前</td><td>2〜3 m/s</td><td>—</td></tr>
-      <tr><td>排煙ダクト</td><td>10〜20 m/s</td><td>消防法要考慮</td></tr>
-      <tr><td>高速ダクト（省スペース）</td><td>10〜20 m/s</td><td>消音器必須</td></tr>
-    </tbody>
-  </table>
-  <div class="note">居室・会議室向けは主ダクト6 m/s以下・吹出手前3 m/s以下を目安に。出典: ASHRAE Fundamentals / 建設省設備設計基準</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>Colebrook-White (Swamee-Jain近似)</b><br>
   1/√f = −2 log(ε/(3.7D) + 2.51/(Re√f))<br>
@@ -573,6 +360,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div class="tab on" data-vm="nc" style="white-space:nowrap;flex-shrink:0">換気回数法</div>
     <div class="tab" data-vm="co2" style="white-space:nowrap;flex-shrink:0">CO₂基準法</div>
     <div class="tab" data-vm="fire" style="white-space:nowrap;flex-shrink:0">火気使用室</div>
+    <div class="tab" data-vm="hood" style="white-space:nowrap;flex-shrink:0">厨房フード</div>
     <div class="tab" data-vm="law" style="white-space:nowrap;flex-shrink:0">建築基準法(居室)</div>
   </div>
 
@@ -630,6 +418,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
         <label>理論廃ガス量 K [m³/kWh]</label>
         <select id="v-fire-k">
           <option value="0.93">0.93 — 都市ガス(13A)</option>
+          <option value="1.20">1.20 — LPG(プロパン)</option>
+          <option value="1.10">1.10 — 灯油</option>
         </select>
       </div>
       <div>
@@ -638,6 +428,21 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       </div>
     </div>
     <div class="note" style="margin-top:8px">V=40KQ (建基法施行令 第20条の3)</div>
+  </div>
+
+  <div id="v-sec-hood" class="hidden">
+    <label>フード種別</label>
+    <select id="v-hood-type">
+      <option value="wall">壁付け(片面開放)</option>
+      <option value="island">アイランド(四面開放)</option>
+      <option value="canopy">天蓋型(バックシェルフ付)</option>
+    </select>
+    <div class="row" style="margin-top:0">
+      <div><label>間口 W [m]</label><input id="v-hood-w" type="number" inputmode="decimal" value="1.2" step="0.1"></div>
+      <div><label>奥行 D [m]</label><input id="v-hood-d" type="number" inputmode="decimal" value="0.9" step="0.1"></div>
+      <div><label>高さ H [m]</label><input id="v-hood-h" type="number" inputmode="decimal" value="0.5" step="0.1"></div>
+    </div>
+    <div class="note" style="margin-top:8px">Q=係数×周長×H×3600。壁付=0.25、アイランド=0.4、天蓋=0.3</div>
   </div>
 
   <div id="v-sec-law" class="hidden">
@@ -670,31 +475,16 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">出典: 建築基準法施行令 第20条の2・3 / ASHRAE Standard 62.1 / 空気調和・衛生工学会(SHASE)。概算用であり、最終決定は建築基準法・消防法・設計図書・機器仕様書によること。</div>
-
-<div class="card">
-  <div class="card-title">用途別 換気量・法定値 参考</div>
-  <table class="rp-table">
-    <thead><tr><th>用途</th><th>換気回数目安</th><th>建基法最低</th></tr></thead>
-    <tbody>
-      <tr><td>事務室・一般居室</td><td>2〜3 回/h</td><td>0.5 回/h</td></tr>
-      <tr><td>会議室</td><td>3〜5 回/h</td><td>0.5 回/h</td></tr>
-      <tr><td>飲食店・レストラン</td><td>6〜10 回/h</td><td>—</td></tr>
-      <tr><td>自動車車庫</td><td>10〜15 回/h</td><td>15 回/h(消防法)</td></tr>
-      <tr><td>便所(一般)</td><td>5〜10 回/h</td><td>—</td></tr>
-      <tr><td>厨房(大)</td><td>30〜40 回/h</td><td>火気計算による</td></tr>
-    </tbody>
-  </table>
-  <div class="note">建基法居室最低: N ≧ 0.5 回/h（令第20条の2）。在室密度が高い用途はCO₂基準法(30 m³/h・人)も確認すること。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>換気回数法</b>: Q = V × N　[m³/h]<br>
   建基法居室最低基準: N ≧ 0.5 回/h<br><br>
-  <b>CO₂基準法</b>: Q = P × q　(q: 用途により異なる。一般事務25〜36、会議室36〜50、ASHRAE 62.1で用途別規定)<br>
-  ※建基法の居室換気量はq固定でなく告示で用途別に規定。上記は概算入力値。<br><br>
+  <b>CO₂基準法</b>: Q = P × q　(q=25〜50 m³/h/人)<br>
+  ASHRAE 62.1: q = 30 m³/h/人(標準)<br><br>
   <b>火気使用室</b>: Q = 40KQ_fuel　(建基法施行令 第20条の3)<br>
-  K: 理論廃ガス量 [m³/kWh]　0.93（都市ガス13A、発熱量[kW]入力時）　出典: 昭和45年建設省告示第1826号 別表<br><br>
+  K: 理論廃ガス量 [m³/kWh]　都市ガス13A=0.93 / LPG=1.20 / 灯油=1.10<br><br>
+  <b>厨房フード(補足係数法)</b>: Q = C × L × H × 3600<br>
+  C: 壁付=0.25 / アイランド=0.40 / 天蓋=0.30　L: 開放周長 [m]<br><br>
   <b>建築基準法(居室の自然/機械換気区分)</b><br>
   自然換気: 開口部の有効面積 Aw ≧ 床面積 Af × 1/20(建築基準法第28条・施行令第20条の2)<br>
   これを満たさない場合は機械換気設備が必要。最低必要換気量 V=20Af/N<br>
@@ -762,7 +552,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">必要面積 = Q/(3600×v)、有効面積 = W×H×(開口率/100)。候補は有効面積≥必要面積のもの(50mm刻み)。<br>出典: 空気調和・衛生工学会(SHASE) / 各メーカーカタログ値。概算用であり、最終決定は機器仕様書によること。</div>
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>必要有効面積</b>: A = Q / (3600 × v)　[m²]<br>
   <b>制気口有効面積</b>: Aeff = W × H × (開口率/100)　[m²]<br>
@@ -960,18 +750,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">ASHRAE式(Buck近似)による計算。基準気圧101.325 kPa。概算用。</div>
-<div class="card">
-  <div class="card-title">快適域 参考（ASHRAE 55-2020）</div>
-  <table class="rp-table">
-    <thead><tr><th>条件</th><th>乾球温度</th><th>相対湿度</th></tr></thead>
-    <tbody>
-      <tr><td>夏期 快適域</td><td>23〜26 ℃</td><td>30〜60 %</td></tr>
-      <tr><td>冬期 快適域</td><td>20〜23 ℃</td><td>30〜50 %</td></tr>
-      <tr><td>一般執務 有効温度域</td><td>20〜27 ℃</td><td>—</td></tr>
-    </tbody>
-  </table>
-  <div class="note">露点温度がおよそ2℃以下になると結露・カビリスク。絶対湿度の管理（夏:≦12 g/kg' / 冬:≧5 g/kg' 程度）も合わせて確認のこと。</div>
-</div>
 </div><!-- /tool-psychro -->
 <!-- ==================== TOOL 06: 負荷計算 ==================== -->
 <div class="tool" id="tool-load">
@@ -1102,32 +880,14 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note" id="ld-note"></div>
-<div class="note">出典: 各空調機メーカー単位熱負荷目安(ダイキン/パナソニック/三菱) / SHASE-S112。馬力換算 1HP≒2.8kW は空調機の呼称馬力（物理馬力0.746kWとは異なる慣用値）。<br>概算用であり、最終決定は詳細負荷計算(SHASE-S112等)によること。</div>
-
-<div class="card">
-  <div class="card-title">用途別 概算熱負荷 原単位 参考</div>
-  <table class="rp-table">
-    <thead><tr><th>用途</th><th>冷房 W/m²</th><th>暖房 W/m²</th></tr></thead>
-    <tbody>
-      <tr><td>事務室（標準）</td><td>80〜120</td><td>60〜90</td></tr>
-      <tr><td>ホテル客室</td><td>70〜100</td><td>60〜80</td></tr>
-      <tr><td>病院病室</td><td>80〜120</td><td>70〜100</td></tr>
-      <tr><td>学校教室</td><td>80〜100</td><td>70〜90</td></tr>
-      <tr><td>店舗・百貨店</td><td>120〜180</td><td>80〜120</td></tr>
-      <tr><td>飲食店</td><td>150〜250</td><td>100〜150</td></tr>
-      <tr><td>住宅</td><td>60〜90</td><td>50〜80</td></tr>
-    </tbody>
-  </table>
-  <div class="note">出典: 各空調機メーカー設計資料 / SHASE-S112。照明・OA・在室密度・外皮性能により大きく変動するため、詳細計算に進むこと。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<div class="note">出典: 各空調機メーカー単位熱負荷目安(ダイキン/パナソニック/三菱) / SHASE-S112。馬力換算 1HP≒2.8kW(冷房)。<br>概算用であり、最終決定は詳細負荷計算(SHASE-S112等)によること。</div>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>原単位法</b>: 熱負荷[W] = 単位熱負荷[W/m²] × 室面積[m²]<br><br>
   <b>積上げ法</b>: 熱負荷 = 外皮 + 照明 + OA機器 + 人体 + 外気<br>
   ・外皮/照明/OA = 各原単位[W/m²] × 面積<br>
   ・人体 = 在室人員 × 1人発熱[W]<br>
-  ・外気負荷[W] = 0.33 × 外気量[m³/h] × Δエンタルピー[kJ/kg]<br><br>
+  ・外気負荷 = 0.33 × 外気量[m³/h] × Δエンタルピー[kJ/kg]<br><br>
   <b>馬力換算</b>: HP = 熱負荷[kW] / 2.8<br>
   <b>冷凍トン</b>: USRT = 熱負荷[kW] / 3.517
 </div>
@@ -1245,12 +1005,12 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
 </div>
 
-<div class="note">水比熱 4.186 kJ/kg·K、密度 1000 kg/m³。摩擦損失目安 300 Pa/m以下（本管基準・SHASE-S206）。Hazen-Williams C値: SGP=130 / 銅管=140 / ステンレス=130 / VP=150（新管値。経年劣化・腐食で低下）。<br>出典: 空気調和・衛生工学便覧 / SHASE-S206。概算用であり、最終決定は設計図書によること。</div>
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<div class="note">水比熱 4.186 kJ/kg·K、密度 1000 kg/m³。摩擦損失上限440 Pa/m目安。<br>出典: 空気調和・衛生工学便覧 / SHASE-S206。概算用であり、最終決定は設計図書によること。</div>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>必要流量</b>: Q[L/s] = q[kW] / (c·ρ·Δt) = q / (4.186 × Δt)<br><br>
   <b>管内流速</b>: v = Q / A,　A = πd²/4<br>
-  <b>摩擦損失</b>: ヘーゼン・ウィリアムス式 (C値: SGP=130 / 銅管=140 / ステンレス=130 / VP=150)<br>
+  <b>摩擦損失</b>: ヘーゼン・ウィリアムス式 (C=130, 鋼管)<br>
   R = 1.22×10¹⁰ × Q^1.85 / (C^1.85 × d^4.87) [Pa/m]<br><br>
   <b>全揚程</b>: H = (管摩擦×実長×局部係数 + 機器圧損) / (ρg)<br>
   <b>軸動力</b>: P[kW] = ρg·Q·H / (η×1000)
@@ -1263,16 +1023,16 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="card">
   <div class="card-title">音源 <span style="font-size:10px;color:var(--ac);margin-left:4px">点音源</span></div>
   <div class="tabs" id="nz-tabs">
-    <div class="tab" data-nm="oct">オクターブバンド</div>
-    <div class="tab on" data-nm="a">A特性(一点)</div>
+    <div class="tab on" data-nm="oct">オクターブバンド</div>
+    <div class="tab" data-nm="a">A特性(一点)</div>
   </div>
   <!-- A特性モード -->
-  <div id="nz-sec-a">
+  <div id="nz-sec-a" class="hidden">
     <label>音源 パワーレベル Lw [dB(A)]</label>
     <input id="nz-lw" type="number" inputmode="decimal" class="q-input" value="85">
   </div>
   <!-- オクターブバンドモード -->
-  <div id="nz-sec-oct" class="hidden">
+  <div id="nz-sec-oct">
     <div class="tabs" id="nz-oct-unit-tabs" style="margin-bottom:8px">
       <div class="tab on" data-nzu="db">入力値は dB(Z)</div>
       <div class="tab" data-nzu="dba">入力値は dB(A)</div>
@@ -1288,29 +1048,15 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div>
       <label>指向係数 Q</label>
       <select id="nz-q">
-        <option value="2">Q=2 地面上(半球)</option>
         <option value="1">Q=1 自由空間(球面)</option>
+        <option value="2" selected>Q=2 地面上(半球)</option>
         <option value="4">Q=4 壁際(1/4球)</option>
         <option value="8">Q=8 隅角部(1/8球)</option>
       </select>
     </div>
     <div>
-      <label id="nz-r-label">水平距離 r [m]</label>
+      <label id="nz-r-label">受音点距離 r [m]</label>
       <input id="nz-r" type="number" inputmode="decimal" value="10" step="1">
-    </div>
-  </div>
-  <div class="row" style="margin-top:0">
-    <div>
-      <label>音源高さ hs [m]</label>
-      <input id="nz-hs" type="number" inputmode="decimal" value="1.0" step="0.5">
-    </div>
-    <div>
-      <label>受音点高さ hr [m]</label>
-      <input id="nz-hr" type="number" inputmode="decimal" value="1.5" step="0.5">
-    </div>
-    <div>
-      <label>斜距離</label>
-      <div style="padding:8px 0;font-size:13px;font-weight:600;color:var(--ac)" id="nz-slant-disp">— m</div>
     </div>
   </div>
 </div>
@@ -1325,9 +1071,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <svg id="nz-wall-svg" viewBox="0 0 340 190" style="width:100%;height:auto;display:block"></svg>
     </div>
     <div class="row" style="margin-top:6px">
-      <div><label>音源高さ hs [m]</label><input id="nz-hs-w" type="number" inputmode="decimal" value="1.0" step="0.5"></div>
+      <div><label>音源高さ h₁ [m]</label><input id="nz-hs" type="number" inputmode="decimal" value="1.5" step="0.5"></div>
       <div><label>壁高さ h_w [m]</label><input id="nz-hw" type="number" inputmode="decimal" value="3" step="0.5"></div>
-      <div><label>受音点高さ hr [m]</label><input id="nz-hr-w" type="number" inputmode="decimal" value="1.5" step="0.5"></div>
+      <div><label>受音点高さ h₂ [m]</label><input id="nz-hr" type="number" inputmode="decimal" value="1.5" step="0.5"></div>
     </div>
     <div class="row">
       <div><label>音源→壁 水平 L₁ [m]</label><input id="nz-l1" type="number" inputmode="decimal" value="3" step="0.5"></div>
@@ -1363,7 +1109,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <div class="note">点音源・球面拡散を仮定。Lp = Lw + 10log(Q/(4πr²)) − 回折減衰。<br>出典: 環境騒音の予測手法(日本音響学会) / 前川チャート。概算用であり、最終決定は実測・詳細予測によること。</div>
 
-<div id="nz-aweight-card" class="card hidden" style="padding:8px 10px">
+<div id="nz-aweight-card" class="card" style="padding:8px 10px">
   <div class="card-title" style="margin-bottom:4px">A特性補正値 (dB)</div>
   <div class="note" style="margin-bottom:6px">各バンドのLp [dB(Z)] に加算することでLp(A)を求める。</div>
   <table style="width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums">
@@ -1421,80 +1167,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </svg>
   <div class="note">点音源(●)と音が広がる範囲(<span style="color:var(--ac)">破線</span>)。床・壁などの反射面(グレー面)が増えるほど音が狭い範囲に集中し、同じ距離でもレベルが高くなる(Q大)。</div>
 </div>
-
-<div class="card">
-  <div class="card-title">環境基準値 参考（環境基本法第16条・環境庁告示第64号）</div>
-  <table class="rp-table">
-    <thead><tr><th>類型</th><th style="text-align:left">主な対象地域</th><th>昼間<br><span style="font-size:9px">6〜22時</span></th><th>夜間<br><span style="font-size:9px">22〜6時</span></th></tr></thead>
-    <tbody>
-      <tr><td>AA</td><td style="text-align:left">療養・福祉施設等の集合地域</td><td>50 dB</td><td>40 dB</td></tr>
-      <tr><td>A</td><td style="text-align:left">専ら住居（低層・中高層住専等）</td><td>55 dB</td><td>45 dB</td></tr>
-      <tr><td>B</td><td style="text-align:left">主として住居（住居・近商・準工業等）</td><td>55 dB</td><td>45 dB</td></tr>
-      <tr><td>C</td><td style="text-align:left">住居と商業・工業の混在地域</td><td>60 dB</td><td>50 dB</td></tr>
-    </tbody>
-  </table>
-  <div class="note">道路沿い・幹線道路近接空間は別途特例あり。工業専用地域等は環境基準の設定対象外が多い。環境基準は達成目標であり規制基準とは別。</div>
-</div>
-<div class="card">
-  <div class="card-title">東京都 騒音規制基準 参考（環境確保条例・日常生活）</div>
-  <table style="width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-bottom:1px">
-    <thead>
-      <tr style="background:var(--bg)">
-        <th style="text-align:left;padding:3px 6px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;width:38%"></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">朝<br><span style="font-size:9px">6〜8時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">昼<br><span style="font-size:9px">8〜19時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">夕<br><span style="font-size:9px">19〜23時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">夜<br><span style="font-size:9px">23〜6時</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding:4px 6px;border-bottom:1px solid var(--line)">第1種地域<br><span style="font-size:10px;color:var(--sub)">低層住専・AA地域</span></td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">40</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">45</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">40</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">40</td>
-      </tr>
-      <tr>
-        <td style="padding:4px 6px">第2種地域<br><span style="font-size:10px;color:var(--sub)">中高層住専・住居系</span></td>
-        <td style="text-align:center;padding:4px 2px">45</td>
-        <td style="text-align:center;padding:4px 2px">50</td>
-        <td style="text-align:center;padding:4px 2px">45</td>
-        <td style="text-align:center;padding:4px 2px">45</td>
-      </tr>
-    </tbody>
-  </table>
-  <table style="width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-top:6px">
-    <thead>
-      <tr style="background:var(--bg)">
-        <th style="text-align:left;padding:3px 6px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;width:38%"></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">朝<br><span style="font-size:9px">6〜8時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">昼<br><span style="font-size:9px">8〜20時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">夕<br><span style="font-size:9px">20〜23時</span></th>
-        <th style="text-align:center;padding:3px 2px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400;line-height:1.2">夜<br><span style="font-size:9px">23〜6時</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding:4px 6px;border-bottom:1px solid var(--line)">第3種地域<br><span style="font-size:10px;color:var(--sub)">近商・商業・準工業・工業</span></td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">55</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">60</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">55</td>
-        <td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line)">50</td>
-      </tr>
-      <tr>
-        <td style="padding:4px 6px">第4種地域<br><span style="font-size:10px;color:var(--sub)">知事指定商業地域</span></td>
-        <td style="text-align:center;padding:4px 2px">60</td>
-        <td style="text-align:center;padding:4px 2px">70</td>
-        <td style="text-align:center;padding:4px 2px">60</td>
-        <td style="text-align:center;padding:4px 2px">55</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="note" style="margin-top:5px">単位: dB。東京都環境確保条例 条例136条 別表13（日常生活騒音）。環境基準（環境基本法）・工場騒音規制とは別。所管行政庁に確認のこと。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>距離減衰(点音源)</b><br>
   Lp = Lw + 10·log₁₀(Q / (4π·r²))　[dB]　r = 直線距離 d<br>
@@ -1510,6 +1183,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   A特性モードは代表周波数500Hz(λ≈0.68m)で回折計算
 </div>
 </div><!-- /tool-noise -->
+<!-- ==================== TOOL 09: 騒音合成 ==================== -->
 <div class="tool" id="tool-noisesum">
 <h2>騒音合成<small>HVAC TOOLS 09</small></h2>
 
@@ -1606,23 +1280,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
   <div class="note">対象音 = 合成騒音 − 補正値。レベル差 = 合成騒音 − 暗騒音。差3dB未満は測定不能、10以上は暗騒音の影響を無視できる(JIS Z 8731 環境騒音の表示・測定方法による)。</div>
 </div>
-
-<div class="card">
-  <div class="card-title">合成後レベルの目安 参考</div>
-  <table class="rp-table">
-    <thead><tr><th>合成レベル目安</th><th>判断材料</th></tr></thead>
-    <tbody>
-      <tr><td>〜40 dB(A)</td><td>住宅寝室・病院病室 夜間基準以内</td></tr>
-      <tr><td>〜45 dB(A)</td><td>NC-35〜40相当 / 住居系 昼間基準内</td></tr>
-      <tr><td>〜50 dB(A)</td><td>NC-40〜45相当 / 事務室許容範囲</td></tr>
-      <tr><td>〜55 dB(A)</td><td>住居地域 昼間環境基準上限</td></tr>
-      <tr><td>60 dB(A)超</td><td>商業地域 昼間基準付近・室内では問題</td></tr>
-    </tbody>
-  </table>
-  <div class="note">NC値との対応はおよそ dB(A) ≈ NC + 6〜8 dB(空調騒音スペクトル目安)。精確な判定はNC判定ツールへ。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>騒音のエネルギー合成</b><br>
   L_total = 10·log₁₀(10^(L₁/10) + 10^(L₂/10) + … + 10^(Lₙ/10))　[dB]<br><br>
@@ -1685,23 +1343,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">出典: 公共建築工事標準仕様書(機械設備工事編) / SHASE-S 206 (給排水衛生設備基準・同解説) / 各メーカー据付説明書。<br>排水横管は管内に空気溜まりが生じないよう、終始下り勾配で配管すること。概算用であり、最終決定は据付説明書・設計図書によること。</div>
-
-<div class="card">
-  <div class="card-title">呼び径別 最小勾配（公共建築工事標準仕様書準拠）</div>
-  <table class="rp-table">
-    <thead><tr><th>呼び径</th><th>最小勾配</th><th>% 換算</th><th>高低差/10m</th></tr></thead>
-    <tbody>
-      <tr><td>〜65A</td><td>1/50</td><td>2.00 %</td><td>200 mm</td></tr>
-      <tr><td>75A・100A</td><td>1/100</td><td>1.00 %</td><td>100 mm</td></tr>
-      <tr><td>125A</td><td>1/150</td><td>0.67 %</td><td>67 mm</td></tr>
-      <tr><td>150A以上</td><td>1/200</td><td>0.50 %</td><td>50 mm</td></tr>
-      <tr><td>雨水横走り</td><td>1/100</td><td>1.00 %</td><td>100 mm</td></tr>
-    </tbody>
-  </table>
-  <div class="note">空調ドレンはメーカー指定優先。指定なき場合1/100以上。天井内の有効高さ制限がある場合は配管ルートごとに高低差を必ず確認すること。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>必要高低差</b>: 下がり量 = L[m] × (1/n) × 1000　[mm]<br><br>
   <b>用途別 最小勾配(目安)</b><br>
@@ -1787,20 +1429,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">出典: 公共建築工事標準仕様書(機械設備工事編) 表2.2.20「配管の支持間隔」/ 2.2.5「ダクトの吊り及び支持」/ SHASE規格。ダクト重量は鋼板+保温で概算8kg/m²。ボルト許容荷重は強度区分4.6・安全率4の目安値。<br>概算用であり、最終決定は設計図書・メーカー指針によること。</div>
-
-<div class="card">
-  <div class="card-title">耐震設計 重要度係数 参考（建築設備耐震設計・施工指針）</div>
-  <table class="rp-table">
-    <thead><tr><th>用途・条件</th><th>重要度係数 I</th></tr></thead>
-    <tbody>
-      <tr><td>学校・病院・避難所・消防署</td><td>1.5</td></tr>
-      <tr><td>一般事務所・住宅・商業施設</td><td>1.0</td></tr>
-    </tbody>
-  </table>
-  <div class="note">水平地震力 = 機器重量 × 設計水平震度（I×k）。振れ止めは特定天井（高さ6m超・面積200m²超等）では別途告示基準を確認のこと。斜め吊り・両端固定が基本。</div>
-</div>
-
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>吊りボルト間隔(公共建築工事標準仕様書)</b><br>
   ダクト: アングル・スライド工法 3,680mm以下 / 共板工法・スパイラル工法 3,000mm以下 / 機械室内・長辺450mm以下 2,000mm以下<br>
@@ -1855,25 +1484,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">出典: NC(Noise Criteria)曲線 (L.L.Beranek、ANSI/ASA一般値)。<br>各バンドの値がいずれのNC曲線も超えない最小のNC値を「判定結果」とする。補間値は各バンドの値をNC曲線間で線形補間した参考値(最大バンドを表示)。</div>
-
-<div class="card">
-  <div class="card-title">用途別 推奨NC値 参考表</div>
-  <table style="width:100%;border-collapse:collapse;font-size:12px">
-    <thead><tr><th style="text-align:left;padding:4px 6px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400">用途</th><th style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400">推奨NC</th></tr></thead>
-    <tbody>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">放送・コンサートホール</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">NC-15〜20</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">劇場・映画館</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-20〜25</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">病院 病室 / 住宅 寝室</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-25〜30</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">図書館・美術館 / ホテル客室 / 学校教室</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-30〜35</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">会議室</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-30〜40</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">病院ロビー</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-35〜40</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">事務室 / レストラン</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-40〜45</td></tr>
-      <tr><td style="padding:4px 6px;border-bottom:1px solid var(--line)">店舗・百貨店</td><td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right">NC-40〜50</td></tr>
-      <tr><td style="padding:4px 6px">工場(軽作業)</td><td style="padding:4px 6px;text-align:right">NC-45〜55</td></tr>
-    </tbody>
-  </table>
-  <div class="note" style="margin-top:6px">出典: ASHRAE Handbook / SHASE-S準拠</div>
-</div>
 </div><!-- /tool-nc -->
 
 <!-- ==================== TOOL 13: 鋼材重量計算 ==================== -->
@@ -1882,20 +1492,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <div id="st-rows"></div>
 <button type="button" id="st-add" class="btn-sm" style="width:100%;padding:10px;margin-bottom:10px;font-size:13px">＋ 別の鋼材を追加</button>
-
-<!-- 鋼材一覧リスト -->
-<div class="card" id="st-list-card" style="display:none;padding:0;overflow:hidden">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--line)">
-    <span class="card-title" style="margin:0">鋼材一覧</span>
-    <button onclick="stCopyList()" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--sub);cursor:pointer;font-family:inherit">コピー</button>
-  </div>
-  <div style="overflow-x:auto">
-    <table id="st-list-table" style="width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap">
-      <thead id="st-list-thead"></thead>
-      <tbody id="st-list-tbody"></tbody>
-    </table>
-  </div>
-</div>
 
 <div class="card">
   <div class="card-title">合計重量</div>
@@ -1914,7 +1510,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 
 <div class="note">重量はSS400換算(比重7.85 t/m³)、SUS304は比重7.93。出典: JIS G3192(H形鋼・I形鋼・等辺/不等辺山形鋼・溝形鋼) / JIS G3350(リップ溝形鋼) / JIS G3466(角形鋼管) / JIS G3194(平鋼FB)。実際の製品は圧延公差等により数%差が生じる場合がある。プレートは規格厚×幅×長さで算出(めっき重量を含まない)。</div>
-
 </div><!-- /tool-steel -->
 
 <!-- ==================== TOOL 14: 風速・動圧・圧損 変換 ==================== -->
@@ -1978,7 +1573,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <div class="note">空気 20℃ ρ=1.2 kg/m³, ν=1.5×10⁻⁵ m²/s。動圧 Pv=ρv²/2、相当直径 De=1.30(ab)^0.625/(a+b)^0.25、摩擦損失はColebrook近似(亜鉛鉄板 ε=0.15mm)。概算用であり最終決定は設計図書による。</div>
 
-<button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
+<button class="formula-btn" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠を表示'">▼ 計算式・根拠を表示</button>
 <div class="formula-box">
   <b>連続の式</b><br>
   Q[m³/h] = v[m/s] × A[m²] × 3600<br>
@@ -1993,245 +1588,27 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 </div><!-- /tool-airconv -->
 
-
-<!-- 広告バー（AdSense） -->
-<div id="ad-bar">
-  <!-- AdSense: publisher IDとad-slotを設定後にコメントアウト解除 -->
-  <!--
-  <ins class="adsbygoogle"
-    style="display:block;width:100%;height:60px"
-    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-    data-ad-slot="XXXXXXXXXX"
-    data-ad-format="horizontal"
-    data-full-width-responsive="false"></ins>
-  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
-  -->
-  <span style="font-size:11px;color:var(--sub);letter-spacing:.5px">広告スペース</span>
-</div>
 </div><!-- /content -->
 
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
 
-/* ========== Pro 骨格 ========== */
-// ライセンスキー照合（ハッシュ比較）
-function _ph(s){let h=5381;for(const c of s)h=(((h<<5)+h)^c.charCodeAt(0))>>>0;return h.toString(16);}
-const _PH=['86266708','f8f548d6','b54ae59'];
-const isPro=true; // Pro features enabled for all users
-
-function applyProState(){
-  // isPro is always true; acoustic lock opacity cleared
-  updateAcousticLocks();
-}
-function showProToast(msg){
-  const t=document.getElementById('pro-toast');
-  t.textContent=msg||'🔒 Pro版の機能です';
-  t.classList.add('on');
-  clearTimeout(showProToast._tid);
-  showProToast._tid=setTimeout(()=>t.classList.remove('on'),2500);
-}
-function showProKeyModal(){
-  const modal=document.getElementById('pro-key-modal');
-  const statusLine=document.getElementById('pro-key-status-line');
-  const form=document.getElementById('pro-key-form');
-  const activeBox=document.getElementById('pro-key-active-box');
-  const errEl=document.getElementById('pro-key-err');
-  if(isPro){statusLine.textContent='現在 Pro版 が有効です';statusLine.style.color='var(--ok)';form.style.display='none';activeBox.style.display='block';const dc=document.getElementById('pro-deact-confirm');if(dc)dc.style.display='none';}
-  else{statusLine.textContent='現在 Free版 です。ライセンスキーを入力してください。';statusLine.style.color='var(--sub)';form.style.display='block';activeBox.style.display='none';if(errEl)errEl.textContent='';}
-  modal.classList.add('on');
-}
-function activatePro(){
-  const key=(document.getElementById('pro-key-input').value||'').trim().toUpperCase();
-  const errEl=document.getElementById('pro-key-err');
-  if(_PH.includes(_ph(key))){localStorage.setItem('plenary_pro','true');errEl.textContent='';applyProState();document.getElementById('pro-key-modal').classList.remove('on');showProToast('✓ Pro版が有効になりました');}
-  else{errEl.textContent='キーが正しくありません。';document.getElementById('pro-key-input').focus();}
-}
-function deactivatePro(){
-  document.getElementById('pro-deact-confirm').style.display='none';
-  localStorage.removeItem('plenary_pro');applyProState();
-  document.getElementById('pro-key-modal').classList.remove('on');showProToast('Free版に戻りました');
-}
-function requirePro(label){
-  if(isPro)return true;
-  showProToast('🔒 '+(label||'この機能')+' はPro版の機能です');
-  showProKeyModal();return false;
-}
-function toggleFormula(btn){
-  const box=btn.nextElementSibling;
-  box.classList.toggle('on');
-  btn.textContent=box.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠';
-}
-function proGatedFormula(btn){toggleFormula(btn);}
-function updateAcousticLocks(){
-  // 屋外騒音タブ
-  document.querySelectorAll('#nz-tabs .tab').forEach(t=>{if(t.dataset.nm==='oct')t.style.opacity=isPro?'':'0.6';});
-  // 騒音合成タブ
-  document.querySelectorAll('#ns-mode-tabs .tab').forEach(t=>{if(t.dataset.nsm==='oct')t.style.opacity=isPro?'':'0.6';});
-  // 指向係数Q
-  const nzQ=document.getElementById('nz-q');
-  if(nzQ){
-    const proLabels={'1':'Q=1 自由空間(球面)','2':'Q=2 地面上(半球)','4':'Q=4 壁際(1/4球)','8':'Q=8 隅角部(1/8球)'};
-    Array.from(nzQ.options).forEach(o=>{
-      if(proLabels[o.value])o.text=proLabels[o.value];
-      o.disabled=(!isPro&&o.value!=='2');
-    });
-    if(!isPro)nzQ.value='2';
-  }
-  // 回折壁
-  const wallChk=document.getElementById('nz-wall-on');
-  if(wallChk)wallChk.title=isPro?'':'回折計算はPro版の機能です';
-}
-document.getElementById('pro-key-modal').onclick=function(e){if(e.target.id==='pro-key-modal')this.classList.remove('on');};
-// 初期適用
-applyProState();
-
-/* ========== 保存/呼び出し ========== */
-const SAVE_KEY='plenary_saves';
-function getSaves(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');}catch(e){return[];}}
-function putSaves(arr){localStorage.setItem(SAVE_KEY,JSON.stringify(arr));}
-
-function captureInputs(){
-  const tool=document.querySelector('.tool.on');
-  if(!tool)return{};
-  const data={toolId:tool.id};
-  tool.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{data[el.id]=el.value;});
-  return data;
-}
-function restoreInputs(data){
-  Object.entries(data).forEach(([id,val])=>{
-    if(id==='toolId')return;
-    const el=document.getElementById(id);
-    if(!el)return;
-    el.value=val;
-    el.dispatchEvent(new Event('input',{bubbles:true}));
-    el.dispatchEvent(new Event('change',{bubbles:true}));
-  });
-}
-
-function openSaveModal(){
-  if(!requirePro('入力セット保存'))return;
-  const modal=document.getElementById('save-modal');
-  modal.classList.add('on');
-  switchSaveTab('save');
-  document.getElementById('save-name-inp').value='';
-  document.getElementById('save-memo-inp').value='';
-}
-function switchSaveTab(tab){
-  document.querySelectorAll('#save-tabs .tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('#save-tabs .tab').forEach((t,i)=>{if((i===0&&tab==='save')||(i===1&&tab==='load'))t.classList.add('on');});
-  document.getElementById('save-form-area').classList.toggle('hidden',tab!=='save');
-  document.getElementById('save-load-area').classList.toggle('hidden',tab!=='load');
-  if(tab==='load')renderSaveList();
-}
-function doSave(){
-  const name=(document.getElementById('save-name-inp').value||'').trim()||'無名';
-  const memo=document.getElementById('save-memo-inp').value||'';
-  const inputs=captureInputs();
-  if(!inputs.toolId){showProToast('ツールを開いてから保存してください');return;}
-  const saves=getSaves();
-  saves.unshift({id:Date.now(),name,memo,ts:new Date().toLocaleString('ja-JP'),toolId:inputs.toolId,inputs});
-  if(saves.length>50)saves.pop();
-  putSaves(saves);
-  document.getElementById('save-modal').classList.remove('on');
-  showProToast('✓ 保存: '+name);
-}
-function renderSaveList(){
-  const tool=document.querySelector('.tool.on');
-  const toolId=tool?tool.id:null;
-  const saves=getSaves().filter(s=>s.toolId===toolId);
-  const el=document.getElementById('save-list-el');
-  if(!saves.length){el.innerHTML='<div style="color:var(--sub);font-size:12px;padding:8px 0">このツールの保存データはありません</div>';return;}
-  el.innerHTML=saves.map(s=>`
-    <div class="save-item">
-      <span class="save-item-del" onclick="deleteSave(${s.id})">✕</span>
-      <div class="save-item-name" onclick="loadSave(${s.id})" style="cursor:pointer">${s.name}</div>
-      <div class="save-item-meta">${s.ts}</div>
-      ${s.memo?`<div class="save-item-memo">${s.memo}</div>`:''}
-    </div>`).join('');
-}
-function loadSave(id){
-  const s=getSaves().find(x=>x.id===id);
-  if(!s)return;
-  restoreInputs(s.inputs);
-  document.getElementById('save-modal').classList.remove('on');
-  showProToast('✓ 呼び出し: '+s.name);
-}
-function deleteSave(id){
-  putSaves(getSaves().filter(s=>s.id!==id));
-  renderSaveList();
-}
-document.getElementById('save-modal').onclick=function(e){if(e.target.id==='save-modal')this.classList.remove('on');};
-
-/* ========== 帳票PDF ========== */
-const RM_KEY='plenary_report_meta';
-function loadReportMeta(){
-  try{return JSON.parse(localStorage.getItem(RM_KEY)||'{}');}catch(e){return{};}
-}
-function saveReportMeta(){
-  const d={project:$('rm-project').value,drawing:$('rm-drawing').value,author:$('rm-author').value,date:$('rm-date').value};
-  localStorage.setItem(RM_KEY,JSON.stringify(d));
-  return d;
-}
-function openReportModal(){
-  if(!requirePro('帳票出力')){
-    // Free版: 直接印刷（ウォーターマーク付き）
-    const cur=document.querySelector('.tool.on');
-    const key=cur?cur.id.replace('tool-',''):'';
-    const num=TOOL_PRINT_NUM[key]||'00';
-    const now=new Date();
-    const ts=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
-    const orig=document.title;
-    document.title=`Plenary${num}_${ts}`;
-    window.print();
-    setTimeout(()=>{document.title=orig;},1000);
-    return;
-  }
-  // Pro版: 帳票設定モーダル
-  const m=loadReportMeta();
-  $('rm-project').value=m.project||'';
-  $('rm-drawing').value=m.drawing||'';
-  $('rm-author').value=m.author||'';
-  $('rm-date').value=m.date||(new Date().toISOString().slice(0,10));
-  document.getElementById('report-modal').classList.add('on');
-  closeExportMenu();
-}
-function doReportPrint(){
-  const m=saveReportMeta();
-  const cur=document.querySelector('.tool.on');
-  const key=cur?cur.id.replace('tool-',''):'';
-  const num=TOOL_PRINT_NUM[key]||'00';
-  // 帳票ヘッダー更新
-  $('rh-project').textContent=m.project||'—';
-  $('rh-drawing').textContent=m.drawing||'—';
-  $('rh-author').textContent=m.author||'—';
-  $('rh-date').textContent=m.date||'—';
-  $('rh-tool-name').textContent=cur?.querySelector('h2')?.childNodes[0]?.textContent?.trim()||'';
-  document.getElementById('report-modal').classList.remove('on');
-  // 印刷
-  const now=new Date();
-  const ts=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
-  const orig=document.title;
-  document.title=`Plenary${num}_${m.project||''}${ts}`;
-  setTimeout(()=>{window.print();setTimeout(()=>{document.title=orig;},1000);},100);
-}
-document.getElementById('report-modal').onclick=function(e){if(e.target.id==='report-modal')this.classList.remove('on');};
-
 /* ========== ツール切り替え / ホーム ========== */
 const TOOL_USAGE={
-  duct:{title:"ダクトサイズ計算",body:"計算方法(等摩擦法/許容風速法)とダクト材質・用途を選び、風量Qを入力すると推奨径・風速・摩擦損失が表示されます。候補リストをタップすると矩形変換・板厚・フランジ工法の詳細が確認できます。<br><br>「＋ この条件をストック」で検討案を積み上げておき、2案を選んで横並び比較することができます。"},
-  vent:{title:"換気量計算",body:"上のタブで算定法を選びます(換気回数法/CO₂基準法/火気使用室/建築基準法)。室容積は直接入力かW×D×Hのどちらでも指定できます。<br><br>建築基準法(居室)タブでは、開口部の有効面積から自然換気の可否判定も行われます。"},
+  duct:{title:"ダクトサイズ計算",body:"風量Qを入力し、上のタブで「等摩擦法」(指定R[Pa/m]を満たす径を逆算)か「許容風速法」(指定風速から径を逆算)を選びます。ダクト材質と用途(風速上限)も選ぶと、推奨径・風速・摩擦損失が表示されます。<br><br>候補リストをタップすると規格断面の詳細(矩形変換等)を確認できます。下にスクロールすると板厚・フランジ工法の参考値も同時に算出されます。"},
+  vent:{title:"換気量計算",body:"上のタブで算定法を選びます(換気回数法/CO₂基準法/火気使用室/厨房フード/建築基準法)。室容積は「容積V」直接入力か「W×D×H」のどちらかで指定できます。<br><br>建築基準法(居室)タブでは、開口部の有効面積から自然換気が可能かどうかの判定も行われます。"},
   grille:{title:"吹出・吸込口計算",body:"風量Qと種別(VHS/HS/OAG等)を選ぶと、標準の開口率・面風速が自動でセットされます(任意入力にも変更可)。個数を増やすと1個あたりの必要面積が小さくなります。<br><br>候補リストから規格サイズの詳細を確認できます。"},
   conv:{title:"単位換算",body:"変換したい項目のいずれか1マスに数値を入力すると、同じカード内の他の単位へ自動で変換されます。<br><br>圧力・熱量/冷凍能力・風量・温度・長さ・質量・流量・熱貫流率・比エンタルピーの9種類を収録しています。"},
   psychro:{title:"空気線図",body:"上のタブで入力する組み合わせを選びます(乾球+相対湿度/乾球+湿球/乾球+露点)。気圧を変えると高地補正もできます。<br><br>「＋追加」で状態点を線図上に複数プロットでき、2点間の変化量(顕熱・潜熱等)も自動表示されます。"},
   load:{title:"負荷計算(簡易)",body:"上のタブで「原単位法」(用途別W/m²から概算)か「積上げ法」(外皮・照明・OA機器・人体・外気を個別入力)を選びます。面積は直接入力かW×Dのどちらでも指定できます。<br><br>積上げ法では、各負荷の内訳が下に表示されます。"},
   water:{title:"水配管",body:"冷水/温水を選び、熱負荷Qと往き・還り温度を入力すると、必要流量と参考管径が出ます。<br><br>下にスクロールすると保温厚さの参考値、ポンプ揚程・軸動力の概算も同じ画面で確認できます。"},
-  noise:{title:"屋外騒音(距離・回折減衰)",body:"A特性(一点)モードでは、音源パワーレベル・水平距離・音源高さ・受音点高さ・指向性Qを入力すると、斜距離を自動算出して受音点レベルを計算します。<br><br>「回折壁を考慮する」をONにすると、前川チャートによる回折減衰を含めた計算ができます。オクターブバンドモードでは帯域別パワーレベルから合成dB(A)をグラフ・表で確認できます。"},
-  noisesum:{title:"騒音合成",body:"上のタブで「単一」(レベル1つで合成)か「オクターブバンド」(帯域ごとに合成)を選びます。<br><br>単一モードは音源ごとのレベル[dB]を入力欄に並べ、「＋追加」で音源を増やせます。オクターブバンドモードは音源ごとに63Hz〜8000Hzの帯域レベルを入力すると、帯域別の合成スペクトルと総合dB(A)が出ます。どちらもEnterキーで次の欄へ移動できます。"},
-  drain:{title:"排水勾配",body:"配管長さLと用途・呼び径(採用したい勾配)を選ぶと、必要な高低差と支持間隔・支持点数が出ます。<br><br>「任意勾配」を選ぶと1/nを直接指定できます。"},
+  noise:{title:"屋外騒音(距離・回折減衰)",body:"音源パワーレベル(オクターブバンド入力も可)・距離・指向性Qを入力します。<br><br>壁による回折を考慮する場合は「壁あり」をONにして高さ・距離を入力すると、図と合わせて回折減衰を含めた受音点レベルが算出されます。オクターブバンドモードでは、音源と受音点のバンド別レベルをグラフと表で確認できます。入力値がdB(Z)かdB(A)かはタブで切り替えられます(カタログ値が既にdB(A)表記の場合に使用)。"},
+  noisesum:{title:"騒音合成",body:"上のタブで「単一」(レベル1つで合成)か「オクターブバンド」(帯域ごとに合成)を選びます。<br><br>単一モードは音源ごとのレベル[dB]を入力欄に並べ、「＋追加」で音源を増やせます。オクターブバンドモードは音源ごとに63Hz〜8000Hzの帯域レベルを入力すると、帯域別の合成スペクトルと総合dB(A)が出ます(空欄の帯域はその音源を除外)。入力値がdB(Z)かdB(A)かはタブで切り替えられます。<br><br>どちらも入力中にEnterキーで次の欄へ移動でき、最後の欄では新しい音源が追加されます。"},
+  drain:{title:"排水勾配",body:"配管長さLと、用途・呼び径(採用したい勾配)を選ぶと、必要な高低差と支持間隔・支持点数が出ます。<br><br>「任意勾配」を選ぶと1/nを直接指定できます。"},
   hanger:{title:"吊り支持・振れ止め",body:"上のタブでダクト/配管を選びます。ダクトは工法と幅・高さ・長さ、配管は呼び径区分・長さ・質量を入力すると、吊りボルトの本数・許容荷重と、振れ止め支持の要否・箇所数が算出されます。"},
   nc:{title:"NC判定",body:"63Hz〜8000Hzのオクターブバンドレベルを入力します(空欄のバンドは判定から除外)。入力中にEnterキーで次のバンドへ移動できます。<br><br>入力に応じてNC値とdB(A)参考値、グラフ上の入力レベル(太線)が自動更新されます。"},
-  steel:{title:"鋼材重量",body:"種類(H形鋼・角形鋼管・プレート等)とサイズを選ぶと断面図と単位重量が決まります。同一鋼材で仕様違いを追加するときは「＋ 同じ鋼材で追加」、別種類は「＋ 別の鋼材を追加」を使います。<br><br>鋼材一覧リストが自動生成され、「コピー」ボタンでExcelに貼り付けられるTSV形式でクリップボードに取得できます。"},
+  steel:{title:"鋼材重量",body:"種類(H形鋼・角パイプ・鋼板等)とサイズを選ぶと断面図と単位重量が決まります。<br><br>同じ鋼材で長さ・本数が違うものを追加するときは「＋ 同じ鋼材で追加」(断面図は増えません)。種類が違う鋼材を増やすときは下の「＋ 別の鋼材を追加」を使います。"},
   airconv:{title:"風速・動圧・圧力損失 変換",body:"風量Q・風速v・断面のうち、入力した直近2項目から残り1項目が自動算出されます(矩形/円形を選択可)。<br><br>下のカードでは静圧・局部損失係数から動圧・全圧・局部損失も計算できます。"}
 };
 function goToTool(name){
@@ -2241,7 +1618,6 @@ function goToTool(name){
   $("home-btn").style.display="flex";
   $("usage-btn").style.display="flex";
   $("output-btn").style.display="flex";
-  $("info-btn").style.display="none";
   if(name==="psychro" && typeof psCalc==="function") psCalc();
 }
 document.querySelectorAll(".home-card").forEach(c=>c.onclick=()=>goToTool(c.dataset.tool));
@@ -2252,21 +1628,25 @@ $("home-btn").onclick=()=>{
   $("home-btn").style.display="none";
   $("usage-btn").style.display="none";
   $("output-btn").style.display="none";
-  $("info-btn").style.display="flex";
 };
 $("info-btn").onclick=()=>$("info-modal").classList.add("on");
 $("info-modal").onclick=(e)=>{ if(e.target.id==="info-modal") $("info-modal").classList.remove("on"); };
-// エクスポートメニュー
-function closeExportMenu(){$('export-menu').classList.remove('on');}
-$("output-btn").onclick=(e)=>{
-  e.stopPropagation();
-  $('export-menu').classList.toggle('on');
-};
-document.addEventListener('click',e=>{
-  if(!$('export-menu').contains(e.target)&&e.target.id!=='output-btn') closeExportMenu();
-});
 const TOOL_PRINT_NUM={duct:'01',vent:'02',grille:'03',conv:'04',psychro:'05',load:'06',water:'07',drain:'08',hanger:'09',noise:'10',noisesum:'11',nc:'12',steel:'13',airconv:'14'};
-$("em-pdf").onclick=()=>{ closeExportMenu(); openReportModal(); };
+$("output-btn").onclick=()=>{
+  const cur=document.querySelector(".tool.on");
+  const key=cur?cur.id.replace("tool-",""):"";
+  const num=TOOL_PRINT_NUM[key]||"00";
+  const now=new Date();
+  const yy=String(now.getFullYear()).slice(-2);
+  const mm=String(now.getMonth()+1).padStart(2,'0');
+  const dd=String(now.getDate()).padStart(2,'0');
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mi=String(now.getMinutes()).padStart(2,'0');
+  const orig=document.title;
+  document.title=`Plenary${num}_${yy}${mm}${dd}_${hh}${mi}`;
+  window.print();
+  setTimeout(()=>{ document.title=orig; },1000);
+};
 $("usage-btn").onclick=()=>{
   const cur=document.querySelector(".tool.on");
   if(!cur || cur.id==="home") return;
@@ -2364,8 +1744,8 @@ function dCalc(){
     div.className="sel-row"+(c.key===defaultKey?" active":"");
     div.dataset.key=c.key;
     div.innerHTML=`<span class="sr-name">${c.label}</span>`+
-      `<span class="${vCls}" style="font-size:11px;white-space:nowrap;flex-shrink:0">${c.v.toFixed(2)} m/s</span>`+
-      `<span class="sr-badge">${c.R.toFixed(2)}&nbsp;Pa/m</span>`;
+      `<span class="${vCls}" style="font-size:11px">${c.v.toFixed(2)} m/s</span>`+
+      `<span class="sr-badge">${c.R.toFixed(2)}</span>`;
     div.onclick=()=>dSelect(c.key,all,vmax);
     list.appendChild(div);
   }
@@ -2496,7 +1876,7 @@ document.querySelectorAll("[data-dm]").forEach(t=>t.onclick=()=>{
 });
 ["d-q","d-r","d-v"].forEach(id=>{$(id).addEventListener("input",dCalc);$(id).addEventListener("change",dCalc);});
 $("d-mat").addEventListener("change",()=>{
-  const labels={"0.00015":"亜鉛鉄板 ε=0.15 mm","0.0015":"塩ビダクト ε=1.5 mm","0.003":"コンクリートダクト ε=3.0 mm","0.0009":"グラスウールダクト ε=0.9 mm","0.000045":"ステンレスダクト ε=0.045 mm"};
+  const labels={"0.00018":"亜鉛鉄板 ε=0.18 mm","0.0015":"塩ビダクト ε=1.5 mm","0.003":"コンクリートダクト ε=3.0 mm","0.0009":"グラスウールダクト ε=0.9 mm","0.000045":"ステンレスダクト ε=0.045 mm"};
   $("d-eps-note").textContent=labels[$("d-mat").value]||"";
   dCalc();
 });
@@ -2511,110 +1891,10 @@ $("d-use-custom").addEventListener("input",dCalc);
 $("d-smoke").addEventListener("change",()=>{ if(dCurSel) dPlateCalc(dCurSel); });
 $("d-bolt-pitch").addEventListener("change",()=>{ if(dCurSel) dPlateCalc(dCurSel); });
 
-/* ========== ダクト 検討ストック ========== */
-let dStocks=[], dPinned=[];
-
-function dAddStock(){
-  if(!dCurSel){showProToast('先に候補を選択してください');return;}
-  const c=dCurSel;
-  const methodLabel={'ef':'等摩擦法','vel':'許容風速法','ef-rect':'等摩擦法(角)','vel-rect':'許容風速法(角)'}[dMode]||dMode;
-  const matEl=$('d-mat');const matLabel=matEl.options[matEl.selectedIndex]?.text.split(' ')[0]||'亜鉛';
-  const q=$('d-q').value;
-  const sizeLabel=c.type==='rect'?`${c.a}×${c.b}`:`Φ${c.D}`;
-  const stock={
-    id:Date.now(),
-    label:`${methodLabel} Q=${q} → ${sizeLabel} v=${(+c.v||0).toFixed(1)}m/s R=${(+c.R||0).toFixed(2)}Pa/m`,
-    method:dMode, mat:matEl.value, matLabel,
-    q, shape:c.type||'round',
-    size:sizeLabel, v:(+c.v||0).toFixed(1), R:(+c.R||0).toFixed(2),
-    inputs:{q, mat:matEl.value, shape:c.type||'round'},
-    sel:c
-  };
-  // Rモードなら値も保存
-  if(dMode==='ef')stock.inputs.r=$('d-r')?.value;
-  if(dMode==='vel')stock.inputs.vd=$('d-v')?.value;
-  dStocks.unshift(stock);
-  dRenderStocks();
-  showProToast('ストックしました');
-}
-
-function dRenderStocks(){
-  const el=$('d-stock-list');
-  if(!dStocks.length){el.innerHTML='';$('d-stock-count').textContent='';$('d-compare-btn').style.display='none';return;}
-  $('d-stock-count').textContent=`${dStocks.length}件`;
-  const pinnedCount=dPinned.length;
-  $('d-compare-btn').style.display=pinnedCount>=2?'':'none';
-  el.innerHTML=dStocks.map(s=>{
-    const pinIdx=dPinned.indexOf(s.id);
-    const pinTag=pinIdx===0?'<span class="d-stock-tag p1">案1</span>':pinIdx===1?'<span class="d-stock-tag p2">案2</span>':'';
-    const isPinned=pinIdx>=0;
-    return `<div class="d-stock-card${isPinned?' pinned':''}" onclick="dStockClick(${s.id})">
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:13px;font-weight:600;color:var(--ac)">${s.size}</span>
-        ${pinTag}
-        <button onclick="event.stopPropagation();dDeleteStock(${s.id})" style="margin-left:auto;background:none;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:0 2px">✕</button>
-      </div>
-      <div style="font-size:11.5px;color:var(--sub);margin-top:2px">${s.label}</div>
-    </div>`;
-  }).join('');
-}
-
-function dStockClick(id){
-  // ピン切替（2案選択）
-  const idx=dPinned.indexOf(id);
-  if(idx>=0){dPinned.splice(idx,1);}
-  else if(dPinned.length<2){dPinned.push(id);}
-  else{dPinned=[dPinned[1],id];}
-  dRenderStocks();
-  dRenderCompare();
-}
-
-function dDeleteStock(id){
-  dStocks=dStocks.filter(s=>s.id!==id);
-  dPinned=dPinned.filter(x=>x!==id);
-  dRenderStocks();
-  dRenderCompare();
-}
-
-function dToggleCompare(){
-  const area=$('d-compare-area');
-  area.classList.toggle('hidden');
-  if(!area.classList.contains('hidden'))dRenderCompare();
-}
-
-function dRenderCompare(){
-  if(dPinned.length<2)return;
-  const [a,b]=[dStocks.find(s=>s.id===dPinned[0]),dStocks.find(s=>s.id===dPinned[1])];
-  if(!a||!b)return;
-  const rows=[
-    ['サイズ',a.size,b.size,'ac'],
-    ['風速 v',a.v+' m/s',b.v+' m/s',''],
-    ['摩擦損失 R',a.R+' Pa/m',b.R+' Pa/m',''],
-    ['計算方法',a.method,b.method,''],
-    ['風量 Q',a.q+' m³/h',b.q+' m³/h',''],
-    ['材質',a.matLabel,b.matLabel,''],
-  ];
-  $('d-compare-table').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px">
-  <thead><tr>
-    <th style="text-align:left;padding:4px;border-bottom:1px solid var(--line);color:var(--sub);font-weight:400"></th>
-    <th style="text-align:center;padding:4px;border-bottom:1px solid var(--line);color:#5bc4d9">案1</th>
-    <th style="text-align:center;padding:4px;border-bottom:1px solid var(--line);color:#7dd95b">案2</th>
-  </tr></thead>
-  <tbody>${rows.map(([label,va,vb,cls])=>`<tr>
-    <td style="padding:4px;border-bottom:1px solid var(--line);color:var(--sub)">${label}</td>
-    <td style="text-align:center;padding:4px;border-bottom:1px solid var(--line);font-weight:${cls?700:400};color:${cls?'var(--ac)':'var(--tx)'}">${va}</td>
-    <td style="text-align:center;padding:4px;border-bottom:1px solid var(--line);font-weight:${cls?700:400};color:${cls?'var(--ac)':'var(--tx)'}">${vb}</td>
-  </tr>`).join('')}</tbody></table>`;
-  $('d-compare-area').classList.remove('hidden');
-}
-
-/* ========== ダクト 系統計算 (Pro) ========== */
-// 単区間/系統モード切替
-
 /* ========== TOOL 02: 換気量 ========== */
 let vMode="nc";
-const vSecs={nc:["v-sec-vol","v-sec-nc"],co2:["v-sec-vol","v-sec-co2"],fire:["v-sec-fire"],law:["v-sec-law"]};
-const vAllSecs=["v-sec-vol","v-sec-nc","v-sec-co2","v-sec-fire","v-sec-law"];
+const vSecs={nc:["v-sec-vol","v-sec-nc"],co2:["v-sec-vol","v-sec-co2"],fire:["v-sec-fire"],hood:["v-sec-hood"],law:["v-sec-law"]};
+const vAllSecs=["v-sec-vol","v-sec-nc","v-sec-co2","v-sec-fire","v-sec-hood","v-sec-law"];
 
 function vShowSecs(){vAllSecs.forEach(id=>$(id).classList.toggle("hidden",!vSecs[vMode].includes(id)));}
 
@@ -2641,6 +1921,12 @@ function vCalc(){
   } else if(vMode==="fire"){
     const K=+$("v-fire-k").value||0.93,Qf=+$("v-fire-q").value||0;
     Q=40*K*Qf;extra={label:"発熱量 × 40K",val:`40 × ${K} × ${Qf.toFixed(1)} kW`};note="建基法 第20条の3: V=40KQ";
+  } else if(vMode==="hood"){
+    const W=+$("v-hood-w").value||0,D=+$("v-hood-d").value||0,H=+$("v-hood-h").value||0;
+    const C={"wall":0.25,"island":0.4,"canopy":0.3}[$("v-hood-type").value]||0.25;
+    const L={"wall":W+2*D,"island":2*(W+D),"canopy":W+2*D}[$("v-hood-type").value]||0;
+    Q=Math.round(C*L*H*3600);extra={label:"フード面積",val:`${W}×${D} m、高さ ${H} m`};
+    note=`Q = ${C} × ${L.toFixed(2)} m × ${H} m × 3600`;
   } else if(vMode==="law"){
     const Af=+$("v-law-af").value||0, Aw=+$("v-law-aw").value||0, N=+$("v-law-n").value||10;
     const ratio=Af>0?Aw/Af:0, needRatio=1/20, natOk=ratio>=needRatio;
@@ -2685,8 +1971,8 @@ function vGetVol(){
 $("v-nc-preset").addEventListener("change",()=>{
   $("v-nc-custom-box").classList.toggle("hidden",$("v-nc-preset").value!=="custom");vCalc();
 });
-["v-vol","v-nc-custom","v-co2-p","v-fire-q","v-w","v-d","v-h","v-law-af","v-law-aw","v-law-n"].forEach(id=>$(id).addEventListener("input",vCalc));
-["v-co2-rate","v-fire-k"].forEach(id=>$(id).addEventListener("change",vCalc));
+["v-vol","v-nc-custom","v-co2-p","v-fire-q","v-hood-w","v-hood-d","v-hood-h","v-w","v-d","v-h","v-law-af","v-law-aw","v-law-n"].forEach(id=>$(id).addEventListener("input",vCalc));
+["v-co2-rate","v-fire-k","v-hood-type"].forEach(id=>$(id).addEventListener("change",vCalc));
 
 /* ========== TOOL 03: 吹出・吸込口 ========== */
 const G_PRESET={
@@ -3463,11 +2749,9 @@ function wtCalc(){
   // 必要流量 [L/s] = q[kW]/(4.186*dt)
   const Qls=q/(4.186*dt);
   const Qm3s=Qls/1000;
-  // Hazen-Williams C値: 管種別（新管基準）
-  const Cmap={'2.0':130,'1.4':140,'3.0':130,'1.5':150};
-  const C=Cmap[String(vmax)]||130;
+  const C=130;
 
-  // 候補生成: 流速<=vmax かつ R<=300Pa/m目安を満たす最小から
+  // 候補生成: 流速<=vmax かつ R<=440Pa/m目安を満たす最小から
   const cands=[];
   for(const p of SGP){
     const d=p.id/1000, A=Math.PI*d*d/4;
@@ -3488,7 +2772,7 @@ function wtCalc(){
     const div=document.createElement('div');
     div.className='sel-row'+(c.name===recommend.name?' active':'');
     div.innerHTML=`<span class="sr-name">${c.name}</span>`+
-      `<span class="${vCls}" style="font-size:11px;white-space:nowrap;flex-shrink:0">${c.v.toFixed(2)} m/s</span>`+
+      `<span class="${vCls}" style="font-size:11px">${c.v.toFixed(2)} m/s</span>`+
       `<span class="sr-badge">${c.R.toFixed(0)}Pa</span>`;
     div.onclick=()=>wtSelect(c,Qls,vmax);
     list.appendChild(div);
@@ -3571,7 +2855,7 @@ document.querySelectorAll('[data-wm]').forEach(t=>t.onclick=()=>{
 ['wt-pipe','wt-local'].forEach(id=>$(id).addEventListener('change',wtCalc));
 
 /* ========== TOOL 08: 屋外騒音 ========== */
-let nzMode='a';
+let nzMode='oct';
 let nzOctUnit='db'; // 'db'=入力dB(Z) / 'dba'=入力dB(A)
 const NZ_BANDS=[63,125,250,500,1000,2000,4000,8000];
 // A特性補正値 [dB]
@@ -3635,43 +2919,31 @@ function maekawa(delta, freq){
 function nzCalc(){
   const Q=+$('nz-q').value||2;
   const wallOn=$('nz-wall-on').checked;
-  const hs=+$('nz-hs').value||0;
-  const hr=+$('nz-hr').value||0;
-  const dh=hr-hs;
 
   // 壁ON時: 高さ・水平距離からa/b/dを計算
   let a=0,b=0,d=0,delta=0;
   if(wallOn){
-    const hw=+$('nz-hw').value||0;
+    const hs=+$('nz-hs').value||0, hw=+$('nz-hw').value||0, hr=+$('nz-hr').value||0;
     const L1=+$('nz-l1').value||0, L2=+$('nz-l2').value||0;
     a=Math.sqrt(L1*L1+(hw-hs)*(hw-hs));
     b=Math.sqrt(L2*L2+(hw-hr)*(hw-hr));
-    d=Math.sqrt((L1+L2)*(L1+L2)+dh*dh);
-    const hLine = hs + dh*L1/(L1+L2);
+    d=Math.sqrt((L1+L2)*(L1+L2)+(hr-hs)*(hr-hs));
+    // 音源-受音点の直線が水平位置L1で持つ高さ
+    const hLine = hs + (hr-hs)*L1/(L1+L2);
+    // 壁頂が直線より上(遮蔽):δ正 / 下(見通せる):δ負
     const blocks = hw >= hLine;
     delta = blocks ? (a+b-d) : -(a+b-d);
+    // δは-1.0(N換算)で打ち止め: ここでは行路差自体は表示用、回折はmaekawaで頭打ち
     $('nz-a-calc').textContent=a.toFixed(2)+' m';
     $('nz-b-calc').textContent=b.toFixed(2)+' m';
     $('nz-d-calc').textContent=d.toFixed(2)+' m';
     $('nz-delta-calc').textContent=(delta<=-1.0)?'- m':(delta.toFixed(2)+' m');
     nzDrawWall(hs,hw,hr,L1,L2);
-    $('nz-r').value=d.toFixed(2);
+    $('nz-r').value=d.toFixed(2); // 受音点距離rはL1+L2(と高さ)から自動算出し、表示も同期させる
   }
 
-  // 距離r: 壁ON時は直線距離d、OFF時は水平+高低差から斜距離
-  const rH=+$('nz-r').value||1;
-  const r=wallOn?d:Math.sqrt(rH*rH+dh*dh);
-
-  // 斜距離表示（壁OFFのみ）
-  const slantEl=$('nz-slant-disp');
-  if(slantEl){
-    if(wallOn){
-      slantEl.textContent='—';
-    } else {
-      const slant=Math.sqrt(rH*rH+dh*dh);
-      slantEl.textContent=slant.toFixed(2)+' m'+(Math.abs(dh)>0.01?' Δh='+dh.toFixed(1)+'m':'');
-    }
-  }
+  // 距離r: 壁ON時は直線距離d、OFF時はnz-r入力
+  const r=wallOn?d:(+$('nz-r').value||1);
 
   // 距離減衰 [dB] = 10log(Q/(4πr²))
   const distAtten=10*Math.log10(Q/(4*Math.PI*r*r));
@@ -3728,7 +3000,6 @@ function nzCalc(){
 }
 
 document.querySelectorAll('[data-nm]').forEach(t=>t.onclick=()=>{
-  if(t.dataset.nm==='oct' && !requirePro('オクターブバンド入力')){return;}
   document.querySelectorAll('[data-nm]').forEach(x=>x.classList.remove('on'));
   t.classList.add('on');nzMode=t.dataset.nm;
   $('nz-sec-a').classList.toggle('hidden',nzMode!=='a');
@@ -3839,36 +3110,23 @@ function nzDrawResultChart(rows, overallLwA, overallLpA){
 }
 let nzRManualValue=$('nz-r').value;
 $('nz-wall-on').addEventListener('change',()=>{
-  if($('nz-wall-on').checked && !requirePro('回折計算')){
-    $('nz-wall-on').checked=false;return;
-  }
   $('nz-wall-box').classList.toggle('hidden',!$('nz-wall-on').checked);
   if($('nz-wall-on').checked){
-    nzRManualValue=$('nz-r').value;
+    nzRManualValue=$('nz-r').value; // ON時: 現在の手入力値を保存
     $('nz-r').disabled=true;
     $('nz-r-label').textContent='受音点距離 r [m] (L₁+L₂から自動算出)';
   } else {
     $('nz-r').disabled=false;
-    $('nz-r').value=nzRManualValue;
+    $('nz-r').value=nzRManualValue; // OFF時: 保存していた値を復元
     $('nz-r-label').textContent='受音点距離 r [m]';
   }
   nzCalc();
 });
-// hs/hr: 上部(nz-hs/nz-hr)と壁内(nz-hs-w/nz-hr-w)を双方向同期
-['hs','hr'].forEach(k=>{
-  const main=$('nz-'+k), wall=$('nz-'+k+'-w');
-  if(!main||!wall)return;
-  main.addEventListener('input',()=>{wall.value=main.value;nzCalc();});
-  wall.addEventListener('input',()=>{main.value=wall.value;nzCalc();});
-});
-['nz-lw','nz-r','nz-hs','nz-hr','nz-hw','nz-hs-w','nz-hr-w','nz-l1','nz-l2'].forEach(id=>{
+['nz-lw','nz-r','nz-hs','nz-hw','nz-hr','nz-l1','nz-l2'].forEach(id=>{
   const el=$(id);
   if(el){el.addEventListener('input',nzCalc);el.addEventListener('change',nzCalc);}
 });
-$('nz-q').addEventListener('change',function(){
-  if(this.value!=='2' && !requirePro('指向係数Q選択')){this.value='2';nzCalc();return;}
-  nzCalc();
-});
+$('nz-q').addEventListener('change',nzCalc);
 $('nz-oct-clear').addEventListener('click',()=>{
   NZ_BANDS.forEach(f=>{
     const el=$('nz-oct-'+f);
@@ -4019,7 +3277,6 @@ function nsCalc(){
 }
 
 $('ns-add').onclick=()=>{
-  if(nsLevels.length>=2 && !isPro){requirePro('3音源以上の合成');return;}
   if(nsLevels.length>=20)return;
   nsLevels.push(80);nsRender();nsCalc();
 };
@@ -4198,7 +3455,6 @@ nsOctCalc();
 document.querySelectorAll('#ns-mode-tabs .tab').forEach(t=>{
   t.onclick=()=>{
     if(t.classList.contains('on'))return;
-    if(t.dataset.nsm==='oct' && !requirePro('オクターブバンド合成'))return;
     document.querySelectorAll('#ns-mode-tabs .tab').forEach(x=>x.classList.remove('on'));
     t.classList.add('on');
     nsMode=t.dataset.nsm;
@@ -5209,67 +4465,6 @@ function stCalc(){
   $('st-r-total').textContent=total.toFixed(2);
   $('st-r-design').textContent=(total*margin).toFixed(2)+' kg';
   $('st-note').textContent=`鋼材${stGroups.length}種類(計${totalLines}件)の小計合計(SS400換算・比重7.85)。余裕率×${margin.toFixed(2)}を掛けた値が設計重量。`;
-
-  // 一覧リスト生成
-  const listCard=$('st-list-card');
-  if(!listCard)return;
-  const allLines=[];
-  stGroups.forEach(g=>{
-    const isSheet=ST_SHEET.includes(g.cat);
-    const uw=stUnitWeight(g);
-    const fullName=(typeof STEEL_TYPES!=='undefined'&&STEEL_TYPES[g.cat])?STEEL_TYPES[g.cat].name:g.cat;
-    const shapeName=fullName.replace(/[（(].*/,'').trim();
-    const _st=typeof STEEL_TYPES!=='undefined'?STEEL_TYPES[g.cat]:null;
-    const sizeLabel=_st?.sheet
-      ?(g.cat==='sus'?'SUS-':'PL-')+(g.thick||'')+'t'
-      :(_st?.items?.[g.sizeIdx]?.label||g.cat);
-    g.lines.forEach(ln=>{
-      const sub=isSheet
-        ? uw*((ln.pw||0)/1000)*((ln.pl||0)/1000)*(ln.qty||0)
-        : uw*(ln.len||0)*(ln.qty||0);
-      allLines.push({shapeName,sizeLabel,isSheet,uw,ln,sub});
-    });
-  });
-  if(allLines.length===0){listCard.style.display='none';return;}
-  listCard.style.display='';
-
-  const th=s=>`<th style="padding:4px 8px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:right">${s}</th>`;
-  const thL=s=>`<th style="padding:4px 8px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:left">${s}</th>`;
-  const td=(s,bold)=>`<td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right${bold?';font-weight:700':''}">` +s+`</td>`;
-  const tdL=(s)=>`<td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:left">`+s+`</td>`;
-
-  $('st-list-thead').innerHTML=`<tr>${thL('品名')}${th('寸法')}${th('数量')}${th('単位重量')}${th('重量 kg')}</tr>`;
-  $('st-list-tbody').innerHTML=allLines.map(({shapeName,sizeLabel,isSheet,uw,ln,sub})=>{
-    const lenStr=isSheet?`${ln.pw||0}×${ln.pl||0} mm`:`${(ln.len||0).toFixed(2)} m`;
-    const qtyStr=isSheet?`${ln.qty||0} 枚`:`${ln.qty||0} 本`;
-    const uwStr=uw>0?uw.toFixed(2)+(isSheet?' kg/m²':' kg/m'):'-';
-    return `<tr>${tdL(sizeLabel||shapeName)}${td(lenStr)}${td(qtyStr)}${td(uwStr)}${td(sub>0?sub.toFixed(2):'-',true)}</tr>`;
-  }).join('')+`<tr><td style="padding:4px 8px;font-weight:700;border-top:2px solid var(--line)" colspan="4">合計</td><td style="padding:4px 8px;font-weight:700;color:var(--ac);border-top:2px solid var(--line);text-align:right">${total.toFixed(2)}</td></tr>`;
-}
-
-function stCopyList(){
-  // タブ区切りでクリップボードにコピー（Excel貼り付け対応）
-  const rows=[['種類','寸法','数量','単位重量','重量(kg)']];
-  stGroups.forEach(g=>{
-    const isSheet=ST_SHEET.includes(g.cat);
-    const uw=stUnitWeight(g);
-    const fullName=(typeof STEEL_TYPES!=='undefined'&&STEEL_TYPES[g.cat])?STEEL_TYPES[g.cat].name:g.cat;
-    const shapeName=fullName.replace(/[（(].*/,'').trim();
-    const _st=typeof STEEL_TYPES!=='undefined'?STEEL_TYPES[g.cat]:null;
-    const sizeLabel=_st?.sheet
-      ?(g.cat==='sus'?'SUS-':'PL-')+(g.thick||'')+'t'
-      :(_st?.items?.[g.sizeIdx]?.label||g.cat);
-    g.lines.forEach(ln=>{
-      const sub=isSheet?uw*((ln.pw||0)/1000)*((ln.pl||0)/1000)*(ln.qty||0):uw*(ln.len||0)*(ln.qty||0);
-      const lenStr=isSheet?`${ln.pw||0}×${ln.pl||0} mm`:`${(ln.len||0).toFixed(2)} m`;
-      const qtyStr=isSheet?`${ln.qty||0} 枚`:`${ln.qty||0} 本`;
-      rows.push([sizeLabel||shapeName,lenStr,qtyStr,uw>0?uw.toFixed(2)+(isSheet?' kg/m²':' kg/m'):'-',sub>0?sub.toFixed(2):'-']);
-    });
-  });
-  const totalW=stGroups.reduce((s,g)=>{const uw=stUnitWeight(g);const isSheet=ST_SHEET.includes(g.cat);return s+g.lines.reduce((s2,ln)=>s2+(isSheet?uw*((ln.pw||0)/1000)*((ln.pl||0)/1000)*(ln.qty||0):uw*(ln.len||0)*(ln.qty||0)),0);},0);
-  rows.push(['合計','','','',totalW.toFixed(2)]);
-  const tsv=rows.map(r=>r.join('\t')).join('\n');
-  navigator.clipboard.writeText(tsv).then(()=>showProToast('コピーしました')).catch(()=>showProToast('コピー失敗'));
 }
 
 $('st-add').addEventListener('click',()=>{
@@ -5339,17 +4534,12 @@ $("ac-zeta").addEventListener("input",acCalc);
 /* ========== 初期化 ========== */
 dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();
 </script>
-<!-- AdSense script: publisher IDを設定後にコメント解除 -->
-<!--
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
--->
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js');
   });
 }
-
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "39b5f50d646446b98f74efc6748d7e3a"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
