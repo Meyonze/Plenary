@@ -157,7 +157,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .d-stock-tag.p1{background:#1a3a4a;color:#5bc4d9}.d-stock-tag.p2{background:#2a3a1a;color:#7dd95b}
 #save-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px}
 #save-modal.on{display:flex}
-#report-modal.on{display:flex!important}
 .save-item{padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:var(--bg)}
 .save-item-name{font-size:13px;font-weight:600;color:var(--tx)}
 .save-item-meta{font-size:11px;color:var(--sub);margin-top:2px}
@@ -225,9 +224,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
 </div>
 <div id="export-menu">
-  <button class="em-item" id="em-pdf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>PDFで保存</button>
+  <button class="em-item" id="em-pdf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>PDFで保存</button>
   <button class="em-item" onclick="closeExportMenu();openSaveModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>セット保存</button>
-  <button class="em-item" onclick="closeExportMenu();openLoadModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>セット読込</button>
 </div>
 <div id="usage-modal">
   <div class="im-card">
@@ -241,6 +239,10 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="pro-key-card" style="max-width:380px;position:relative">
     <button class="modal-x-close" onclick="document.getElementById('save-modal').classList.remove('on')">×</button>
     <div style="font-size:15px;font-weight:700;color:var(--ac);margin-bottom:10px" id="save-modal-title">入力セット保存</div>
+    <div class="tabs" id="save-tabs" style="margin-bottom:10px">
+      <div class="tab on" onclick="switchSaveTab('save')">保存する</div>
+      <div class="tab" onclick="switchSaveTab('load')">呼び出し</div>
+    </div>
     <div id="save-form-area">
       <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:3px">保存名</label>
       <input id="save-name-inp" type="text" placeholder="例: ○○邸 2F給気ダクト"
@@ -264,7 +266,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div id="pro-key-status-line" style="font-size:12px;color:var(--sub);margin-bottom:14px"></div>
     <div id="pro-key-form">
       <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:4px">ライセンスキー</label>
-      <input id="pro-key-input" type="text" inputmode="text" placeholder="PLENARY-XXXX-XXXX"
+      <input id="pro-key-input" type="text" inputmode="text" placeholder="PLENARY-XXXX-XXXX" value="PLENARY-DEV-TEST"
         style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:8px 10px;font-size:15px;font-family:monospace;letter-spacing:1px">
       <div id="pro-key-err" style="font-size:11px;color:var(--ng);margin-top:4px;min-height:16px"></div>
       <button onclick="activatePro()" style="margin-top:8px;width:100%;padding:10px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:700;cursor:pointer">有効化</button>
@@ -282,7 +284,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     </div>
     <div style="margin-top:10px;font-size:11px;color:var(--sub);line-height:1.6">
       Pro版ではウォーターマークなし印刷・音響系全機能・詳細根拠表示が利用できます。<br>
-      <a href="https://meyonze.github.io/Plenary/" target="_blank" style="color:var(--ac)">購入方法はこちら</a>
+      <a href="https://note.com/meyonze/n/nda16ed350908" target="_blank" style="color:var(--ac)">購入方法はこちら</a>
     </div>
   </div>
 </div>
@@ -345,7 +347,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
   <table class="rh-print">
     <tr>
-      <th>物件名</th><td colspan="3" id="rh-project">—</td>
+      <th>物件名</th><td id="rh-project">—</td>
+      <th style="padding-left:8px">図番</th><td id="rh-drawing">—</td>
     </tr>
     <tr>
       <th>作成者</th><td id="rh-author">—</td>
@@ -360,9 +363,11 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div style="font-size:15px;font-weight:700;color:var(--ac);margin-bottom:12px">帳票 設定</div>
     <div style="display:grid;grid-template-columns:60px 1fr;gap:6px 8px;align-items:center;font-size:13px">
       <label style="color:var(--sub)">物件名</label>
-      <input id="rm-project" type="text" placeholder="○○新築工事" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
+      <input id="rm-project" type="text" placeholder="○○邸新築工事" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
+      <label style="color:var(--sub)">図番</label>
+      <input id="rm-drawing" type="text" placeholder="E-01" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
       <label style="color:var(--sub)">作成者</label>
-      <input id="rm-author" type="text" placeholder="○○エンジニアリング" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
+      <input id="rm-author" type="text" placeholder="笹倉エンジニアリング" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
       <label style="color:var(--sub)">計算日</label>
       <input id="rm-date" type="date" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--tx);padding:6px 8px;font-size:13px">
     </div>
@@ -421,7 +426,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="home-card" data-tool="noisesum"><span class="hc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/><path d="M5 8.5A4 4 0 0 1 5 15.5"/><path d="M2 6.5A7 7 0 0 1 2 17.5"/><path d="M19 8.5A4 4 0 0 0 19 15.5"/><path d="M22 6.5A7 7 0 0 0 22 17.5"/></svg></span><span class="hc-title">騒音合成</span><span class="hc-desc">複数音源の合成レベルを算出</span></div>
   <div class="home-card" data-tool="nc"><span class="hc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V3"/><path d="M3 21h18"/><path d="M4 6c1 6 4 10 16 13"/></svg></span><span class="hc-title">NC判定</span><span class="hc-desc">オクターブバンドレベルからNC値を判定</span></div>
   <div class="home-card" data-tool="acspl" style="position:relative"><span class="hc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4m0 0-2.2-2.2M6 12l-2.2 2.2"/><path d="M22 12h-4m0 0 2.2-2.2M18 12l2.2 2.2"/><line x1="9.5" y1="8" x2="9.5" y2="16"/><line x1="12.5" y1="6" x2="12.5" y2="18"/><line x1="15.5" y1="9" x2="15.5" y2="15"/></svg></span><span class="hc-title">SPL↔PWL変換</span><span class="hc-desc">音圧・音響出力レベル変換 (Q・距離)</span></div>
-  <!-- 消音チャンバ: 性能未確認のため一時非表示（次のマイナーアップデートで再検討。tool-acplmのコードは残存） -->
+  <!-- 消音チャンバ: 一時除外（tool-acplmのコードは残存） -->
   <!-- <div class="home-card" data-tool="acplm" style="position:relative">...</div> -->
 </div><!-- /home-grid -->
 </div><!-- /home -->
@@ -450,7 +455,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div id="d-boxR">
       <label>単位摩擦損失 R [Pa/m]</label>
       <input id="d-r" type="number" inputmode="decimal" value="1.0" step="0.1">
-      <div style="font-size:10.5px;color:var(--sub);margin-top:2px;line-height:1.4">ダクト1mあたりの摩擦による圧力損失。一般に低速ダクトで0.8〜1.5Pa/m程度が目安</div>
     </div>
     <div id="d-boxV" style="display:none">
       <label>設計風速 v [m/s]</label>
@@ -2254,7 +2258,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="card" style="padding:10px">
   <div class="card-title" style="margin-bottom:4px">六角ボルト（JIS B 1180）</div>
   <div style="font-size:10px;color:var(--sub);margin-bottom:6px">並目ねじ・全ねじ基準。対辺は建設業界慣用値（M10=17・M12=19）。</div>
-  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="bA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto-start-reverse"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><polygon points="52.00,48.00 24.29,64.00 24.29,96.00 52.00,112.00 79.71,96.00 79.71,64.00" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="52" cy="80" r="27.7" fill="none" stroke="var(--tx)" stroke-width="0.78"/><line x1="8" y1="80" x2="96" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="52" y1="36" x2="52" y2="124" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="24.287187078897965" y1="64.0" x2="24.287187078897965" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="79.71281292110203" y1="64.0" x2="79.71281292110203" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="24.287187078897965" y1="36" x2="79.71281292110203" y2="36" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#bA)" marker-end="url(#bA)"/><text x="52.0" y="32" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">s</text><polygon points="128.0,52.3 150.0,52.3 150.0,107.7 128.0,107.7 124.0,103.7 124.0,56.3" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="124" y1="64.0" x2="150" y2="64.0" stroke="var(--tx)" stroke-width="0.78"/><line x1="124" y1="96.0" x2="150" y2="96.0" stroke="var(--tx)" stroke-width="0.78"/><path d="M 124 59.0 Q 128.5 64.0 124 69.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><path d="M 124 91.0 Q 128.5 96.0 124 101.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="150" y1="68.0" x2="166" y2="68.0" stroke="var(--tx)" stroke-width="1.3"/><line x1="150" y1="92.0" x2="166" y2="92.0" stroke="var(--tx)" stroke-width="1.3"/><line x1="166" y1="68.0" x2="166" y2="92.0" stroke="var(--tx)" stroke-width="0.9099999999999999"/><polygon points="166.0,68.0 249.0,68.0 254.0,71.5 254.0,88.5 249.0,92.0 166.0,92.0" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="166" y1="71.0" x2="249" y2="71.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="166" y1="89.0" x2="249" y2="89.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="249" y1="68.0" x2="249" y2="92.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="112" y1="80" x2="266" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="196.8" y1="92.0" x2="214.8" y2="110.0" stroke="var(--tx)" stroke-width="0.78"/><text x="217.8" y="115.0" fill="var(--tx)" font-size="10" font-family="Georgia,serif" font-style="italic">M</text><line x1="124" y1="52.287187078897965" x2="124" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="150" y1="52.287187078897965" x2="150" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="124" y1="38.287187078897965" x2="150" y2="38.287187078897965" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#bA)" marker-end="url(#bA)"/><text x="137.0" y="34.287187078897965" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">k</text></svg>
+  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="bA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><polygon points="52.00,48.00 24.29,64.00 24.29,96.00 52.00,112.00 79.71,96.00 79.71,64.00" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="52" cy="80" r="27.7" fill="none" stroke="var(--tx)" stroke-width="0.78"/><line x1="8" y1="80" x2="96" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="52" y1="36" x2="52" y2="124" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="24.287187078897965" y1="64.0" x2="24.287187078897965" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="79.71281292110203" y1="64.0" x2="79.71281292110203" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="24.287187078897965" y1="36" x2="79.71281292110203" y2="36" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#bA)" marker-end="url(#bA)"/><text x="52.0" y="32" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">s</text><polygon points="128.0,52.3 150.0,52.3 150.0,107.7 128.0,107.7 124.0,103.7 124.0,56.3" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="124" y1="64.0" x2="150" y2="64.0" stroke="var(--tx)" stroke-width="0.78"/><line x1="124" y1="96.0" x2="150" y2="96.0" stroke="var(--tx)" stroke-width="0.78"/><path d="M 124 59.0 Q 128.5 64.0 124 69.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><path d="M 124 91.0 Q 128.5 96.0 124 101.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="150" y1="68.0" x2="166" y2="68.0" stroke="var(--tx)" stroke-width="1.3"/><line x1="150" y1="92.0" x2="166" y2="92.0" stroke="var(--tx)" stroke-width="1.3"/><line x1="166" y1="68.0" x2="166" y2="92.0" stroke="var(--tx)" stroke-width="0.9099999999999999"/><polygon points="166.0,68.0 249.0,68.0 254.0,71.5 254.0,88.5 249.0,92.0 166.0,92.0" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="166" y1="71.0" x2="249" y2="71.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="166" y1="89.0" x2="249" y2="89.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="249" y1="68.0" x2="249" y2="92.0" stroke="var(--tx)" stroke-width="0.65"/><line x1="112" y1="80" x2="266" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="196.8" y1="92.0" x2="214.8" y2="110.0" stroke="var(--tx)" stroke-width="0.78"/><text x="217.8" y="115.0" fill="var(--tx)" font-size="10" font-family="Georgia,serif" font-style="italic">M</text><line x1="124" y1="52.287187078897965" x2="124" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="150" y1="52.287187078897965" x2="150" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="124" y1="38.287187078897965" x2="150" y2="38.287187078897965" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#bA)" marker-end="url(#bA)"/><text x="137.0" y="34.287187078897965" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">k</text></svg>
   <div style="overflow-x:auto">
     <table style="border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;width:100%">
       <thead>
@@ -2291,7 +2295,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="card" style="padding:10px">
   <div class="card-title" style="margin-bottom:4px">六角ナット（JIS B 1181）</div>
   <div style="font-size:10px;color:var(--sub);margin-bottom:6px">1種（並目ねじ）。対辺はボルトと共通。</div>
-  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="nA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto-start-reverse"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><polygon points="56.00,48.00 28.29,64.00 28.29,96.00 56.00,112.00 83.71,96.00 83.71,64.00" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="56" cy="80" r="27.7" fill="none" stroke="var(--tx)" stroke-width="0.78"/><circle cx="56" cy="80" r="13.3" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="12" y1="80" x2="100" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="56" y1="36" x2="56" y2="124" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="28.287187078897965" y1="64.0" x2="28.287187078897965" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="83.71281292110203" y1="64.0" x2="83.71281292110203" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="28.287187078897965" y1="36" x2="83.71281292110203" y2="36" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#nA)" marker-end="url(#nA)"/><text x="56.0" y="32" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">s</text><line x1="66.2" y1="88.6" x2="86.2" y2="110.6" stroke="var(--tx)" stroke-width="0.78"/><text x="89.2" y="115.6" fill="var(--tx)" font-size="10" font-family="Georgia,serif" font-style="italic">M</text><polygon points="190.0,52.3 216.0,52.3 220.0,56.3 220.0,103.7 216.0,107.7 190.0,107.7" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="190" y1="64.0" x2="220" y2="64.0" stroke="var(--tx)" stroke-width="0.78"/><line x1="190" y1="96.0" x2="220" y2="96.0" stroke="var(--tx)" stroke-width="0.78"/><path d="M 220 59.0 Q 215.5 64.0 220 69.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><path d="M 220 91.0 Q 215.5 96.0 220 101.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="178" y1="80" x2="232" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="190" y1="52.287187078897965" x2="190" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="220" y1="52.287187078897965" x2="220" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="190" y1="38.287187078897965" x2="220" y2="38.287187078897965" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#nA)" marker-end="url(#nA)"/><text x="205.0" y="34.287187078897965" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">m</text></svg>
+  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="nA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><polygon points="56.00,48.00 28.29,64.00 28.29,96.00 56.00,112.00 83.71,96.00 83.71,64.00" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="56" cy="80" r="27.7" fill="none" stroke="var(--tx)" stroke-width="0.78"/><circle cx="56" cy="80" r="13.3" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="12" y1="80" x2="100" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="56" y1="36" x2="56" y2="124" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="28.287187078897965" y1="64.0" x2="28.287187078897965" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="83.71281292110203" y1="64.0" x2="83.71281292110203" y2="33" stroke="var(--sub)" stroke-width="0.5"/><line x1="28.287187078897965" y1="36" x2="83.71281292110203" y2="36" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#nA)" marker-end="url(#nA)"/><text x="56.0" y="32" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">s</text><line x1="66.2" y1="88.6" x2="86.2" y2="110.6" stroke="var(--tx)" stroke-width="0.78"/><text x="89.2" y="115.6" fill="var(--tx)" font-size="10" font-family="Georgia,serif" font-style="italic">M</text><polygon points="190.0,52.3 216.0,52.3 220.0,56.3 220.0,103.7 216.0,107.7 190.0,107.7" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="190" y1="64.0" x2="220" y2="64.0" stroke="var(--tx)" stroke-width="0.78"/><line x1="190" y1="96.0" x2="220" y2="96.0" stroke="var(--tx)" stroke-width="0.78"/><path d="M 220 59.0 Q 215.5 64.0 220 69.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><path d="M 220 91.0 Q 215.5 96.0 220 101.0" fill="none" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="178" y1="80" x2="232" y2="80" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="190" y1="52.287187078897965" x2="190" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="220" y1="52.287187078897965" x2="220" y2="35.287187078897965" stroke="var(--sub)" stroke-width="0.5"/><line x1="190" y1="38.287187078897965" x2="220" y2="38.287187078897965" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#nA)" marker-end="url(#nA)"/><text x="205.0" y="34.287187078897965" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">m</text></svg>
   <div style="overflow-x:auto">
     <table style="border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;width:100%">
       <thead>
@@ -2327,7 +2331,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="card" style="padding:10px">
   <div class="card-title" style="margin-bottom:4px">平座金（JIS B 1256）</div>
   <div style="font-size:10px;color:var(--sub);margin-bottom:6px">並型（小形）。</div>
-  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="wA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto-start-reverse"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><circle cx="58" cy="88" r="34" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="58" cy="88" r="13" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="12" y1="88" x2="104" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="58" y1="42" x2="58" y2="134" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="24" y1="88" x2="24" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="92" y1="88" x2="92" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="24" y1="28" x2="92" y2="28" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="24" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">D</text><line x1="45" y1="88" x2="45" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="71" y1="88" x2="71" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="45" y1="41" x2="71" y2="41" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="37" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">d</text><rect x="204" y="54" width="8" height="68" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="204" y1="75.0" x2="212" y2="75.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="204" y1="101.0" x2="212" y2="101.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="192" y1="88" x2="224" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="204" y1="54" x2="204" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="212" y1="54" x2="212" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="204" y1="40" x2="212" y2="40" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="208.0" y="36" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">t</text></svg>
+  <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="wA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><circle cx="58" cy="88" r="34" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="58" cy="88" r="13" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="12" y1="88" x2="104" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="58" y1="42" x2="58" y2="134" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="24" y1="88" x2="24" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="92" y1="88" x2="92" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="24" y1="28" x2="92" y2="28" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="24" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">D</text><line x1="45" y1="88" x2="45" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="71" y1="88" x2="71" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="45" y1="41" x2="71" y2="41" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="37" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">d</text><rect x="204" y="54" width="8" height="68" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="204" y1="75.0" x2="212" y2="75.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="204" y1="101.0" x2="212" y2="101.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="192" y1="88" x2="224" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="204" y1="54" x2="204" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="212" y1="54" x2="212" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="204" y1="40" x2="212" y2="40" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="208.0" y="36" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">t</text></svg>
   <div style="overflow-x:auto">
     <table style="border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;width:100%">
       <thead>
@@ -2944,10 +2948,10 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <!-- 断面図 -->
 <div class="card" style="padding:10px 8px">
-<svg viewBox="55 46 212 194" xmlns="http://www.w3.org/2000/svg" aria-label="消音チャンバ パース図（等角投影）" style="width:100%;display:block">
+<svg viewBox="0 0 258 152" xmlns="http://www.w3.org/2000/svg" aria-label="消音チャンバ パース図" style="width:100%;display:block">
   <defs>
     <marker id="plmArr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto-start-reverse">
-      <polygon points="0,0.5 6,2.5 0,4.5" fill="var(--sub)" opacity="0.9"/>
+      <polygon points="0,0.5 6,2.5 0,4.5" fill="var(--sub)" opacity="0.85"/>
     </marker>
     <marker id="plmIn" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
       <polygon points="0,0 5,2.5 0,5" fill="#88aacc"/>
@@ -2956,79 +2960,72 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <polygon points="0,0 5,2.5 0,5" fill="var(--ac)"/>
     </marker>
   </defs>
-  <!-- 等角投影キューブ S=72: c100(215.9,169) c101(215.9,100.6) c110(153.6,205) c111(153.6,136.6)
-       c010(75.6,160) c011(75.6,91.6) c001(138,55.6) c000(138,124,隠れ点) -->
+  <!--
+    キャビネット斜投影: 正面(22,28)-(174,28)-(174,122)-(22,122) W=152,H=94
+    奥行オフセット: (+44,-18)  背面: (66,10)-(218,10)-(218,104)-(66,104)
+  -->
 
-  <!-- 隠れ辺（破線） -->
-  <line x1="138" y1="124" x2="138" y2="55.6" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.25"/>
-  <line x1="138" y1="124" x2="215.9" y2="169" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.25"/>
-  <line x1="138" y1="124" x2="75.6" y2="160" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.25"/>
+  <!-- 背面の隠れ線（破線） -->
+  <line x1="66" y1="104" x2="218" y2="104" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="4 2" opacity="0.45"/>
+  <line x1="66" y1="10" x2="66" y2="104" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="4 2" opacity="0.45"/>
+
+  <!-- 奥行き辺（見える4本） -->
+  <line x1="22" y1="28" x2="66" y2="10" stroke="var(--tx)" stroke-width="1.2"/>
+  <line x1="174" y1="28" x2="218" y2="10" stroke="var(--tx)" stroke-width="1.2"/>
+  <line x1="22" y1="122" x2="66" y2="104" stroke="var(--tx)" stroke-width="1.2"/>
+  <line x1="174" y1="122" x2="218" y2="104" stroke="var(--tx)" stroke-width="1.2"/>
 
   <!-- 上面 -->
-  <polygon points="138,55.6 215.9,100.6 153.6,136.6 75.6,91.6" fill="rgba(36,52,80,0.80)" stroke="var(--tx)" stroke-width="1.4"/>
-  <!-- 右面（出口側） -->
-  <polygon points="215.9,169 215.9,100.6 153.6,136.6 153.6,205" fill="rgba(24,36,60,0.88)" stroke="var(--tx)" stroke-width="1.4"/>
-  <!-- 左面（入口側） -->
-  <polygon points="75.6,160 75.6,91.6 153.6,136.6 153.6,205" fill="rgba(16,26,48,0.86)" stroke="var(--tx)" stroke-width="1.4"/>
+  <polygon points="22,28 174,28 218,10 66,10" fill="rgba(36,52,80,0.80)" stroke="var(--tx)" stroke-width="1.3"/>
+  <!-- 右面 -->
+  <polygon points="174,28 174,122 218,104 218,10" fill="rgba(24,36,60,0.88)" stroke="var(--tx)" stroke-width="1.3"/>
+  <!-- 正面 -->
+  <rect x="22" y="28" width="152" height="94" fill="rgba(16,26,48,0.86)" stroke="var(--tx)" stroke-width="1.5"/>
 
-  <!-- 出口開口(下げ配置): 箱内側へ後退する見込み面(開口内にクリップ済み) -->
-  <polygon points="202.2,159.8 202.2,129 172.3,146.3 172.3,177.1" fill="rgba(4,8,18,0.97)"/>
-  <polygon points="202.2,159.8 202.2,129 198.7,131 198.7,157.8" fill="rgba(150,170,205,0.50)"/>
-  <polygon points="172.3,177.1 202.2,159.8 198.7,157.8 172.3,173.1" fill="rgba(120,140,175,0.40)"/>
-  <polyline points="172.3,173.1 198.7,157.8 198.7,131" fill="none" stroke="var(--tx)" stroke-width="0.7" opacity="0.85"/>
-  <polygon points="202.2,159.8 202.2,129 172.3,146.3 172.3,177.1" fill="none" stroke="var(--tx)" stroke-width="1.1"/>
-  <!-- 入口開口: 同様に見込み付き(クリップ済み) -->
-  <polygon points="96.5,163.5 96.5,132.7 135.1,155 135.1,185.8" fill="rgba(4,8,18,0.97)"/>
-  <polygon points="96.5,163.5 96.5,132.7 100,134.7 100,161.5" fill="rgba(150,170,205,0.50)"/>
-  <polygon points="96.5,163.5 135.1,185.8 135.1,181.8 100,161.5" fill="rgba(120,140,175,0.40)"/>
-  <polyline points="100,134.7 100,161.5 135.1,181.8" fill="none" stroke="var(--tx)" stroke-width="0.7" opacity="0.85"/>
-  <polygon points="96.5,163.5 96.5,132.7 135.1,155 135.1,185.8" fill="none" stroke="var(--tx)" stroke-width="1.1"/>
+  <!-- 内部フレーム（吸音材厚さを示す破線） -->
+  <rect x="32" y="38" width="132" height="74" fill="none" stroke="#4488bb" stroke-width="0.9" stroke-dasharray="3 2" opacity="0.65"/>
+  <!-- 上面内部フレーム -->
+  <polygon points="32,38 164,38 208,20 76,20" fill="none" stroke="#4488bb" stroke-width="0.9" stroke-dasharray="3 2" opacity="0.50"/>
 
-  <!-- 出口 矢印+ラベル（右上へ逃がして図・H寸法と非干渉） -->
-  <line x1="187.2" y1="153.1" x2="209.6" y2="166.3" stroke="var(--ac)" stroke-width="1.5" marker-end="url(#plmOut)"/>
-  <rect x="193" y="103" width="32" height="25" rx="4" fill="var(--bg)" opacity="0.85"/>
-  <text x="196" y="114" fill="var(--tx)" font-size="9.5" text-anchor="start" font-weight="600">出口</text>
-  <text x="196" y="123.5" fill="var(--sub)" font-size="7.5" text-anchor="start">Se=w×h</text>
+  <!-- 出口開口（右面 上寄り: y=40-64の平行四辺形） -->
+  <polygon points="174,40 174,64 218,46 218,22" fill="rgba(4,8,18,0.96)" stroke="var(--tx)" stroke-width="1.1"/>
+  <!-- 出口ダクト（右面から突出） -->
+  <polygon points="218,22 218,46 238,37 238,13" fill="rgba(24,36,58,0.90)" stroke="var(--tx)" stroke-width="1.1"/>
+  <line x1="218" y1="34" x2="236" y2="26" stroke="var(--ac)" stroke-width="1.4" marker-end="url(#plmOut)"/>
 
-  <!-- 入口 矢印+ラベル -->
-  <line x1="101.9" y1="181.2" x2="115.8" y2="159.2" stroke="#88aacc" stroke-width="1.5" marker-end="url(#plmIn)"/>
-  <text x="70" y="196" fill="var(--tx)" font-size="9.5" text-anchor="start" font-weight="600">入口</text>
-  <text x="70" y="205.5" fill="var(--sub)" font-size="7.5" text-anchor="start">Qs</text>
+  <!-- 入口開口（正面 左 下寄り: y=80-104） -->
+  <rect x="22" y="80" width="32" height="24" fill="rgba(4,8,18,0.96)"/>
+  <!-- 入口ダクト（正面から突出） -->
+  <rect x="4" y="80" width="18" height="24" fill="rgba(24,36,58,0.90)" stroke="var(--tx)" stroke-width="1.1"/>
+  <line x1="4" y1="92" x2="20" y2="92" stroke="#88aacc" stroke-width="1.4" marker-end="url(#plmIn)"/>
 
-  <!-- d: 入口中心→出口中心（両端に中心点ドット） -->
-  <circle cx="115.8" cy="159.2" r="2" fill="var(--tx)"/>
-  <circle cx="187.2" cy="153.1" r="2" fill="var(--tx)"/>
-  <line x1="115.8" y1="159.2" x2="187.2" y2="153.1" stroke="var(--sub)" stroke-width="0.9" stroke-dasharray="4 2" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
-  <text x="132.7" y="150.1" fill="var(--tx)" font-size="11" text-anchor="middle" font-family="monospace" font-weight="700">d</text>
+  <!-- d寸法（入口中心→出口中心 破線） -->
+  <line x1="38" y1="90" x2="172" y2="54" stroke="var(--sub)" stroke-width="0.8" stroke-dasharray="4 2" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
+  <text x="106" y="75" fill="var(--sub)" font-size="9" text-anchor="middle" font-family="monospace">d</text>
 
-  <!-- θ: 出口ダクト軸の内側延長(一点鎖線)とdラインのなす角 -->
-  <line x1="187.2" y1="153.1" x2="161.4" y2="137.8" stroke="var(--ac)" stroke-width="0.9" stroke-dasharray="6 2 1.5 2" opacity="0.8"/>
-  <path d="M 170,142.9 A 20 20 0 0 0 167.3,154.8" fill="none" stroke="var(--sub)" stroke-width="0.9" opacity="0.9"/>
-  <circle cx="157" cy="146.2" r="8" fill="var(--bg)" opacity="0.9"/>
-  <text x="157" y="149.4" fill="var(--tx)" font-size="10.5" text-anchor="middle" font-style="italic" font-weight="700">θ</text>
+  <!-- 吸音材ラベル -->
+  <text x="98" y="36" fill="#4488bb" font-size="8" text-anchor="middle" opacity="0.9">吸音材</text>
 
-  <!-- W寸法（右面下辺: c100-c110）実線引出線+外側ラベル -->
-  <line x1="218.4" y1="173.3" x2="224.4" y2="183.7" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="156.1" y1="209.3" x2="162.1" y2="219.7" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="223.4" y1="182" x2="161.1" y2="218" stroke="var(--sub)" stroke-width="0.9" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
-  <text x="196.3" y="210.3" fill="var(--tx)" font-size="11" text-anchor="middle" font-family="monospace" font-weight="700">W</text>
-  <!-- D寸法（左面下辺: c010-c110） -->
-  <line x1="73.1" y1="164.3" x2="67.1" y2="174.7" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="151.1" y1="209.3" x2="145.1" y2="219.7" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="68.1" y1="173" x2="146.1" y2="218" stroke="var(--sub)" stroke-width="0.9" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
-  <text x="103.1" y="205.8" fill="var(--tx)" font-size="11" text-anchor="middle" font-family="monospace" font-weight="700">D</text>
-  <!-- H寸法: 図の右外側。実線引出線(対象から3pxギャップ)+線の右にラベル -->
-  <line x1="220.9" y1="100.6" x2="252" y2="100.6" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="220.9" y1="169" x2="252" y2="169" stroke="var(--sub)" stroke-width="0.7" opacity="0.85"/>
-  <line x1="249" y1="100.6" x2="249" y2="169" stroke="var(--sub)" stroke-width="0.9" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
-  <text x="257.5" y="138.2" fill="var(--tx)" font-size="11" text-anchor="middle" font-family="monospace" font-weight="700">H</text>
+  <!-- 入口・出口ラベル -->
+  <text x="5" y="78" fill="var(--tx)" font-size="7.5" text-anchor="start">入口</text>
+  <text x="5" y="87" fill="var(--sub)" font-size="7" text-anchor="start">Qs</text>
+  <text x="240" y="18" fill="var(--tx)" font-size="7.5" text-anchor="start">出口</text>
+  <text x="240" y="27" fill="var(--sub)" font-size="6.5" text-anchor="start">Se=w×h</text>
+
+  <!-- W寸法（正面下辺） -->
+  <line x1="22" y1="130" x2="174" y2="130" stroke="var(--sub)" stroke-width="0.8" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
+  <text x="98" y="139" fill="var(--sub)" font-size="9" text-anchor="middle" font-family="monospace">W</text>
+  <!-- H寸法（正面左辺） -->
+  <line x1="11" y1="28" x2="11" y2="122" stroke="var(--sub)" stroke-width="0.8" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
+  <text x="4" y="75" fill="var(--sub)" font-size="9" text-anchor="middle" transform="rotate(-90,4,75)" font-family="monospace">H</text>
+  <!-- L寸法（上面右辺・奥行き方向） -->
+  <line x1="180" y1="23" x2="218" y2="7" stroke="var(--sub)" stroke-width="0.8" marker-start="url(#plmArr)" marker-end="url(#plmArr)"/>
+  <text x="204" y="6" fill="var(--sub)" font-size="9" text-anchor="middle" font-family="monospace">L</text>
 
   <!-- キャプション -->
-  <text x="161" y="233" fill="var(--sub)" font-size="7.5" text-anchor="middle">パース図（ASHRAE Applications 2019 Ch.49）</text>
+  <text x="113" y="150" fill="var(--sub)" font-size="7" text-anchor="middle">消音チャンバ パース図（ASHRAE Applications 2019 Ch.49）</text>
 </svg>
 </div>
-
-
 
 <div class="card">
   <div class="note" style="background:rgba(80,150,255,.08);border-left:3px solid #4af;border-radius:4px;padding:8px 10px;margin-bottom:8px;font-size:12px;line-height:1.7">
@@ -3040,7 +3037,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div><label>チャンバ高さ H [mm]</label><input id="plm-h" type="number" inputmode="decimal" value="600" step="50"></div>
   </div>
   <div class="row">
-    <div><label>チャンバ奥行 D [mm]</label><input id="plm-l" type="number" inputmode="decimal" value="1200" step="50"></div>
+    <div><label>チャンバ奥行 L [mm]</label><input id="plm-l" type="number" inputmode="decimal" value="1200" step="50"></div>
     <div>
       <label>吸音材</label>
       <select id="plm-abs">
@@ -3060,9 +3057,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
   <div class="row" style="margin-top:8px">
     <div><label>入口→出口距離 d [mm]</label><input id="plm-d" type="number" inputmode="decimal" value="800" step="50" min="100"></div>
-    <div><label>出入口オフセット角度 θ [°]</label><input id="plm-theta" type="number" inputmode="decimal" value="45" step="5" min="0" max="90"></div>
-  </div>
-  <div class="row">
     <div>
       <label>入口位置</label>
       <select id="plm-qs">
@@ -3070,7 +3064,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
         <option value="1">天井中央（Q=1）</option>
       </select>
     </div>
-    <div style="font-size:11px;color:var(--sub);line-height:1.5;padding-top:18px">θ=0°:入口と出口が同軸で正対<br>θ≈45°:隣接する直交2面に開口(正方形断面の目安)<br>θ=90°:出口開口面とほぼ平行位置に入口(極端な配置)</div>
   </div>
 </div>
 
@@ -3111,17 +3104,15 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
 <div class="formula-box">
   <b>消音チャンバ減音量（ASHRAE 2019 Ch.49）</b><br><br>
-  IL = −10×log₁₀ [ Qs×Se×cosθ/(4π×d²) + Se/R ] [dB]<br><br>
+  IL = −10×log₁₀ [ Qs×Se/(4π×d²) + Se/R ] [dB]<br><br>
   Qs : 入口指向係数 (壁面=2, 天井中央=1)<br>
   Se : 出口面積 = w×h [m²]<br>
   d  : 入口中心→出口中心 距離 [m]<br>
-  θ  : 入口→出口のオフセット角度（cosθ=l/d, l=出口軸方向の距離成分）<br>
   R  : チャンバ室定数 = S×α/(1−α) [m²]<br>
   S  : チャンバ内面総面積 − Se [m²]<br>
   α  : 吸音率（周波数別）<br><br>
-  直達音項 Qs×Se×cosθ/(4π×d²) ↓ → 距離が長い/角度が大きいほど有利<br>
-  残響音項 Se/R ↓ → 吸音率が高い（Rが大きい）ほど有利<br><br>
-  <span style="color:var(--sub);font-size:11px">θ = 出口ダクト軸と入出口中心を結ぶ直線とのなす角。入口〜出口が同軸(正対)なら0°。正方形断面のチャンバで隣接する直交2面に開口がある対称配置ではθ≈45°(cosθ=l/r、lは出口軸方向の距離成分、rは直線距離。対称配置ではl=r×cos45°)。出口開口面とほぼ平行な位置に入口がある極端な配置でθ→90°。cosθ=1固定(旧版)は正対配置のみ有効で、別面配置では減音量を過小評価していました。</span>
+  直達音項 Qs×Se/(4π×d²) ↓ → 入出口距離が長いほど有利<br>
+  残響音項 Se/R ↓ → 吸音率が高い（Rが大きい）ほど有利
 </div>
 </div><!-- /tool-acplm -->
 
@@ -3149,7 +3140,7 @@ const $=id=>document.getElementById(id);
 /* ========== Pro 骨格 ========== */
 // ライセンスキー照合（ハッシュ比較）
 function _ph(s){let h=5381;for(const c of s)h=(((h<<5)+h)^c.charCodeAt(0))>>>0;return h.toString(16);}
-const _PH=['86266708','f8f548d6','18c7eef2','67645ec0','6148098f','c5d7533','4e141cb4'];
+const _PH=['86266708','f8f548d6','b54ae59'];
 let isPro=!!localStorage.getItem('plenary_pro'); // Pro: localStorage で管理
 
 function applyProState(){
@@ -3199,6 +3190,7 @@ function toggleFormula(btn){
   box.classList.toggle('on');
   btn.textContent=box.classList.contains('on')?'▲ 計算式を隠す':'▼ 計算式・根拠';
 }
+function proGatedFormula(btn){toggleFormula(btn);}
 function updateAcousticLocks(){
   // 屋外騒音タブ
   document.querySelectorAll('#nz-tabs .tab').forEach(t=>{
@@ -3268,17 +3260,11 @@ function openSaveModal(){
   document.getElementById('save-name-inp').value='';
   document.getElementById('save-memo-inp').value='';
 }
-function openLoadModal(){
-  if(!requirePro('入力セット呼び出し'))return;
-  const modal=document.getElementById('save-modal');
-  modal.classList.add('on');
-  switchSaveTab('load');
-}
 function switchSaveTab(tab){
+  document.querySelectorAll('#save-tabs .tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('#save-tabs .tab').forEach((t,i)=>{if((i===0&&tab==='save')||(i===1&&tab==='load'))t.classList.add('on');});
   document.getElementById('save-form-area').classList.toggle('hidden',tab!=='save');
   document.getElementById('save-load-area').classList.toggle('hidden',tab!=='load');
-  const titleEl=document.getElementById('save-modal-title');
-  if(titleEl)titleEl.textContent=tab==='load'?'入力セット読込':'入力セット保存';
   if(tab==='load')renderSaveList();
 }
 function doSave(){
@@ -3326,13 +3312,13 @@ function loadReportMeta(){
   try{return JSON.parse(localStorage.getItem(RM_KEY)||'{}');}catch(e){return{};}
 }
 function saveReportMeta(){
-  const d={project:$('rm-project').value,author:$('rm-author').value,date:$('rm-date').value};
+  const d={project:$('rm-project').value,drawing:$('rm-drawing').value,author:$('rm-author').value,date:$('rm-date').value};
   localStorage.setItem(RM_KEY,JSON.stringify(d));
   return d;
 }
 function openReportModal(){
-  if(!isPro){
-    // Free版: 直接印刷（透かし付き・Pro案内モーダルは出さない）
+  if(!requirePro('帳票出力')){
+    // Free版: 直接印刷（ウォーターマーク付き）
     const cur=document.querySelector('.tool.on');
     const key=cur?cur.id.replace('tool-',''):'';
     const num=TOOL_PRINT_NUM[key]||'00';
@@ -3340,14 +3326,14 @@ function openReportModal(){
     const ts=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
     const orig=document.title;
     document.title=`Plenary${num}_${ts}`;
-    document.getElementById('print-wm').classList.add('show-wm');
     window.print();
-    setTimeout(()=>{document.title=orig;document.getElementById('print-wm').classList.remove('show-wm');},1000);
+    setTimeout(()=>{document.title=orig;},1000);
     return;
   }
   // Pro版: 帳票設定モーダル
   const m=loadReportMeta();
   $('rm-project').value=m.project||'';
+  $('rm-drawing').value=m.drawing||'';
   $('rm-author').value=m.author||'';
   $('rm-date').value=m.date||(new Date().toISOString().slice(0,10));
   document.getElementById('report-modal').classList.add('on');
@@ -3360,11 +3346,11 @@ function doReportPrint(){
   const num=TOOL_PRINT_NUM[key]||'00';
   // 帳票ヘッダー更新
   $('rh-project').textContent=m.project||'—';
+  $('rh-drawing').textContent=m.drawing||'—';
   $('rh-author').textContent=m.author||'—';
   $('rh-date').textContent=m.date||'—';
   $('rh-tool-name').textContent=cur?.querySelector('h2')?.childNodes[0]?.textContent?.trim()||'';
   document.getElementById('report-modal').classList.remove('on');
-  document.getElementById('print-wm').classList.remove('show-wm');
   // 印刷
   const now=new Date();
   const ts=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
@@ -3393,9 +3379,7 @@ const TOOL_USAGE={
   airconv:{title:"風速・動圧・圧力損失 変換",body:"風量Q・風速v・断面のうち、入力した直近2項目から残り1項目が自動算出されます(矩形/円形を選択可)。<br><br>下のカードでは静圧・局部損失係数から動圧・全圧・局部損失も計算できます。"},
   insul:{title:"保温材計算",body:"上のタブで配管/ダクトを選び、保温材の種類を選択します。<br><br>配管タブでは呼び径を選ぶと外径が自動設定されます。ダクトタブでは角(W×H)または丸(Φ)を選んで寸法を入力します。保温厚・長さ・本数を入力すると保温面積[m²]と重量[kg]が行ごとに算出され、合計も表示されます。「＋追加」で複数系統まとめて計算できます。"},
   acspl:{title:"SPL↔PWL変換",body:"音圧レベル(SPL)と音響パワーレベル(PWL)を相互変換します。点音源の自由音場モデル（ASHRAE準拠）を使用。指向係数Q・距離rを入力すると、PWL→SPLまたはSPL→PWLを算出します。屋外設備機器の音圧予測や、カタログ記載値の変換に使用します。"},
-  /* 消音チャンバ: 性能未確認のため一時非表示（次のマイナーアップデートで再検討）
-  acplm:{title:"消音チャンバ",body:"ダクトを通過する際の音響減衰を計算します。チャンバ内寸・出口面積・入口→出口の距離d・オフセット角度θ・吸音材を入力するとオクターブバンド別の減音量[dB]を算出します（ASHRAE 2019 Ch.49 簡易モデル）。<br><br>θは入口と出口が正対(同軸)なら0°。正方形断面で隣接する直交2面に開口がある一般的な配置ではθ≈45°が目安です。角度が大きい・距離が長い・吸音率が高いほど減音量は大きくなります。"},
-  */
+  acplm:{title:"消音チャンバ",body:"ダクトを通過する際の音響減衰を計算します。チャンバ内寸・入出口面積・距離・吸音材を入力するとオクターブバンド別の減音量[dB]を算出します（ASHRAE 2019 Ch.49 簡易モデル）。吸音材種別・チャンバ容積・出入口の離隔距離が性能を左右します。"},
   elec:{title:"電線・ブレーカー選定",body:"電源方式・機器種別・消費電力・力率・効率・配線長・許容電圧降下を入力すると、定格電流・設計電流・必要断面積・推奨配線サイズ・遮断器参考値が算出されます。<br><br>電線サイズは電流と電圧降下の両面から算出し、大きい方を採用します。電動機回路は内線規程に基づき設計電流を×1.25します。推奨サイズは概算参考値であり、実際は内線規程 JEAC 8001 の許容電流表で確認してください。"}
 };
 function goToTool(name){
@@ -3523,11 +3507,13 @@ function dCalc(){
   const all=[...spiralCands,...rectCands];
   for(const c of all){
     const vCls=c.v>vmax?"n":c.v>vmax*0.85?"w":"g";
+    const arStr=c.ar!=null?(c.ar>4?`<span class="w">${c.ar.toFixed(1)}</span>`:c.ar.toFixed(1)):"—";
     const div=document.createElement("div");
     div.className="sel-row"+(c.key===defaultKey?" active":"");
     div.dataset.key=c.key;
-    div.innerHTML=`<span class="sr-name" style="font-size:14.5px;font-weight:700">${c.label}</span>`+
-      `<span class="${vCls}" style="font-size:10.5px;white-space:nowrap;flex-shrink:0;font-weight:400;opacity:.8">${c.v.toFixed(2)} m/s</span>`;
+    div.innerHTML=`<span class="sr-name">${c.label}</span>`+
+      `<span class="${vCls}" style="font-size:11px;white-space:nowrap;flex-shrink:0">${c.v.toFixed(2)} m/s</span>`+
+      `<span class="sr-badge">${c.R.toFixed(2)}&nbsp;Pa/m</span>`;
     div.onclick=()=>dSelect(c.key,all,vmax);
     list.appendChild(div);
   }
@@ -6142,19 +6128,19 @@ document.querySelectorAll('[data-stab]').forEach(t=>t.onclick=()=>{
 // 単位重量(kg/m) 鋼材比重7.85 (JIS理論値・代表サイズの目安)
 const STEEL_TYPES={
   h:{name:'H形鋼', items:[
-    {label:'H-100×100×6×8', w:16.9, r1:8, ix:378, zx:75.6},
+    {label:'H-100×100×6×8', w:17.2, r1:8, ix:383, zx:76.5},
     {label:'H-100×50×5×7',  w:9.30, r1:8, ix:187, zx:37.5},
-    {label:'H-125×125×6.5×9', w:23.6, r1:8, ix:839, zx:134},
-    {label:'H-125×60×6×8',  w:13.1, r1:8, ix:409, zx:65.5},
-    {label:'H-150×150×7×10', w:31.1, r1:8, ix:1620, zx:216},
+    {label:'H-125×125×6.5×9', w:23.8, r1:8, ix:847, zx:136},
+    {label:'H-125×60×6×8',  w:13.2, r1:8, ix:413, zx:66.1},
+    {label:'H-150×150×7×10', w:31.5, r1:8, ix:1640, zx:219},
     {label:'H-150×75×5×7',  w:14.0, r1:8, ix:666, zx:88.8},
-    {label:'H-175×175×7.5×11', w:40.4, r1:13, ix:2900, zx:331},
-    {label:'H-175×90×5×8',  w:18.0, r1:8, ix:1210, zx:138},
+    {label:'H-175×175×7.5×11', w:40.2, r1:13, ix:2880, zx:330},
+    {label:'H-175×90×5×8',  w:18.1, r1:8, ix:1210, zx:139},
     {label:'H-200×200×8×12', w:49.9, r1:13, ix:4720, zx:472},
-    {label:'H-200×100×5.5×8', w:20.9, r1:8, ix:1810, zx:181},
-    {label:'H-250×250×9×14', w:71.8, r1:13, ix:10700, zx:860},
-    {label:'H-250×125×6×9', w:29.0, r1:8, ix:3960, zx:317},
-    {label:'H-300×300×10×15', w:93.0, r1:13, ix:20200, zx:1350},
+    {label:'H-200×100×5.5×8', w:21.3, r1:8, ix:1840, zx:184},
+    {label:'H-250×250×9×14', w:72.4, r1:13, ix:10800, zx:867},
+    {label:'H-250×125×6×9', w:29.6, r1:8, ix:4050, zx:324},
+    {label:'H-300×300×10×15', w:94.0, r1:13, ix:20400, zx:1360},
     {label:'H-300×150×6.5×9', w:36.7, r1:13, ix:7210, zx:481},
   ]},
   i:{name:'I形鋼', items:[
@@ -6369,7 +6355,7 @@ function stShapeFixed(cat){
     return d+'Z';
   };
   // 寸法線ヘルパ(矢印付き)
-  const arrowDefs=`<defs><marker id="stArr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="${dm}"/></marker></defs>`;
+  const arrowDefs=`<defs><marker id="stArr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="${dm}"/></marker></defs>`;
   // 厚み寸法: 両サイドから内向きに向かい合う矢印
   // 水平方向(t1など): xa<xbの2点に対し、外側から内側へ矢印
   const dimThickH=(xa,xb,y,t,labelSide)=>{
@@ -8004,9 +7990,6 @@ function plmCalc(){
   const seArea=$('plm-se-area');
   if(seArea) seArea.textContent=Se.toFixed(4)+' m²';
   const d  =+$('plm-d')?.value/1000||0.8;    // mm→m
-  const thetaRaw=parseFloat($('plm-theta')?.value);
-  const theta=isNaN(thetaRaw)?90:Math.min(90,Math.max(0,thetaRaw));
-  const cosTheta=Math.cos(theta*Math.PI/180);
   const Qs =+$('plm-qs')?.value||2;
   const absKey=$('plm-abs')?.value||'gw25';
   const alpha=PLM_ABS[absKey];
@@ -8016,23 +7999,22 @@ function plmCalc(){
   PLM_BANDS.forEach((b,i)=>{
     const a=alpha[i];
     const R=Sw*a/(1-a);
-    const direct=Qs*Se*cosTheta/(4*Math.PI*d*d);
+    const direct=Qs*Se/(4*Math.PI*d*d);
     const reverb=R>0 ? Se/R : 0;
     const il=direct+reverb>0 ? -10*Math.log10(direct+reverb) : 0;
-    const ilR=Math.max(0,Math.round(il));
     $('plm-a-'+b).textContent=a.toFixed(2);
-    $('plm-il-'+b).textContent=ilR===0?'0':('−'+ilR);
+    $('plm-il-'+b).textContent=Math.max(0,il).toFixed(1);
   });
 }
 
-['plm-w','plm-h','plm-l','plm-se-w','plm-se-h','plm-d','plm-theta']
+['plm-w','plm-h','plm-l','plm-se-w','plm-se-h','plm-d']
   .forEach(id=>{const el=$(id);if(el)el.addEventListener('input',plmCalc);});
 ['plm-abs','plm-qs'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',plmCalc);});
 // 注: 消音チャンバは現在ホーム非表示だがPro判定は除外済み(Free相当のロジックとして残置)
 // (以前はここで無条件plmCalc()を呼んでおり、Free版で毎回Proモーダルが強制的に開くバグの原因だった)
 
 /* ========== 初期化 ========== */
-dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();insRender();elCalc();plmCalc();
+dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();insRender();elCalc();
 </script>
 <!-- AdSense script: publisher IDを設定後にコメント解除 -->
 <!--
