@@ -2807,15 +2807,11 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <label>電圧</label>
       <select id="el-panel-volt">
         <option value="200">三相 200V（規約電流テーブル使用）</option>
-        <option value="400">三相 400V（計算電流使用）</option>
+        <option value="400">三相 400V（規約電流 200V値の1/2）</option>
       </select>
     </div>
-    <div>
-      <label>400V時 cosφ・η</label>
-      <input id="el-panel-pf" type="number" value="0.85" step="0.01" inputmode="decimal" style="width:100%">
-    </div>
   </div>
-  <div class="note">200V: 内線規程 規約電流テーブルで電流算出。400V: 計算電流（P/√3Vcosφη）を使用（規約電流テーブルは200V専用）。</div>
+  <div class="note">内線規程の規約電流テーブルで電流を算出（400Vは200V値の1/2）。幹線電流は電技解釈148条により「電動機の合計×1.25（合計50A超は×1.1）」。</div>
 </div>
 
 <div class="card">
@@ -2831,13 +2827,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 </div>
 <button onclick="elPanelAddRow()" class="btn-sm" style="width:100%;padding:9px;margin-bottom:4px">＋ 電動機を追加</button>
 
-<div class="card">
-  <div class="card-title">始動条件</div>
-  <div style="font-size:12px;color:var(--sub);margin-bottom:6px">直入れ始動の最大電動機（ブレーカーサイズに影響）</div>
-  <select id="el-max-direct" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--tx);padding:8px 10px;font-size:14px;font-family:inherit">
-    <option value="">-- 選択してください --</option>
-  </select>
-</div>
 
 <div class="card" id="el-panel-result" style="display:none">
   <div class="card-title">幹線・ブレーカー選定結果</div>
@@ -7743,15 +7732,12 @@ let elPanelNextId=2;
 
 function elPanelCalcIr(kw){
   const volt = +($('el-panel-volt')?.value) || 200;
-  if (volt === 400) {
-    // 400V: 規約電流テーブルは200V専用のため計算電流を使用
-    // Ir = kW×1000 / (√3 × 400 × cosφ × η)
-    const pf = +($('el-panel-pf')?.value) || 0.85;
-    return kw*1000/(Math.sqrt(3)*400*pf*pf); // η=pf近似（入力1項目で簡略化）
-  }
-  // 200V: 規約電流テーブルから切り上げ（内線規程方式）
+  // 規約電流テーブル(200V)から切り上げ（内線規程方式）
   const row = EL_YAKUDEN.find(r=>kw<=r.kw);
-  return row ? row.ia : EL_YAKUDEN.at(-1).ia;
+  const ia200 = row ? row.ia : EL_YAKUDEN.at(-1).ia;
+  // 400V: 内線規程の規約電流は電圧に反比例するため 200V値の1/2
+  //（旧: 効率=力率と仮定した計算電流 P/(√3·400·cosφ²) で、やや小さく出ていた）
+  return volt === 400 ? ia200/2 : ia200;
 }
 
 function elPanelRender(){
@@ -7790,6 +7776,7 @@ function elPanelRender(){
 // 「直入れ最大電動機」選択肢を更新(選択は維持)
 function elPanelRefreshMaxSel(){
   const sel=$('el-max-direct');
+  if(!sel) return;
   const curVal=sel.value;
   sel.innerHTML='<option value="">-- 直入れ最大電動機を選択 --</option>'+
     elPanelMotors.filter(m=>m.direct).map(m=>`<option value="${m.id}"${String(m.id)==curVal?' selected':''}>${m.name} ${m.kw}kW</option>`).join('');
@@ -7818,26 +7805,19 @@ function elPanelCalc(){
   if(!elPanelMotors.length){$('el-panel-result').style.display='none';return;}
   const totalKw=elPanelMotors.reduce((s,m)=>s+m.kw,0);
   const totalIr=elPanelMotors.reduce((s,m)=>s+elPanelCalcIr(m.kw),0);
-  const selId=$('el-max-direct').value;
-  const selMotor=elPanelMotors.find(m=>String(m.id)===selId);
-  let designI, designNote, mccbMax;
-  if(selMotor){
-    const irMax=elPanelCalcIr(selMotor.kw);
-    const irOthers=totalIr-irMax;
-    designI=irMax*1.25+irOthers;
-    mccbMax=irMax*3+irOthers; // MCCB上限
-    designNote=`${designI.toFixed(1)} A　（${selMotor.name} ${irMax.toFixed(1)}A×1.25 ＋ 残り${irOthers.toFixed(1)}A）`;
-  } else {
-    designI=totalIr*1.25;
-    mccbMax=totalIr*3;
-    designNote=`${designI.toFixed(1)} A　（直入れ最大未選択・全体×1.25）`;
-  }
+  // 電技解釈 第148条: 幹線の許容電流 ≥ 電動機の定格電流の合計 × K
+  //   K=1.25（合計50A以下） / K=1.1（合計50A超）
+  // 幹線の過電流遮断器 ≤ 電動機の定格電流の合計 × 3（かつ 幹線許容電流×2.5 以下）
+  const K = totalIr<=50 ? 1.25 : 1.1;
+  const designI=totalIr*K;
+  const mccbMax=totalIr*3;
+  const designNote=`${designI.toFixed(1)} A　（ΣIr ${totalIr.toFixed(1)}A × ${K}${K===1.25?'：合計50A以下':'：合計50A超'}）`;
 
   $('el-panel-result').style.display='';
   $('el-p-total-kw').textContent=totalKw.toFixed(1)+' kW';
   $('el-p-total-ir').textContent=totalIr.toFixed(1)+' A';
   $('el-p-design-i').textContent=designNote;
-  $('el-p-mccb-max').textContent=mccbMax.toFixed(0)+' AT以下（= Ir_max×3 + ΣIr_other）';
+  $('el-p-mccb-max').textContent=mccbMax.toFixed(0)+' AT以下（= ΣIr×3、かつ幹線許容電流×2.5以下）';
 
   // 選定テーブル描画
   // ケーブル: 設計電流を満たす最小サイズ
@@ -7884,7 +7864,7 @@ function elPanelAddRow(){
   elPanelMotors.push({id:elPanelNextId++,name:'電動機'+(elPanelMotors.length+1),kw:2.2,direct:true});
   elPanelRender();
 }
-$('el-max-direct').addEventListener('change',elPanelCalc);
+$('el-max-direct')?.addEventListener('change',elPanelCalc);
 
 function elRenderDaikin(){
   const sel=$('el-daikin-sel');
