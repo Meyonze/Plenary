@@ -607,8 +607,10 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   <b>許容風速法</b>: D = √(4Q/(π·v))<br><br>
   <b>粗さ係数 ε</b>: 亜鉛鉄板0.15mm / ステンレス0.045mm / 塩ビ1.5mm / グラスウール0.9mm / コンクリート3.0mm<br><br>
   <b>フランジボルト本数(概算)</b><br>
-  アングルフランジ: 本数 = max(4, 周長 ÷ 100mm) を切り上げ(M8・最大間隔100mm、公共建築工事標準仕様書 表3.2.4)。<br>
-  共板・スライドオンフランジ(コーナーボルト工法): 四隅のコーナーボルト4本＋辺はフランジ押え金具(取付間隔は標準図・メーカー仕様による)。
+  アングルフランジ: 本数 = max(4, 周長 ÷ 100mm) を切り上げ(M8・最大間隔100mm、公共建築工事標準仕様書 令和7年版 表3.1.16)。<br>
+  共板・スライドオンフランジ(コーナーボルト工法、長辺1,500mm以下・低圧ダクトのみ): 四隅のコーナーボルト4本＋辺はフランジ押さえ金具。<br>
+  ・共板の押さえ金具: ダクト端部から150mm以内、金具相互200mm以内(公共建築設備工事標準図 令和7年版「コーナーボルト工法ダクトのフランジ施工例(三)」)。1辺の個数 = 辺長300mm以下は1個、超える場合 ⌈(辺長−300)/200⌉+1 個。長さ150mm以上・再使用禁止(仕様書 1.14.3.6)。<br>
+  ・スライドオンの押さえ金具(1辺あたり): 450以下 0個 / 450超750以下 1個(辺の中央) / 750超1,500以下 2個(均等)(同 標準図)。
 </div>
 </div><!-- /tool-duct -->
 
@@ -792,16 +794,16 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
         <select id="v-fire-k">
           <option value="0.93">都市ガス K=0.93</option>
           <option value="0.93lp">LPガス K=0.93</option>
-          <option value="12.1">灯油 K=12.1(kg) ※要確認</option>
+          <option value="12.1">灯油 K=12.1(m³/kg)</option>
         </select>
       </div>
       <div>
         <label>排気の方式</label>
         <select id="v-fire-hood">
-          <option value="30" selected>フードⅠ型 30KQ</option>
-          <option value="20">フードⅡ型 20KQ</option>
-          <option value="40">フードなし 40KQ</option>
-          <option value="2">煙突 2KQ</option>
+          <option value="30" selected>排気フードⅠ型＋換気扇 30KQ</option>
+          <option value="20">排気フードⅡ型＋換気扇 20KQ</option>
+          <option value="40">排気口・排気筒に換気扇(フードなし) 40KQ</option>
+          <option value="2">煙突に換気扇 2KQ</option>
         </select>
       </div>
     </div>
@@ -887,8 +889,9 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   シックハウス対策(令第20条の8): 住宅等の居室 0.5回/h以上、その他の居室 0.3回/h以上<br><br>
   <b>CO₂基準法</b>: Q = P × q　(建基法の最低は20 m³/h・人。実務は30 m³/h・人(CO₂ 1000ppm相当)が目安)<br><br>
   <b>火気使用室</b>: V = n·K·Q　(建基法施行令 第20条の3・昭和45年建設省告示第1826号)<br>
-  n: 排気フードⅠ型30 / Ⅱ型20 / フードなし40 / 煙突2<br>
-  K: 理論廃ガス量　都市ガス・LPガス 0.93 m³/kWh / 灯油 12.1 m³/kg(要確認)<br><br>
+  n: 排気口・排気筒に換気扇(フードなし) 40(告示第3第二号) / 煙突に換気扇 2(同第三号) / 排気フード付き排気筒に換気扇: Ⅰ型30・Ⅱ型20(同第四号)<br>
+  Ⅰ型: フード下端が火源から1m以内で火源等を覆う。Ⅱ型: さらに火源とその周囲(フード高さの1/2の水平距離)を覆い、5cm以上の垂れ下がり・集気部10°以上の傾斜をもつ<br>
+  K: 理論廃ガス量(告示 別表)　都市ガス 0.93 m³/kWh / LPガス(プロパン主体, 発熱量50.2MJ/kg) 0.93 m³/kWh / 灯油(発熱量43.1MJ/kg) 12.1 m³/kg<br><br>
   <b>駐車場</b>: V = 14 × 床面積　[m³/h]　(駐車場法施行令 第12条。開口部が床面積の1/10以上の階は除く)<br><br>
   <b>建築基準法(居室の自然/機械換気区分)</b><br>
   自然換気: 開口部の有効面積 Aw ≧ 床面積 Af × 1/20(建築基準法第28条・施行令第20条の2)<br>
@@ -1469,6 +1472,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
 <div class="formula-box">
   <b>原単位法</b>: 熱負荷[W] = 単位熱負荷[W/m²] × 室面積[m²]<br><br>
   <b>積上げ法</b>: 熱負荷 = 外皮 + 照明 + OA機器 + 人体 + 外気<br>
+  ※この積上げ法は<b>冷房負荷</b>の概算です。暖房負荷は照明・人体・機器の発熱を見込まず(安全側として差し引かない)、構造体・ガラス面・すきま風・外気負荷で算定します(建築設備設計基準 令和6年版 第2節 空調熱負荷計算(3)(4))。暖房能力の確認は下の原単位表の暖房欄か詳細計算によってください。<br>
   ・外皮/照明/OA = 各原単位[W/m²] × 面積<br>
   ・人体 = 在室人員 × 1人発熱[W]<br>
   ・外気負荷[W] = 0.33 × 外気量[m³/h] × Δエンタルピー[kJ/kg]<br><br>
@@ -2108,7 +2112,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   空調ドレン: メーカー指定があれば優先。指定がない場合は1/100以上を推奨(機内ドレンパンからの取出しは1/50程度の場合あり)。<br>
   雑排水・汚水横管(SHASE-S206): 65A以下 1/50(2.0%) / 75A・100A 1/100(1.0%) / 125A 1/150(0.67%) / 150A以上 1/200(0.5%)<br>
   雨水横走り管: 1/100を標準とする(規模・地域降雨量により別途検討)。<br><br>
-  <b>支持間隔</b>: 硬質ポリ塩化ビニル管の吊り間隔(公共建築工事標準仕様書 表2.2.20)。80A以下 1.0m以下、100A以上 2.0m以下(100A以上は解説資料で1.5mとするものもあり要確認)。鋼管は100A以下2.0m以下<br>
+  <b>支持間隔</b>: 硬質ポリ塩化ビニル管の吊り間隔(公共建築工事標準仕様書(機械設備工事編)令和7年版 表2.2.20)。80A以下 1.0m以下、100A以上 2.0m以下。鋼管は100A以下2.0m以下、125A以上3.0m以下<br>
   <b>支持点数</b> = ⌈L / 支持間隔⌉ + 1(両端含む)
 </div>
 </div><!-- /tool-drain -->
@@ -2167,13 +2171,24 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
         <option value="1:0:v1">15A〜20A (吊1.0m・振れ止め不要)</option>
         <option value="1:6:v2">25A〜40A (吊1.0m・振れ止め6m)</option>
         <option value="1:8:v3">50A〜80A (吊1.0m・振れ止め8m)</option>
-        <option value="2:12:v4">100A〜300A (吊2.0m・振れ止め12m) ※要確認</option>
+        <option value="2:8:v4">100A (吊2.0m・振れ止め8m)</option>
+        <option value="2:12:v5">125A〜300A (吊2.0m・振れ止め12m)</option>
         </optgroup>
         <optgroup label="銅管">
         <option value="1:0:c1">15A〜20A (吊1.0m・振れ止め不要)</option>
         <option value="1:6:c2">25A〜40A (吊1.0m・振れ止め6m)</option>
         <option value="1:8:c3">50A〜80A (吊1.0m・振れ止め8m)</option>
-        <option value="2:12:c4">100A〜300A (吊2.0m・振れ止め12m) ※要確認</option>
+        <option value="2:8:c4">100A (吊2.0m・振れ止め8m)</option>
+        <option value="2:12:c5">125A〜300A (吊2.0m・振れ止め12m)</option>
+        </optgroup>
+        <optgroup label="ポリブテン管">
+        <option value="0.6:0:b1">15A (吊0.6m・振れ止め不要)</option>
+        <option value="0.7:0:b2">20A (吊0.7m・振れ止め不要)</option>
+        <option value="0.7:6:b3">25A〜32A (吊0.7m・振れ止め6m)</option>
+        <option value="1:6:b4">40A (吊1.0m・振れ止め6m)</option>
+        <option value="1:8:b5">50A (吊1.0m・振れ止め8m)</option>
+        <option value="1.3:8:b6">65A〜80A (吊1.3m・振れ止め8m)</option>
+        <option value="1.6:8:b7">100A (吊1.6m・振れ止め8m)</option>
         </optgroup>
         <optgroup label="冷媒用銅管">
         <option value="1.5:6">外径9.52mm以下(2分・3分) (吊1.5m)</option>
@@ -3955,6 +3970,15 @@ function dSelect(key,all,vmax){
   dPlateCalc(c);
 }
 
+// スパイラルダクト直管の板厚(呼称寸法=内径[mm] → 板厚[mm])。公共建築工事標準仕様書(機械設備工事編)令和7年版 表3.1.23
+function dSpiralThk(d, press){
+  const rows = press==="high"
+    ? [[200,0.5],[560,0.6],[800,0.8],[1000,1.0],[Infinity,1.2]]
+    : [[450,0.5],[710,0.6],[1000,0.8],[Infinity,1.0]];
+  for(const [lim,t] of rows){ if(d<=lim) return t; }
+  return rows[rows.length-1][1];
+}
+
 // JIS A4009 板厚表(長辺[mm] → 板厚[mm])
 function dPlateThk(side, press, mat, smoke){
   // smoke=true は高圧1・2相当
@@ -3981,7 +4005,9 @@ function dPlateCalc(c){
   let side, sideLabel;
   if(c.type==="rect"){ side=Math.max(c.a,c.b); sideLabel=c.a+"×"+c.b+" → 長辺 "+side+"mm"; }
   else { side=c.d; sideLabel="φ"+c.d+" (円形/スパイラル)"; }
-  const t=dPlateThk(side, press, mat, smoke);
+  // スパイラルダクト(亜鉛鉄板)は直管の板厚表(公共建築工事標準仕様書 令和7年版 表3.1.23)による
+  const spiralGi = c.type!=="rect" && mat!=="sus" && !smoke;
+  const t=spiralGi ? dSpiralThk(side, press) : dPlateThk(side, press, mat, smoke);
   $("d-plate-side").textContent=side+" mm";
   $("d-plate-t").textContent=t.toFixed(1)+" mm";
 
@@ -3989,19 +4015,21 @@ function dPlateCalc(c){
   let flange, note;
   if(c.type!=="rect"){
     flange="—(円形は甲はぜ/差込継手)";
-    note=sideLabel+"。スパイラルダクトは継手(差込・フランジ)で接続。板厚は角ダクトの表による参考値で、スパイラルダクトの板厚は標準仕様書の円形ダクトの表・メーカー仕様で確認すること(重量もこの板厚での概算)。";
+    note=sideLabel+"。スパイラルダクトは継手(差込・フランジ)で接続。"+(spiralGi
+      ?"板厚は直管の板厚表(公共建築工事標準仕様書 令和7年版 表3.1.23: 低圧 450以下0.5/710以下0.6/1,000以下0.8/1,250以下1.0、高圧1・2 200以下0.5/560以下0.6/800以下0.8/1,000以下1.0/1,250以下1.2)。呼称寸法は内径基準。"
+      :"ステンレス・排煙の円形ダクトは標準仕様書の該当表・メーカー仕様で確認すること(ここでは角ダクトの表による参考値)。");
   } else if(smoke){
     flange="アングルフランジ(共板不可)";
     note=sideLabel+"。排煙ダクトはピッツバーグはぜ+アングルフランジ。共板フランジ・グラスウールは使用不可。高圧1・2の区分はSHASE-S010(送風機・ダクト設計規格)およびJIS A4009による常用圧力区分(高圧1:500Pa超1000Pa以下、高圧2:1000Pa超2500Pa以下)に対応。";
-  } else if(side<=750){
-    flange="共板フランジ(TDC/TDF)可";
-    note=sideLabel+"。共板フランジの適用長辺は標準仕様書・メーカー仕様で確認(標準仕様書のコーナー金具の規定は長辺1,500mmまで)。";
-  } else if(side<=2200){
-    flange="共板フランジ / アングルフランジ";
-    note=sideLabel+"。共板フランジの適用長辺は標準仕様書・メーカー仕様で確認(コーナー金具の規定は長辺1,500mmまで)。大型・補強要時はアングルフランジ。";
+  } else if(press==="high"){
+    flange="アングルフランジ";
+    note=sideLabel+"。コーナーボルト工法(共板・スライドオン)の接合材料は低圧ダクトのみ規定(公共建築工事標準仕様書 令和7年版 表3.1.17・表3.1.18)のため、高圧1・2ダクトはアングルフランジとする。";
+  } else if(side<=1500){
+    flange="共板フランジ / スライドオンフランジ可";
+    note=sideLabel+"。コーナーボルト工法ダクトは長辺1,500mm以下に適用(公共建築工事標準仕様書 令和7年版 1.14.3.2)。共板かスライドオンかは特記による。フランジ最大間隔: 共板1,750mm・スライドオン1,840mm・アングル1,820mm。";
   } else {
-    flange="アングルフランジ(長辺>2200)";
-    note=sideLabel+"。長辺2200mm超は共板不可、アングルフランジを使用。";
+    flange="アングルフランジ(長辺>1,500)";
+    note=sideLabel+"。長辺1,500mm超はコーナーボルト工法の適用外(同 1.14.3.2)のため、アングルフランジを使用。";
   }
   $("d-flange").textContent=flange;
   $("d-plate-note").textContent=note;
@@ -4012,8 +4040,15 @@ function dPlateCalc(c){
   const pitchSel=$("d-bolt-pitch").value;
   if(c.type==="rect"){
     const peri=2*(c.a+c.b);
-    if(pitchSel==="corner"){
-      $("d-bolt-n").textContent="4 本＋押え金具";
+    if(pitchSel==="corner" && (side>1500 || press==="high" || smoke)){
+      $("d-bolt-n").textContent="コーナーボルト工法の適用外(アングルを選択)";
+    } else if(pitchSel==="corner"){
+      // 共板: 押さえ金具はダクト端部から150mm以内・相互間隔200mm以内(標準図 コーナーボルト工法ダクトのフランジ施工例(三))
+      // スライドオン: 1辺あたり 450以下0個/750以下1個/1,500以下2個(同)
+      const nKyo=[c.a,c.a,c.b,c.b].reduce((n,L)=>n+(L<=300?1:Math.ceil((L-300)/200)+1),0);
+      const slide=L=>L<=450?0:L<=750?1:2;
+      const nSl=2*slide(c.a)+2*slide(c.b);
+      $("d-bolt-n").textContent="4 本＋押え金具 共板"+nKyo+"個 / スライドオン"+nSl+"個(1継手)";
     } else {
       const n=Math.max(4, Math.ceil(peri/(+pitchSel||100)));
       $("d-bolt-n").textContent=n+" 本";
@@ -5237,7 +5272,7 @@ function ldCalc(){
     const oaAir=0.33*(+$('ld-s-oaair').value||0)*((+$('ld-s-ho').value||0)-(+$('ld-s-hi').value||0));
     W=skin+solar+light+oa+person+oaAir;
     breakdown={外皮:skin,日射:solar,照明:light,機器:oa,人体:person,換気:oaAir};
-    note=`断熱補正${insulK} × 方位${orient}(×${LD_ORIENT_FACTOR[orient]})`;
+    note=`冷房負荷の概算: 断熱補正${insulK} × 方位${orient}(×${LD_ORIENT_FACTOR[orient]})。暖房負荷は照明・人体・機器を見込まずに別途算定(建築設備設計基準)`;
     $('ld-breakdown').classList.remove('hidden');
     // 警告
     if(orient==='west'&&glass>10) warns.push({lv:'warn',msg:`西向きガラス面積 ${glass}m² — 西日負荷が大きい可能性があります。ブラインド・庇等の日射遮蔽を検討してください。`});
