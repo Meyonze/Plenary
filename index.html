@@ -443,7 +443,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <label>ダクト材質</label>
   <select id="d-mat">
     <option value="0.00015">亜鉛鉄板 (ε=0.15 mm)</option>
-    <option value="0.0015">塩ビダクト (ε=1.5 mm)</option>
+    <option value="0.00001">塩ビダクト (ε=0.01 mm)</option>
     <option value="0.003">コンクリートダクト (ε=3.0 mm)</option>
     <option value="0.0009">グラスウールダクト (ε=0.9 mm)</option>
     <option value="0.000045">ステンレスダクト (ε=0.045 mm)</option>
@@ -619,7 +619,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <label>材質(粗度)</label>
       <select id="dl-str-mat">
         <option value="0.00015">亜鉛鉄板 (ε=0.15 mm)</option>
-        <option value="0.0015">塩ビダクト (ε=1.5 mm)</option>
+        <option value="0.00001">塩ビダクト (ε=0.01 mm)</option>
         <option value="0.003">コンクリートダクト (ε=3.0 mm)</option>
         <option value="0.0009">グラスウールダクト (ε=0.9 mm)</option>
         <option value="0.000045">ステンレスダクト (ε=0.045 mm)</option>
@@ -3370,15 +3370,30 @@ function captureInputs(){
   const tool=document.querySelector('.tool.on');
   if(!tool)return{};
   const data={toolId:tool.id};
-  tool.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{data[el.id]=el.value;});
+  tool.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{
+    data[el.id]=(el.type==='checkbox'||el.type==='radio')?{checked:el.checked}:el.value;
+  });
+  // 選択中のモードタブ(計算方法・形状など)
+  data._tabs=[...tool.querySelectorAll('.tab.on')].map(t=>{
+    if(t.id) return '#'+t.id;
+    const a=[...t.attributes].find(x=>x.name.startsWith('data-'));
+    return a?`[${a.name}="${a.value}"]`:null;
+  }).filter(Boolean);
   return data;
 }
 function restoreInputs(data){
+  // 先にタブを切り替える(タブ切替で既定値に戻る入力欄があるため)
+  const tool=document.getElementById(data.toolId);
+  (data._tabs||[]).forEach(sel=>{
+    const t=tool&&tool.querySelector('.tab'+sel);
+    if(t&&!t.classList.contains('on')) t.click();
+  });
   Object.entries(data).forEach(([id,val])=>{
-    if(id==='toolId')return;
+    if(id==='toolId'||id==='_tabs')return;
     const el=document.getElementById(id);
     if(!el)return;
-    el.value=val;
+    if(val&&typeof val==='object'){ el.checked=!!val.checked; }
+    else el.value=val;
     el.dispatchEvent(new Event('input',{bubbles:true}));
     el.dispatchEvent(new Event('change',{bubbles:true}));
   });
@@ -3798,7 +3813,7 @@ document.querySelectorAll("[data-dm]").forEach(t=>t.onclick=()=>{
 });
 ["d-q","d-r","d-v"].forEach(id=>{$(id).addEventListener("input",dCalc);$(id).addEventListener("change",dCalc);});
 $("d-mat").addEventListener("change",()=>{
-  const labels={"0.00015":"亜鉛鉄板 ε=0.15 mm","0.0015":"塩ビダクト ε=1.5 mm","0.003":"コンクリートダクト ε=3.0 mm","0.0009":"グラスウールダクト ε=0.9 mm","0.000045":"ステンレスダクト ε=0.045 mm"};
+  const labels={"0.00015":"亜鉛鉄板 ε=0.15 mm","0.00001":"塩ビダクト ε=0.01 mm","0.003":"コンクリートダクト ε=3.0 mm","0.0009":"グラスウールダクト ε=0.9 mm","0.000045":"ステンレスダクト ε=0.045 mm"};
   $("d-eps-note").textContent=labels[$("d-mat").value]||"";
   dCalc();
 });
@@ -3822,7 +3837,7 @@ function dAddStock(){
   const methodLabel={'ef':'等摩擦法','vel':'許容風速法','ef-rect':'等摩擦法(角)','vel-rect':'許容風速法(角)'}[dMode]||dMode;
   const matEl=$('d-mat');const matLabel=matEl.options[matEl.selectedIndex]?.text.split(' ')[0]||'亜鉛';
   const q=$('d-q').value;
-  const sizeLabel=c.type==='rect'?`${c.a}×${c.b}`:`Φ${c.D}`;
+  const sizeLabel=c.type==='rect'?`${c.a}×${c.b}`:`Φ${c.d}`;
   const stock={
     id:Date.now(),
     label:`${methodLabel} Q=${q} → ${sizeLabel} v=${(+c.v||0).toFixed(1)}m/s R=${(+c.R||0).toFixed(2)}Pa/m`,
@@ -3968,13 +3983,20 @@ function dlStrSizeLabel(){
   const shape=$('dl-str-shape').value;
   return shape==='round' ? `φ${$('dl-str-d').value}` : `${$('dl-str-w').value}×${$('dl-str-h').value}`;
 }
+// 直管の摩擦損失 [Pa/m]。角ダクトの相当径Deは「同じ風量で同じ圧損」となる径なので、
+// 実風速×断面から風量を出し、De の丸ダクトに同じ風量を流して計算する
+function dlStrR(v,D,eps){
+  if($('dl-str-shape').value!=='rect') return frictV(v,D,eps).R;
+  const w=(+$('dl-str-w').value||0)/1000, h=(+$('dl-str-h').value||0)/1000;
+  return frict(v*w*h*3600,D,eps).R;
+}
 function dlStrCalc(){
   const v=+$('dl-str-v').value||0;
   const D=dlStrGetD_mm()/1000;
   const eps=+$('dl-str-mat').value||0.00015;
   const L=+$('dl-str-len').value||0;
   if(v<=0||D<=0){$('dl-str-r').textContent='-';$('dl-str-loss').textContent='-';return;}
-  const R=frictV(v,D,eps).R;
+  const R=dlStrR(v,D,eps);
   const loss=R*L;
   $('dl-str-r').textContent=R.toFixed(2)+' Pa/m';
   $('dl-str-loss').textContent=loss.toFixed(1);
@@ -3985,7 +4007,7 @@ function dlStrAddToList(){
   const eps=+$('dl-str-mat').value||0.00015;
   const L=+$('dl-str-len').value||0;
   if(v<=0||D<=0||L<=0)return;
-  const R=frictV(v,D,eps).R;
+  const R=dlStrR(v,D,eps);
   const loss=R*L;
   dlList.push({id:dlListNextId++, kind:'straight', typeName:'直管', label:`${dlStrSizeLabel()} L=${L}m`, R, L, v, loss});
   dlRenderList();
@@ -4334,7 +4356,7 @@ const CONV = {
   },
   lflow: {
     lmin:  {to:v=>v,              from:v=>v},
-    m3h:   {to:v=>v/60*1000,     from:v=>v*60/1000},
+    m3h:   {to:v=>v*60/1000,     from:v=>v*1000/60},
     gpm:   {to:v=>v/3.78541,     from:v=>v*3.78541},
     lls:   {to:v=>v/60,          from:v=>v*60},
   },
@@ -4452,10 +4474,11 @@ function pws(T) {
 // 絶対湿度 [kg/kg'] from 蒸気圧[kPa]と全圧[kPa]
 function W_from_pw(pw, P) { return 0.62198 * pw / (P - pw); }
 
-// 湿球温度から絶対湿度(Sprung式)
+// 湿球温度から絶対湿度(ASHRAE Handbook Fundamentals 式: 湿球が0℃以上は水面、未満は氷面)
 function W_from_wb(Tdb, Twb, P) {
   const Ws_wb = W_from_pw(pws(Twb), P);
-  return Ws_wb - 0.00066 * (1 + 0.00115 * Twb) * (Tdb - Twb);
+  if(Twb >= 0) return ((2501 - 2.326*Twb)*Ws_wb - 1.006*(Tdb - Twb)) / (2501 + 1.86*Tdb - 4.186*Twb);
+  return ((2830 - 0.24*Twb)*Ws_wb - 1.006*(Tdb - Twb)) / (2830 + 1.86*Tdb - 2.1*Twb);
 }
 
 // エンタルピー [kJ/kg]
@@ -5030,7 +5053,7 @@ let wtMode='chilled';
 const SGP=[
   {name:'15A',id:16.1},{name:'20A',id:21.6},{name:'25A',id:27.6},{name:'32A',id:35.7},
   {name:'40A',id:41.6},{name:'50A',id:52.9},{name:'65A',id:67.9},{name:'80A',id:80.7},
-  {name:'100A',id:105.3},{name:'125A',id:130.0},{name:'150A',id:155.2},{name:'200A',id:204.7},
+  {name:'100A',id:105.3},{name:'125A',id:130.8},{name:'150A',id:155.2},{name:'200A',id:204.7},
   {name:'250A',id:254.2},{name:'300A',id:304.7}
 ];
 
@@ -5102,8 +5125,9 @@ function wtSelect(c,Qls,vmax){
     :'<span class="g">流速 OK</span> (上限 '+vmax+' m/s)';
   // ポンプ揚程計算に現在の管径を渡す
   wtPump(c,Qls);
-  // 保温材厚さの配管径選択を現在の選択サイズに同期(c.id=呼び径A)
-  if($('ins-size').querySelector(`option[value="${c.id}"]`)){ $('ins-size').value=c.id; }
+  // 保温材厚さの配管径選択を現在の選択サイズ(呼び径)に同期
+  const nominalA=parseInt(c.name,10); // 呼び径(例 '50A'→50)。c.id は内径なので使わない
+  if($('ins-size').querySelector(`option[value="${nominalA}"]`)){ $('ins-size').value=String(nominalA); }
   insCalc();
 }
 
@@ -7522,6 +7546,38 @@ function insAddRow(type){
   insRender();
 }
 
+// 1行分の保温面積[m²]・重量[kg]
+function insRowCalc(r,type,density){
+  if(type==='pipe'){
+    const od=PIPE_OD[r.size]||60.5;
+    return {area:Math.PI*(od+2*r.t)/1000*r.len*r.qty,
+            wt:Math.PI/4*(Math.pow((od+2*r.t)/1000,2)-Math.pow(od/1000,2))*r.len*r.qty*density};
+  }
+  if(r.shape==='circ'){
+    return {area:Math.PI*(r.w+2*r.t)/1000*r.len*r.qty,
+            wt:Math.PI/4*(Math.pow((r.w+2*r.t)/1000,2)-Math.pow(r.w/1000,2))*r.len*r.qty*density};
+  }
+  const a=(2*(r.w+r.h)+8*r.t)/1000*r.len*r.qty;
+  return {area:a, wt:a*(r.t/1000)*density};
+}
+// 入力中は表を作り直さず(フォーカスが外れるため)、計算値と合計だけ更新する
+function insUpdateNumbers(){
+  const density=+$('ins-mat').value||24;
+  [['pipe',insPipeRows,'ins-pipe-rows'],['duct',insDuctRows,'ins-duct-rows']].forEach(([type,rows,wrapId])=>{
+    const areaEls=$(wrapId).querySelectorAll('.ins-area'), wtEls=$(wrapId).querySelectorAll('.ins-wt');
+    rows.forEach((r,i)=>{
+      const c=insRowCalc(r,type,density);
+      if(areaEls[i]) areaEls[i].textContent=c.area.toFixed(2);
+      if(wtEls[i]) wtEls[i].textContent=c.wt.toFixed(2);
+    });
+  });
+  const rows=insMode==='pipe'?insPipeRows:insDuctRows;
+  let totA=0, totW=0;
+  rows.forEach(r=>{const c=insRowCalc(r,insMode,density);totA+=c.area;totW+=c.wt;});
+  $('ins-result-card').style.display=rows.length?'':'none';
+  if(rows.length){$('ins-total-area').textContent=totA.toFixed(2);$('ins-total-wt').textContent=totW.toFixed(2);}
+}
+
 function insRender(){
   const density=+$('ins-mat').value||24;
   // --- 配管 ---
@@ -7539,13 +7595,13 @@ function insRender(){
       `<input type="number" inputmode="decimal" value="${r.t}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-pi="${i}" data-pf="t">`+
       `<input type="number" inputmode="decimal" value="${r.len}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-pi="${i}" data-pf="len">`+
       `<input type="number" inputmode="decimal" value="${r.qty}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-pi="${i}" data-pf="qty">`+
-      `<div style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${area.toFixed(2)}</div>`+
-      `<div style="padding:5px 4px;font-size:12px;text-align:right">${wt.toFixed(2)}</div>`+
+      `<div class="ins-area" style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${area.toFixed(2)}</div>`+
+      `<div class="ins-wt" style="padding:5px 4px;font-size:12px;text-align:right">${wt.toFixed(2)}</div>`+
       `<button style="background:none;border:none;color:var(--ng);font-size:16px;cursor:pointer;padding:4px" data-pi="${i}" class="ins-del-p">✕</button>`;
     pWrap.appendChild(row);
   });
   pWrap.querySelectorAll('select').forEach(el=>el.addEventListener('change',()=>{insPipeRows[+el.dataset.pi].size=el.value;insRender();}));
-  pWrap.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{insPipeRows[+el.dataset.pi][el.dataset.pf]=+el.value||0;insRender();}));
+  pWrap.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{insPipeRows[+el.dataset.pi][el.dataset.pf]=+el.value||0;insUpdateNumbers();}));
   pWrap.querySelectorAll('.ins-del-p').forEach(btn=>btn.onclick=()=>{insPipeRows.splice(+btn.dataset.pi,1);insRender();});
 
   // --- ダクト ---
@@ -7572,13 +7628,13 @@ function insRender(){
       `<input type="number" inputmode="decimal" value="${r.t}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-di="${i}" data-df="t">`+
       `<input type="number" inputmode="decimal" value="${r.len}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-di="${i}" data-df="len">`+
       `<input type="number" inputmode="decimal" value="${r.qty}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-di="${i}" data-df="qty">`+
-      `<div style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${area.toFixed(2)}</div>`+
-      `<div style="padding:5px 4px;font-size:12px;text-align:right">${wt.toFixed(2)}</div>`+
+      `<div class="ins-area" style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${area.toFixed(2)}</div>`+
+      `<div class="ins-wt" style="padding:5px 4px;font-size:12px;text-align:right">${wt.toFixed(2)}</div>`+
       `<button style="background:none;border:none;color:var(--ng);font-size:16px;cursor:pointer;padding:4px" data-di="${i}" class="ins-del-d">✕</button>`;
     dWrap.appendChild(row);
   });
   dWrap.querySelectorAll('select').forEach(el=>el.addEventListener('change',()=>{insDuctRows[+el.dataset.di].shape=el.value;insRender();}));
-  dWrap.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{insDuctRows[+el.dataset.di][el.dataset.df]=+el.value||0;insRender();}));
+  dWrap.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{insDuctRows[+el.dataset.di][el.dataset.df]=+el.value||0;insUpdateNumbers();}));
   dWrap.querySelectorAll('.ins-del-d').forEach(btn=>btn.onclick=()=>{insDuctRows.splice(+btn.dataset.di,1);insRender();});
 
   // 合計
@@ -7711,24 +7767,32 @@ function elPanelRender(){
         `<option value="1"${m.direct?' selected':''}>直入れ</option>`+
         `<option value="0"${!m.direct?' selected':''}>INV等</option>`+
       `</select>`+
-      `<div style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${ir.toFixed(1)}</div>`+
+      `<div class="elp-ir" style="padding:5px 4px;font-size:12px;text-align:right;color:var(--ac);font-weight:600">${ir.toFixed(1)}</div>`+
       `<button style="background:none;border:none;color:var(--ng);font-size:15px;cursor:pointer;padding:4px" data-pi="${i}" class="elp-del">✕</button>`;
     tbody.appendChild(row);
   });
   tbody.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{
-    const m=elPanelMotors[+el.dataset.pi];
+    // 入力中は表を作り直さず(フォーカスが外れるため)、その行の電流と集計だけ更新する
+    const i=+el.dataset.pi, m=elPanelMotors[i];
     if(el.dataset.pf==='kw') m.kw=+el.value||0; else m.name=el.value;
-    elPanelRender();
+    const irEl=tbody.querySelectorAll('.elp-ir')[i];
+    if(irEl) irEl.textContent=elPanelCalcIr(m.kw).toFixed(1);
+    elPanelRefreshMaxSel();
+    elPanelCalc();
   }));
   tbody.querySelectorAll('select').forEach(el=>el.addEventListener('change',()=>{
-    elPanelMotors[+el.dataset.pi].direct=el.value==='1'; elPanelCalc();
+    elPanelMotors[+el.dataset.pi].direct=el.value==='1'; elPanelRefreshMaxSel(); elPanelCalc();
   }));
   tbody.querySelectorAll('.elp-del').forEach(btn=>btn.onclick=()=>{elPanelMotors.splice(+btn.dataset.pi,1);elPanelRender();});
+  elPanelRefreshMaxSel();
+  elPanelCalc();
+}
+// 「直入れ最大電動機」選択肢を更新(選択は維持)
+function elPanelRefreshMaxSel(){
   const sel=$('el-max-direct');
   const curVal=sel.value;
   sel.innerHTML='<option value="">-- 直入れ最大電動機を選択 --</option>'+
     elPanelMotors.filter(m=>m.direct).map(m=>`<option value="${m.id}"${String(m.id)==curVal?' selected':''}>${m.name} ${m.kw}kW</option>`).join('');
-  elPanelCalc();
 }
 
 // 幹線・MCCB 選定テーブル（200V 三相 管内配線・参考値）
@@ -8061,14 +8125,18 @@ function elCableScMinSize(Ik) {
  *  最大ATを採用（始動電流によるトリップ防止）
  *  戻り値: { at, af, mccbMax, instantOk }
  */
-function elSelectMCCB(Id, Ir, loadType, Istart) {
+function elMccbAf(at){ return at<=50?50 : at<=100?100 : at<=225?225 : at<=400?400 : 600; }
+function elSelectMCCB(Id, Ir, loadType, Istart, cableIa) {
   const isMotor = loadType==='motor'||loadType==='inverter';
-  const mccbMax = isMotor
-    ? (Ir>50 ? Ir*2.75 : Ir*3)
-    : Infinity;
+  // 電線保護: 一般負荷は AT ≤ 電線許容電流、電動機回路は AT ≤ 電線許容電流×2.5（内線規程）
+  const cableLimit = cableIa>0 ? (isMotor ? cableIa*2.5 : cableIa) : Infinity;
+  const mccbMax = Math.min(isMotor ? (Ir>50 ? Ir*2.75 : Ir*3) : Infinity, cableLimit);
   let bestAt=0, bestAf=0;
-  for (const r of EL_SEL_TABLE) {
-    if (r.at>=Id && r.at<=mccbMax) { bestAt=r.at; bestAf=r.af; }
+  const okAts = MCCB_RATINGS.filter(at => at>=Id && at<=mccbMax);
+  if (okAts.length) {
+    // 電動機: 始動電流で落ちにくいよう上限内の最大AT / 一般負荷: 設計電流以上の最小AT
+    bestAt = isMotor ? okAts[okAts.length-1] : okAts[0];
+    bestAf = elMccbAf(bestAt);
   }
   // 瞬時整定チェック: Istart > AT × C曲線倍率 → 誤トリップリスク
   const instantOk = (Istart<=0||bestAt<=0) || Istart < bestAt*EL_INST_MULT;
@@ -8108,7 +8176,7 @@ function elGenerateWarnings({ Id, Istart, vdPct, adoptedCv, mccbResult, Ik }) {
 
   // MCCB選定不能
   if (mccbResult.at===0)
-    w('err', 'MCCBが選定できません。電動機保護上限（Ir×3）と設計電流の関係を確認してください。');
+    w('err', 'MCCBが選定できません。設計電流・電動機保護上限（Ir×3）・電線許容電流の関係を確認してください。');
 
   // 短絡耐量不足
   if (Ik > 0 && adoptedCv) {
@@ -8172,7 +8240,7 @@ function elCalc() {
   const cableByI  = elSelectCable(Id, ambTemp, installM, circuits);
   const cableByVd = EL_CV.find(r => r.size >= vdMin);
   // 電流・電圧降下の両条件を満たす最小サイズ
-  const adoptedCv = (() => {
+  let adoptedCv = (() => {
     if (!cableByI && !cableByVd) return null;
     if (!cableByVd) return cableByI;
     if (!cableByI)  return { ...cableByVd,
@@ -8180,7 +8248,15 @@ function elCalc() {
     const pick = cableByI.size >= cableByVd.size ? cableByI : cableByVd;
     return { ...pick, ia_corr: elCorrectedAmpacity(pick.ia, ambTemp, installM, circuits) };
   })();
-  const mccbResult = elSelectMCCB(Id, Ir, loadType, Istart);
+  let mccbResult = elSelectMCCB(Id, Ir, loadType, Istart, adoptedCv?.ia_corr);
+  // 電線を保護できるATが無い場合は、ATが収まるまで電線サイズを上げる
+  if (adoptedCv && mccbResult.at===0) {
+    for (const r of EL_CV.filter(r=>r.size>adoptedCv.size)) {
+      const ia = elCorrectedAmpacity(r.ia, ambTemp, installM, circuits);
+      const m = elSelectMCCB(Id, Ir, loadType, Istart, ia);
+      if (m.at>0) { adoptedCv = { ...r, ia_corr: ia }; mccbResult = m; break; }
+    }
+  }
   const trOpen     = !$('el-tr-sec')?.classList.contains('hidden');
   const Ik         = (trOpen && kva>0) ? elCalcIk(kva, pctZ, V, is3p) : 0;
   const elbData    = elAssessELB(kw, loadType, startMethod);
