@@ -2727,14 +2727,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div><label>導体温度 °C（VD用）</label><input id="el-cond-t" type="number" inputmode="decimal" value="75" step="5"></div>
   </div>
   <div class="row">
-    <div><label>MCCB 余裕率（設計電流×）</label><select id="el-mccb-margin">
-      <option value="1">×1.0（余裕なし・法規最小）</option>
-      <option value="1.1">×1.1</option>
-      <option value="1.25" selected>×1.25（常時負荷80%以下・推奨）</option>
-    </select></div>
-    <div><label>始動余裕（始動電流÷）</label><select id="el-start-ratio">
-      <option value="4.5" selected>÷4.5（内線規程の表相当）</option>
-      <option value="3.5">÷3.5（始動が長い・慣性大）</option>
+    <div><label>電動機の始動時間</label><select id="el-start-sec">
+      <option value="6" selected>6秒以下（一般的なポンプ・小型ファン）</option>
+      <option value="10">10秒以下（大型ファンなど慣性大）</option>
     </select></div>
   </div>
 </div>
@@ -2824,14 +2819,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     </div>
   </div>
   <div class="row">
-    <div><label>MCCB 余裕率（設計電流×）</label><select id="el-p-mccb-margin">
-      <option value="1">×1.0（余裕なし・法規最小）</option>
-      <option value="1.1">×1.1</option>
-      <option value="1.25" selected>×1.25（常時負荷80%以下・推奨）</option>
-    </select></div>
-    <div><label>始動余裕（始動電流÷）</label><select id="el-p-start-ratio">
-      <option value="4.5" selected>÷4.5（内線規程の表相当）</option>
-      <option value="3.5">÷3.5（始動が長い・慣性大）</option>
+    <div><label>電動機の始動時間</label><select id="el-p-start-sec">
+      <option value="6" selected>6秒以下（一般的なポンプ・小型ファン）</option>
+      <option value="10">10秒以下（大型ファンなど慣性大）</option>
     </select></div>
   </div>
   <div class="note">内線規程の規約電流テーブルで電流を算出（400Vは200V値の1/2）。幹線電流は電技解釈148条により「電動機の合計×1.25（合計50A超は×1.1）」。</div>
@@ -7850,31 +7840,30 @@ function elPanelCalc(){
   const rho=1/56; // Ω·mm²/m（内線規程 常用温度基準）
   // ケーブル行: designI ≤ ia を満たす最小
   let cableRow=EL_SEL_TABLE.find(r=>designI<=r.ia)||null;
-  // 始動時電流: 始動電流が最大の電動機（直入れ×6.5 / INV等×1.2）＋残りの電動機の運転電流
-  let startM=null, startI=0;
-  elPanelMotors.forEach(m=>{
-    const ir=elPanelCalcIr(m.kw), ist=ir*(m.direct?EL_START_MULT.direct:EL_START_MULT.inverter);
-    if(ist>startI){startI=ist;startM=m;}
+  // 幹線の必要AT: 設計電流 と「最大の直入れ電動機の分岐回路の定格」の大きい方（余裕率は掛けない）
+  const sec=elStartSec('el-p'), volt=+($('el-panel-volt')?.value)||200;
+  let brM=null, brNeed=null;
+  elPanelMotors.filter(m=>m.direct&&m.kw>0).forEach(m=>{
+    const b=elMotorBranchNeed(m.kw, elPanelCalcIr(m.kw), volt, sec);
+    if(!brNeed||b.at>brNeed.at){brNeed=b;brM=m;}
   });
-  const startSum = startM ? startI + (totalIr-elPanelCalcIr(startM.kw)) : 0;
+  const need=Math.max(designI, brNeed?brNeed.at:0);
+  const basis=`設計電流 ${designI.toFixed(1)}A`+(brNeed?`／最大の直入れ電動機 ${brM.name} ${brM.kw}kW の分岐定格 ${brNeed.at}A（${brNeed.src}）`:'')+' の大きい方';
   let bestAt=0, bestAf=0, upper=mccbMax, pk=null;
   if(cableRow){
-    const opts=elMccbOpts('el-p');
     upper=Math.min(mccbMax, cableRow.ia*2.5); // ケーブル許容電流×2.5も上限
-    pk=elPickMccb(designI, upper, startSum, true, opts);
-    // 余裕・始動条件を満たせない場合は、満たせるまで幹線サイズを上げる
+    pk=elPickMccb(designI, upper, need, basis);
+    // 必要な定格が上限内に無い場合は、収まるまで幹線サイズを上げる
     if(pk.short){
       for(const r of EL_SEL_TABLE.filter(r=>r.ia>cableRow.ia)){
-        const up2=Math.min(mccbMax, r.ia*2.5), p2=elPickMccb(designI, up2, startSum, true, opts);
+        const up2=Math.min(mccbMax, r.ia*2.5), p2=elPickMccb(designI, up2, need, basis);
         if(p2.at && !p2.short){ cableRow=r; upper=up2; pk=p2; break; }
       }
     }
     bestAt=pk.at; bestAf=pk.af;
   }
   const basisEl=$('el-p-mccb-basis');
-  if(basisEl) basisEl.textContent = pk&&pk.at
-    ? elMccbBasisText(pk, designI, upper, startM?`${startM.name} ${startM.direct?'直入れ':'INV等'}始動＋他の運転電流 = ${startSum.toFixed(0)}A`:'')
-    : '—';
+  if(basisEl) basisEl.textContent = elMccbBasisText(pk, upper);
   tbody.innerHTML=EL_SEL_TABLE.map(r=>{
     const isCable=cableRow&&r.mm===cableRow.mm;
     const isMccb=isCable&&r.at===bestAt;
@@ -8006,8 +7995,8 @@ const EL_SC_TIME   = 0.1;      // 短絡時 MCCB遮断時間概算 [s]
 
 /* ---- 始動倍率テーブル（内線規程 3705節・電気設備学会資料参考） ---- */
 const EL_START_MULT = {
-  direct:   6.5,  // 直入れ (DOL)
-  yd:       2.5,  // スターデルタ
+  direct:   9.0,  // 直入れ (DOL)。IE3／トップランナーモーターは定格の約9倍（旧: 6.5）
+  yd:       3.0,  // スターデルタ（直入れの約1/3）
   soft:     3.0,  // ソフトスタータ
   inverter: 1.2,  // インバーター始動
 };
@@ -8142,53 +8131,72 @@ function elCableScMinSize(Ik) {
  *  戻り値: { at, af, mccbMax, instantOk }
  */
 function elMccbAf(at){ return at<=50?50 : at<=100?100 : at<=225?225 : at<=400?400 : 600; }
-// 余裕率（設計電流×k）: 既定1.25 = 常時の負荷電流を定格の80%以下に抑える慣例
-// 始動余裕（始動電流÷r）: 既定4.5 = 始動の数秒間に熱動素子（過負荷引外し）で落ちない目安。
-//   内線規程の電動機分岐回路の配線用遮断器の表（例: 3.7kW→30A, 7.5kW→50A, 15kW→100A）と
-//   おおむね一致するよう設定した経験値。始動時間が長い・慣性の大きい機器は 3.5 を選ぶ
-const EL_START_THERMAL_RATIO = 4.5;
-function elMccbOpts(pfx){
-  return { margin: +($(pfx+'-mccb-margin')?.value)||1.25,
-           ratio:  +($(pfx+'-start-ratio')?.value)||EL_START_THERMAL_RATIO };
+// ---- MCCB 選定の考え方（現場の選び方に合わせる） ----
+// ・一般負荷: 連続負荷は電流を定格の80%以下にする（内線規程 3605-3）→ 必要AT = 設計電流 × 1.25
+// ・電動機の分岐回路: 余裕率は掛けず、始動電流で落ちない定格をメーカー選定表から選ぶ
+//   （高効率 IE3／トップランナーモーターは始動電流が定格の約9倍）
+// ・動力盤の幹線: 余裕率は掛けず、設計電流（電技解釈148条）と最大の直入れ電動機の分岐定格以上
+const EL_GENERAL_MARGIN = 1.25;
+const EL_IE3_START_MULT = 9;  // IE3 直入れ始動電流 ≒ 定格×9（富士電機 選定表の始動電流より）
+// 富士電機「電動機分岐回路の選定（直入始動、IE3）」200V 配線用遮断器 AT（表の左端の値）
+//  6秒: https://www.fujielectric.co.jp/fcs/pdf/news/forIE3_general_breaker-6_20151221.pdf
+// 10秒: https://www.fujielectric.co.jp/fcs/pdf/news/forIE3_general_breaker-10_20151221.pdf
+const EL_MOTOR_BRANCH_AT = {
+  kw:  [0.75, 1.5, 2.2, 3.7, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37],
+  6:   [10,   20,  30,  40,  60,  75,  100,100, 125, 125, 175, 225],
+  10:  [10,   20,  30,  50,  75,  100, 100,125, 125, 150, 200, 300],
+};
+// 表の範囲外（400V・37kW超など）用の近似: AT ≥ 始動電流 ÷ k（表の値から逆算した平均的な比）
+const EL_START_DIV = { 6:{small:3.4, large:5.2}, 10:{small:2.6, large:4.1} }; // small: 100A以下, large: 125A以上
+function elStartSec(pfx){ return +($(pfx+'-start-sec')?.value)===10 ? 10 : 6; }
+/** 直入れ電動機1台の分岐回路の必要AT（表優先、範囲外は近似） */
+function elMotorBranchNeed(kw, Ir, V, sec){
+  const t=EL_MOTOR_BRANCH_AT;
+  if (V===200 && kw>0 && kw<=t.kw[t.kw.length-1]) {
+    const i=t.kw.findIndex(k=>kw<=k+1e-9);
+    return { at:t[sec][i], src:`富士電機 IE3直入れ選定表（始動${sec}秒）${t.kw[i]}kW欄` };
+  }
+  const Ist=Ir*EL_IE3_START_MULT, d=EL_START_DIV[sec];
+  const at=MCCB_RATINGS.find(a=>a>=Ist/(a<=100?d.small:d.large))||MCCB_RATINGS.at(-1);
+  return { at, src:`始動電流 ${Ist.toFixed(0)}A（定格×${EL_IE3_START_MULT}）から近似（始動${sec}秒）` };
 }
-/** 現場で選ぶ標準ATを決める共通ロジック
- *  必要AT = max(設計電流×余裕率, 始動時電流÷始動余裕) 以上の最小の標準定格。
- *  上限(法規・電線保護)を超えるものは選ばない。上限内に必要ATが無い場合は、
- *  設計電流を満たす上限内最大ATを選び short=true を返す */
-function elPickMccb(Id, upper, IstartSum, isMotor, opts){
-  const o = opts||{margin:1.25, ratio:EL_START_THERMAL_RATIO};
-  const needMargin = Id*o.margin;
-  const needStart = (isMotor && IstartSum>0) ? IstartSum/o.ratio : 0;
-  const need = Math.max(needMargin, needStart);
+/** 共通: need 以上の最小の標準定格。上限 upper を超えるなら short=true（上限内最大を返す） */
+function elPickMccb(Id, upper, need, basis){
   const inRange = MCCB_RATINGS.filter(at => at>=Id && at<=upper);
   let at = inRange.find(a => a>=need) || 0, short=false;
   if (!at && inRange.length) { at = inRange[inRange.length-1]; short = true; }
-  const by = needStart>needMargin ? 'start' : 'design';
-  return { at, af: at?elMccbAf(at):0, need, needMargin, needStart, by, short, startShort: short&&by==='start', opts:o };
+  return { at, af: at?elMccbAf(at):0, need, basis, short };
 }
 function elSelectMCCB(Id, Ir, loadType, Istart, cableIa, opts) {
+  const o = opts||{};
   const isMotor = loadType==='motor'||loadType==='inverter';
-  // 電線保護: 一般負荷は AT ≤ 電線許容電流、電動機回路は AT ≤ 電線許容電流×2.5（内線規程）
-  const cableLimit = cableIa>0 ? (isMotor ? cableIa*2.5 : cableIa) : Infinity;
-  const mccbMax = Math.min(isMotor ? (Ir>50 ? Ir*2.75 : Ir*3) : Infinity, cableLimit);
-  const pk = elPickMccb(Id, mccbMax, Istart, isMotor, opts);
+  // 電線保護: 一般負荷は AT ≤ 電線許容電流、電動機の分岐回路は AT ≤ 電線許容電流×2.5（電技解釈149条）
+  const mccbMax = cableIa>0 ? (isMotor ? cableIa*2.5 : cableIa) : Infinity;
+  let need, basis;
+  if (!isMotor) {
+    need = Id*EL_GENERAL_MARGIN;
+    basis = `設計電流 ${Id.toFixed(1)}A × ${EL_GENERAL_MARGIN}（連続負荷は定格の80%以下: 内線規程3605-3）= ${need.toFixed(1)}A`;
+  } else if (loadType==='motor' && o.startMethod==='direct') {
+    const b = elMotorBranchNeed(o.kw, Ir, o.V, o.sec||6);
+    need = Math.max(Id, b.at);
+    basis = `${b.src} → ${b.at}A` + (Id>b.at?`／設計電流 ${Id.toFixed(1)}A が上回るため設計電流で選定`:'');
+  } else {
+    const d=EL_START_DIV[o.sec||6];
+    const nsAt = Istart>0 ? (MCCB_RATINGS.find(a=>a>=Istart/(a<=100?d.small:d.large))||0) : 0;
+    need = Math.max(Id, nsAt);
+    basis = `設計電流 ${Id.toFixed(1)}A` + (Istart>0?`／始動電流 ${Istart.toFixed(0)}A（${o.startLabel||''}）から ${nsAt}A`:'') + ' の大きい方';
+  }
+  const pk = elPickMccb(Id, mccbMax, need, basis);
   // 瞬時整定チェック: Istart > AT × C曲線倍率 → 誤トリップリスク
   const instantOk = (Istart<=0||pk.at<=0) || Istart < pk.at*EL_INST_MULT;
   return { at:pk.at, af:pk.af, mccbMax, instantOk, pick:pk };
 }
 /** 選定根拠の説明文 */
-function elMccbBasisText(pk, Id, upper, startLabel){
-  if (!pk.at) return '—';
-  const up = isFinite(upper) ? `上限 ${upper.toFixed(0)}A` : '';
-  const o = pk.opts;
-  const mTxt = `設計電流 ${Id.toFixed(1)}A×余裕率${o.margin} = ${pk.needMargin.toFixed(1)}A`;
-  const sTxt = pk.needStart>0 ? `始動電流${startLabel?'（'+startLabel+'）':''}÷${o.ratio} = ${pk.needStart.toFixed(0)}A` : '';
-  const main = pk.by==='start' ? sTxt : mTxt, sub = pk.by==='start' ? mTxt : sTxt;
-  let t = `${main} 以上の最小標準定格` + (sub ? `／参考: ${sub}` : '');
-  if (up) t += `（${up}以内）`;
-  if (pk.short) t += pk.by==='start'
-    ? '。⚠ 上限内では始動余裕が不足。始動方式の変更（Y-Δ・INV）や電線サイズアップを検討'
-    : '。⚠ 上限内では余裕率を満たせないため、上限内の最大定格を表示';
+function elMccbBasisText(pk, upper){
+  if (!pk || !pk.at) return '—';
+  let t = `${pk.basis} 以上の最小標準定格`;
+  if (isFinite(upper)) t += `（上限 ${upper.toFixed(0)}A 以内）`;
+  if (pk.short) t += '。⚠ 上限内では必要な定格に届かないため、上限内の最大定格を表示。電線サイズアップや始動方式（Y-Δ・INV）の変更を検討';
   return t;
 }
 
@@ -8225,7 +8233,7 @@ function elGenerateWarnings({ Id, Istart, vdPct, adoptedCv, mccbResult, Ik }) {
 
   // MCCB選定不能
   if (mccbResult.at===0)
-    w('err', 'MCCBが選定できません。設計電流・電動機保護上限（Ir×3）・電線許容電流の関係を確認してください。');
+    w('err', 'MCCBが選定できません。設計電流と電線許容電流（電動機は×2.5まで）の関係を確認してください。');
 
   // 短絡耐量不足
   if (Ik > 0 && adoptedCv) {
@@ -8297,7 +8305,8 @@ function elCalc() {
     const pick = cableByI.size >= cableByVd.size ? cableByI : cableByVd;
     return { ...pick, ia_corr: elCorrectedAmpacity(pick.ia, ambTemp, installM, circuits) };
   })();
-  const mOpts = elMccbOpts('el');
+  const mOpts = { kw, V, startMethod, sec: elStartSec('el'),
+    startLabel: ({direct:'直入れ',yd:'Y-Δ',soft:'ソフトスタータ',inverter:'INV'})[startMethod]||'' };
   let mccbResult = elSelectMCCB(Id, Ir, loadType, Istart, adoptedCv?.ia_corr, mOpts);
   // 電線を保護できる(余裕を含む)ATが無い場合は、ATが収まるまで電線サイズを上げる
   if (adoptedCv && (mccbResult.at===0 || mccbResult.pick.short)) {
@@ -8348,9 +8357,9 @@ function elCalc() {
 
   // MCCB
   if (mccbResult.at>0) {
-    const upperNote = isMotor ? `（上限 ${mccbResult.mccbMax.toFixed(0)} AT）` : '';
+    const upperNote = '';
     set('el-r-mccb', `${mccbResult.at} AT / ${mccbResult.af} AF ${upperNote}`);
-    set('el-r-mccb-basis', elMccbBasisText(mccbResult.pick, Id, mccbResult.mccbMax, isMotor&&Istart>0?`${Istart.toFixed(0)}A`:''));
+    set('el-r-mccb-basis', elMccbBasisText(mccbResult.pick, mccbResult.mccbMax));
   } else {
     set('el-r-mccb', '—'); set('el-r-mccb-basis', '—');
   }
@@ -8406,9 +8415,9 @@ function elCalc() {
 // --- イベントリスナー ---
 ['el-kw','el-pf','el-eff','el-len','el-vd','el-amb','el-circuits','el-cond-t','el-kva','el-pctz']
   .forEach(id=>{ if($(id)) $(id).addEventListener('input', elCalc); });
-['el-phase','el-type','el-install','el-start','el-mccb-margin','el-start-ratio']
+['el-phase','el-type','el-install','el-start','el-start-sec']
   .forEach(id=>{ if($(id)) $(id).addEventListener('change', elCalc); });
-['el-p-mccb-margin','el-p-start-ratio'].forEach(id=>{ if($(id)) $(id).addEventListener('change', ()=>elPanelCalc()); });
+['el-p-start-sec'].forEach(id=>{ if($(id)) $(id).addEventListener('change', ()=>elPanelCalc()); });
 // 動力盤モード電圧変更
 if($('el-panel-volt')) $('el-panel-volt').addEventListener('change', ()=>elPanelRender());
 if($('el-panel-pf')) $('el-panel-pf').addEventListener('input', ()=>elPanelRender());
