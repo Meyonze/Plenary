@@ -46,6 +46,16 @@ body{transition:background-color .2s,color .2s}
 .home-card .hc-icon{color:var(--tx);display:flex}
 .home-card .hc-icon svg{width:24px;height:24px}
 .logo-badge{flex:0 0 auto;width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--ac),#bf5236);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.home-card{position:relative}
+.fav-btn{position:absolute;top:2px;right:2px;width:30px;height:30px;border:none;background:transparent;color:var(--sub);font-size:14px;line-height:1;cursor:pointer;border-radius:50%;padding:0;opacity:.3}
+.fav-btn.on{color:var(--tx);opacity:.7;font-size:16px}
+.fav-btn:active{opacity:.6}
+#fav-section{grid-column:1/-1;display:none}
+#fav-section.has-favs{display:block}
+#fav-section .fav-head{display:flex;align-items:center;gap:8px;padding:8px 2px 10px}
+#fav-section .fav-head span{font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.02em}
+#fav-section .fav-head div{flex:1;height:1px;background:var(--line)}
+#fav-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .home-card .hc-title{font-size:13px;font-weight:700;color:var(--tx)}
 .home-card .hc-desc{font-size:11px;color:var(--sub);line-height:1.4}
 #home-btn{position:fixed;top:8px;left:max(8px, calc(50% - 280px + 8px));z-index:200;height:36px;padding:0 14px 0 10px;border-radius:18px;border:1px solid var(--line);background:var(--panel);color:var(--tx);display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.25);user-select:none;white-space:nowrap}
@@ -390,6 +400,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   </div>
 </div>
 <div id="home-grid">
+  <div id="fav-section"><div class="fav-head"><span>お気に入り</span><div></div></div><div id="fav-list"></div></div>
   <div style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 2px 10px;grid-column:1/-1">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.55 1.55M18.25 18.25l1.55 1.55M2 12h2.2M19.8 12H22M4.2 19.8l1.55-1.55M18.25 5.75l1.55-1.55"/></svg>
     <span style="font-size:13px;font-weight:700;color:var(--tx);letter-spacing:.02em">設備計算</span>
@@ -3699,6 +3710,47 @@ function goToTool(name){
   if(name==="psychro" && typeof psCalc==="function") psCalc();
 }
 document.querySelectorAll(".home-card").forEach(c=>c.onclick=()=>goToTool(c.dataset.tool));
+
+/* ===== お気に入りカード（localStorage: plenary_favs） ===== */
+const FAV_KEY="plenary_favs";
+function favLoad(){try{const a=JSON.parse(localStorage.getItem(FAV_KEY)||"[]");return Array.isArray(a)?a:[]}catch(e){return[]}}
+function favSave(a){try{localStorage.setItem(FAV_KEY,JSON.stringify(a))}catch(e){}}
+function favToggle(id){
+  const a=favLoad(),i=a.indexOf(id);
+  if(i>=0)a.splice(i,1);else a.push(id);
+  favSave(a);favRender();
+}
+function favMakeBtn(id,on){
+  const b=document.createElement("button");
+  b.type="button";b.className="fav-btn"+(on?" on":"");
+  b.textContent=on?"★":"☆";
+  b.setAttribute("aria-label",on?"お気に入りから外す":"お気に入りに追加");
+  b.onclick=e=>{e.stopPropagation();favToggle(id)};
+  return b;
+}
+function favRender(){
+  const favs=favLoad();
+  const originals=[...document.querySelectorAll("#home-grid > .home-card[data-tool]")];
+  const ids=new Set(originals.map(c=>c.dataset.tool));
+  const valid=favs.filter(id=>ids.has(id));
+  originals.forEach(c=>{
+    const id=c.dataset.tool;
+    const old=c.querySelector(".fav-btn");if(old)old.remove();
+    c.appendChild(favMakeBtn(id,valid.includes(id)));
+  });
+  const list=$("fav-list");list.innerHTML="";
+  valid.forEach(id=>{
+    const src=originals.find(c=>c.dataset.tool===id);
+    const cl=src.cloneNode(true);
+    cl.removeAttribute("data-tool");cl.dataset.favTool=id;
+    cl.querySelector(".fav-btn")?.remove();
+    cl.appendChild(favMakeBtn(id,true));
+    cl.onclick=()=>goToTool(id);
+    list.appendChild(cl);
+  });
+  $("fav-section").classList.toggle("has-favs",valid.length>0);
+}
+favRender();
 $("home-btn").onclick=()=>{
   document.querySelectorAll(".tool").forEach(x=>x.classList.remove("on"));
   $("home").classList.add("on");
