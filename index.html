@@ -2881,6 +2881,10 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div id="el-r-iku-row" class="kv" style="display:none"><span>MCCB 必要Icu</span><b id="el-r-iku">—</b></div>
   <div style="padding:6px 2px;border-top:1px solid var(--line)">
     <div style="color:var(--sub);font-size:14px;margin-bottom:3px">漏電遮断器（ELB）推奨</div>
+    <select id="el-elb-place" style="margin-bottom:4px">
+      <option value="indoor" selected>屋内・据置（接地を確実にとった機器）</option>
+      <option value="wet">水気のある場所・屋外（人が触れるおそれ）</option>
+    </select>
     <div id="el-r-elb" style="color:var(--ac);font-weight:600;font-size:14px;line-height:1.6">—</div>
   </div>
   <div id="el-r-warns" style="display:none;margin-top:6px"></div>
@@ -8201,6 +8205,7 @@ function elPreset(kw){
   $('el-phase').value='3p200';
   $('el-type').value='inverter'; // VRV室外機はインバーター機器。消費電力から電流を出す
   if($('el-start')) $('el-start').value='inverter';
+  if($('el-elb-place')) $('el-elb-place').value='wet'; // 室外機は屋外
   $('el-kw').value=kw;
   $('el-pf').value='0.90';
   $('el-eff').value='1.0';
@@ -8264,16 +8269,15 @@ const EL_GROUP_F = [1.00, 0.80, 0.70, 0.65, 0.60, 0.55]; // 1条〜6条以上
 // 分岐回路のELBは人体保護のため高速形（0.1秒以内）。時延形は幹線側との協調用で、分岐の推奨にはしない
 // インバーター機器はメーカーが「インバーター回路用（対応品）30mA または 100mA・0.1秒以内」を指定する例が多い
 const EL_ELB = {
-  general:     { sens:30,  type:'高速形（0.1秒以内）', risk:null,
-                 note:'一般回路（電技解釈 36条）。水気のある場所・屋外は30mA' },
-  motor:       { sens:30,  type:'高速形（0.1秒以内）', risk:null,
-                 note:'電動機回路。漏れ電流が大きく不要動作する場合は100mA高速形を検討' },
-  motor_hv:    { sens:30,  type:'高速形（0.1秒以内）', risk:null,
-                 note:'電動機回路。漏れ電流が大きく不要動作する場合は100mA高速形を検討' },
-  inverter_sm: { sens:'30／100', type:'高速形（0.1秒以内）・インバーター対応品', risk:null,
-                 note:'インバーター機器。メーカー指定の定格感度電流を優先' },
-  inverter_lg: { sens:'30／100', type:'高速形（0.1秒以内）・インバーター対応品', risk:null,
-                 note:'インバーター機器。メーカー指定の定格感度電流を優先' },
+  // 設置場所で感度を分ける（三菱電機「定格感度電流の選定」の選定表の考え方）
+  //  屋内・据置で接地を確実にとった機器: 100mA 高速形も可（接地抵抗の目安 500Ω以下）
+  //  水気のある場所・屋外で人が触れるおそれ: 30mA以下・0.1秒以内の高感度高速形（内線規程1375-2）
+  general_in:  { sens:30,  type:'高速形（0.1秒以内）', note:'一般回路（電技解釈 36条）。コンセント・人が触れる回路は30mA' },
+  general_wet: { sens:30,  type:'高速形（0.1秒以内）', note:'水気のある場所・屋外。感電防止のため30mA以下' },
+  motor_in:    { sens:100, type:'高速形（0.1秒以内）', note:'屋内・据置で接地を確実にとった電動機。接地抵抗の目安500Ω以下（水気のある場所は250Ω）' },
+  motor_wet:   { sens:30,  type:'高速形（0.1秒以内）', note:'水気のある場所・屋外で人が触れるおそれ。感電防止のため30mA以下' },
+  inv_in:      { sens:100, type:'高速形（0.1秒以内）・インバーター対応品', note:'高調波・サージで不要動作しない対応品。メーカー指定の感度を優先' },
+  inv_wet:     { sens:30,  type:'高速形（0.1秒以内）・インバーター対応品', note:'水気のある場所・屋外。メーカー指定の感度を優先（100mA指定の機種もある）' },
 };
 // 内線規程の許容電圧降下[%]。こう長60m以下は幹線・分岐それぞれ、60m超は幹線＋分岐の合計
 //（電気事業者から低圧で受電 / 構内の変圧器から供給）
@@ -8467,10 +8471,11 @@ function elMccbBasisText(pk, upper){
 }
 
 /** ELBリスク評価 */
-function elAssessELB(kw, loadType, startMethod) {
-  if (loadType==='inverter') return kw>=22 ? EL_ELB.inverter_lg : EL_ELB.inverter_sm;
-  if (loadType==='motor')    return kw>=7.5 ? EL_ELB.motor_hv   : EL_ELB.motor;
-  return EL_ELB.general;
+function elAssessELB(kw, loadType, place) {
+  const sfx = place==='wet' ? '_wet' : '_in';
+  if (loadType==='inverter') return EL_ELB['inv'+sfx];
+  if (loadType==='motor')    return EL_ELB['motor'+sfx];
+  return EL_ELB['general'+sfx];
 }
 
 /** 警告生成
@@ -8591,7 +8596,7 @@ function elCalc() {
   }
   const trOpen     = !$('el-tr-sec')?.classList.contains('hidden');
   const Ik         = (trOpen && kva>0) ? elCalcIk(kva, pctZ, V, is3p) : 0;
-  const elbData    = elAssessELB(kw, loadType, startMethod);
+  const elbData    = elAssessELB(kw, loadType, $('el-elb-place')?.value||'indoor');
   const warns      = elGenerateWarnings({ Id, Istart, vdPct, adoptedCv, mccbResult, Ik });
 
   // --- 表示ヘルパー ---
@@ -8687,6 +8692,7 @@ function elCalc() {
 
 // --- イベントリスナー ---
 $('el-vd-basis')?.addEventListener('change', elCalc);
+$('el-elb-place')?.addEventListener('change', elCalc);
 ['el-kw','el-pf','el-eff','el-len','el-vd','el-amb','el-circuits','el-cond-t','el-kva','el-pctz']
   .forEach(id=>{ if($(id)) $(id).addEventListener('input', elCalc); });
 ['el-phase','el-type','el-install','el-start','el-start-sec']
