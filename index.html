@@ -1439,6 +1439,12 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <option value="3.0">ステンレス鋼管 (≦3.0 m/s)</option>
     <option value="1.5">塩ビ管 VP (≦1.5 m/s)</option>
   </select>
+  <label>摩擦損失の上限</label>
+  <select id="wt-rmax">
+    <option value="300">300 Pa/m（静かさ・省エネ重視）</option>
+    <option value="400" selected>400 Pa/m（一般的な目安）</option>
+    <option value="500">500 Pa/m（上限寄り）</option>
+  </select>
 </div>
 
 <div class="card">
@@ -3369,6 +3375,23 @@ const SAVE_KEY='plenary_saves';
 function getSaves(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');}catch(e){return[];}}
 function putSaves(arr){localStorage.setItem(SAVE_KEY,JSON.stringify(arr));}
 
+// 行を追加する表など、入力欄に id が無い状態を保存・復元する（ツールごと）
+const _clone=o=>JSON.parse(JSON.stringify(o));
+const _nextId=(rows,key='id')=>rows.reduce((m,r)=>Math.max(m,(+r[key])||0),-1)+1;
+const TOOL_STATE={
+  'tool-insul':{get:()=>({pipe:_clone(insPipeRows),duct:_clone(insDuctRows)}),
+    set:d=>{insPipeRows=d.pipe||[];insDuctRows=d.duct||[];insNextId=Math.max(_nextId(insPipeRows),_nextId(insDuctRows));insRender();}},
+  'tool-steel':{get:()=>_clone(stGroups),
+    set:d=>{stGroups=d||[];stNextId=Math.max(_nextId(stGroups),...stGroups.map(g=>_nextId(g.lines||[])),1);stRender();}},
+  'tool-noisesum':{get:()=>({levels:_clone(nsLevels),oct:_clone(nsOctItems)}),
+    set:d=>{nsLevels=d.levels||[];nsOctItems=d.oct||[];nsRender();nsCalc();nsOctRender();nsOctCalc();}},
+  'tool-elec':{get:()=>_clone(elPanelMotors),
+    set:d=>{elPanelMotors=d||[];elPanelNextId=_nextId(elPanelMotors);elPanelRender();}},
+  'tool-ductloss':{get:()=>_clone(dlList),
+    set:d=>{dlList=d||[];dlListNextId=_nextId(dlList);dlRenderList();}},
+  'tool-psychro':{get:()=>_clone(psPoints),
+    set:d=>{psPoints=d||[];psRenderList();psRenderArrows();psCalc();}},
+};
 function captureInputs(){
   const tool=document.querySelector('.tool.on');
   if(!tool)return{};
@@ -3382,6 +3405,8 @@ function captureInputs(){
     const a=[...t.attributes].find(x=>x.name.startsWith('data-'));
     return a?`[${a.name}="${a.value}"]`:null;
   }).filter(Boolean);
+  const st=TOOL_STATE[tool.id];
+  if(st) data._state=st.get();
   return data;
 }
 function restoreInputs(data){
@@ -3392,7 +3417,7 @@ function restoreInputs(data){
     if(t&&!t.classList.contains('on')) t.click();
   });
   Object.entries(data).forEach(([id,val])=>{
-    if(id==='toolId'||id==='_tabs')return;
+    if(id==='toolId'||id==='_tabs'||id==='_state')return;
     const el=document.getElementById(id);
     if(!el)return;
     if(val&&typeof val==='object'){ el.checked=!!val.checked; }
@@ -3400,6 +3425,9 @@ function restoreInputs(data){
     el.dispatchEvent(new Event('input',{bubbles:true}));
     el.dispatchEvent(new Event('change',{bubbles:true}));
   });
+  // 行を追加する表などの状態（入力欄の復元のあとに戻す）
+  const st=TOOL_STATE[data.toolId];
+  if(st && data._state!==undefined){ try{ st.set(_clone(data._state)); }catch(e){ console.warn('状態の復元に失敗',e); } }
 }
 
 function openSaveModal(){
@@ -4933,6 +4961,12 @@ function ldGetArea(mode){
   return +$(mode==='unit'?'ld-area':'ld-s-area').value||0;
 }
 /* ---- 負荷計算 定数 ---- */
+// 業務用パッケージエアコンの代表的な能力段階（冷房能力 kW と馬力の対応。国内主要メーカーの標準ラインアップ）
+const LD_PAC_LINEUP = [
+  {hp:'1.5',kw:4.0},{hp:'1.8',kw:4.5},{hp:'2',kw:5.0},{hp:'2.3',kw:5.6},{hp:'2.5',kw:6.3},
+  {hp:'3',kw:8.0},{hp:'4',kw:11.2},{hp:'5',kw:14.0},{hp:'6',kw:16.0},{hp:'8',kw:22.4},{hp:'10',kw:28.0},
+  {hp:'12',kw:33.5},{hp:'14',kw:40.0},{hp:'16',kw:45.0},{hp:'20',kw:56.0},
+];
 const LD_ORIENT_FACTOR = { north:0.8, east:1.1, south:1.0, west:1.25 }; // 方位係数
 const LD_BASE_SOLAR    = 200;  // 基準日射取得 [W/m²]
 const LD_INSUL_FACTOR  = { poor:1.2, normal:1.0, high:0.8 }; // 断熱性能補正
@@ -5000,7 +5034,11 @@ function ldCalc(){
 
   $('ld-r-kw').textContent=kW.toFixed(2);
   $('ld-r-usrt').textContent=(kW/3.517).toFixed(2)+' USRT';
-  $('ld-r-hp').textContent=Math.ceil(kW/2.8*10)/10+' HP';
+  // 業務用パッケージエアコンの標準能力から、必要能力（マージン込み）以上の最小機種を選ぶ
+  const pac=LD_PAC_LINEUP.find(x=>x.kw>=kWfinal-1e-9);
+  $('ld-r-hp').textContent=kWfinal<=0?'—'
+    : pac?`${pac.hp} HP 相当（冷房能力 ${pac.kw.toFixed(1)} kW 級）`
+    : `${LD_PAC_LINEUP.at(-1).hp} HP 超（${kWfinal.toFixed(1)} kW: 複数台・マルチで検討）`;
   $('ld-r-kcal').textContent=Math.round(W*0.86).toLocaleString()+' kcal/h';
   const A2=ldGetArea(ldMode)||1;
   $('ld-r-perm2').textContent=(W/A2).toFixed(0)+' W/m²';
@@ -5060,6 +5098,26 @@ const SGP=[
   {name:'250A',id:254.2},{name:'300A',id:304.7}
 ];
 
+// 管材別の内径[mm]（外径−2×肉厚）と Hazen-Williams C値
+//  銅管: JIS H3300 Mタイプ / ステンレス: JIS G3448 一般配管用 / 塩ビ: JIS K6741 VP
+const WT_PIPES={
+  '2.0':{C:130, sizes:SGP},
+  '1.4':{C:140, sizes:[
+    {name:'15A(1/2)',id:14.46},{name:'20A(3/4)',id:20.60},{name:'25A(1)',id:26.80},{name:'32A(1-1/4)',id:32.78},
+    {name:'40A(1-1/2)',id:38.80},{name:'50A(2)',id:51.04},{name:'65A(2-1/2)',id:63.38},{name:'80A(3)',id:75.72},
+    {name:'100A(4)',id:99.96},{name:'125A(5)',id:124.64},{name:'150A(6)',id:149.38}]},
+  '3.0':{C:130, sizes:[
+    {name:'13Su',id:14.28},{name:'20Su',id:20.22},{name:'25Su',id:26.58},{name:'30Su',id:31.6},
+    {name:'40Su',id:40.3},{name:'50Su',id:46.2},{name:'60Su',id:57.5},{name:'75Su',id:73.3},
+    {name:'80Su',id:85.1},{name:'100Su',id:110.3},{name:'125Su',id:135.8},{name:'150Su',id:159.2},
+    {name:'200Su',id:210.3},{name:'250Su',id:261.4},{name:'300Su',id:312.5}]},
+  '1.5':{C:150, sizes:[
+    {name:'VP13',id:13.6},{name:'VP16',id:16.6},{name:'VP20',id:20.6},{name:'VP25',id:25.8},
+    {name:'VP30',id:31.8},{name:'VP40',id:40.8},{name:'VP50',id:51.8},{name:'VP65',id:67.8},
+    {name:'VP75',id:78.0},{name:'VP100',id:100.8},{name:'VP125',id:126.0},{name:'VP150',id:147.2},
+    {name:'VP200',id:195.4},{name:'VP250',id:241.6},{name:'VP300',id:287.8}]},
+};
+
 // ヘーゼン・ウィリアムス摩擦損失 [Pa/m]
 function hwFriction(Q_m3s, d_m, C){
   // R[m/m] = 10.67 * Q^1.85 / (C^1.85 * d^4.87)  (水頭)
@@ -5078,19 +5136,21 @@ function wtCalc(){
   // 必要流量 [L/s] = q[kW]/(4.186*dt)
   const Qls=q/(4.186*dt);
   const Qm3s=Qls/1000;
-  // Hazen-Williams C値: 管種別（新管基準）
-  const Cmap={'2.0':130,'1.4':140,'3.0':130,'1.5':150};
-  const C=Cmap[String(vmax)]||130;
+  // 管材ごとの内径表と Hazen-Williams C値（新管基準）。キーは管材セレクトの値
+  const pipeKey=$('wt-pipe').value;
+  const PIPE=WT_PIPES[pipeKey]||WT_PIPES['2.0'];
+  const C=PIPE.C;
+  const Rmax=+($('wt-rmax')?.value)||400;
 
-  // 候補生成: 流速<=vmax かつ R<=300Pa/m目安を満たす最小から
+  // 候補生成: 流速<=vmax かつ 摩擦損失<=Rmax を満たす最小から
   const cands=[];
-  for(const p of SGP){
+  for(const p of PIPE.sizes){
     const d=p.id/1000, A=Math.PI*d*d/4;
     const v=Qm3s/A;
     const R=hwFriction(Qm3s,d,C);
-    cands.push({name:p.name,id:p.id,v,R,ok:v<=vmax});
+    cands.push({name:p.name,id:p.id,v,R,ok:v<=vmax&&R<=Rmax,vOk:v<=vmax,rOk:R<=Rmax});
   }
-  // 流速OKな最小径を推奨
+  // 流速・摩擦損失の両方を満たす最小径を推奨
   const okCands=cands.filter(x=>x.ok);
   const recommend=okCands.length>0?okCands[0]:cands[cands.length-1];
 
@@ -5104,14 +5164,15 @@ function wtCalc(){
     div.className='sel-row'+(c.name===recommend.name?' active':'');
     div.innerHTML=`<span class="sr-name">${c.name}</span>`+
       `<span class="${vCls}" style="font-size:11px;white-space:nowrap;flex-shrink:0">${c.v.toFixed(2)} m/s</span>`+
-      `<span class="sr-badge">${c.R.toFixed(0)}Pa</span>`;
-    div.onclick=()=>wtSelect(c,Qls,vmax);
+      `<span class="sr-badge${c.rOk?'':' n'}">${c.R.toFixed(0)}Pa</span>`;
+    div.onclick=()=>wtSelect(c,Qls,vmax,Rmax);
     list.appendChild(div);
   });
-  wtSelect(recommend,Qls,vmax);
+  wtSelect(recommend,Qls,vmax,Rmax);
 }
 
-function wtSelect(c,Qls,vmax){
+function wtSelect(c,Qls,vmax,Rmax){
+  Rmax=Rmax||400;
   document.querySelectorAll('#wt-sel-list .sel-row').forEach(el=>{
     el.classList.toggle('active',el.querySelector('.sr-name').textContent===c.name);
   });
@@ -5125,7 +5186,9 @@ function wtSelect(c,Qls,vmax){
   $('wt-vb').style.background=c.v>vmax?'var(--ng)':c.v>vmax*0.85?'var(--warn)':'var(--ac)';
   $('wt-vnote').innerHTML=c.v>vmax
     ?'<span class="n">流速超過。1サイズ上を検討。</span>'
-    :'<span class="g">流速 OK</span> (上限 '+vmax+' m/s)';
+    :c.R>Rmax
+    ?'<span class="n">摩擦損失超過（'+c.R.toFixed(0)+' Pa/m ＞ '+Rmax+' Pa/m）。1サイズ上を検討。</span>'
+    :'<span class="g">流速・摩擦損失 OK</span> (上限 '+vmax+' m/s・'+Rmax+' Pa/m)';
   // ポンプ揚程計算に現在の管径を渡す
   wtPump(c,Qls);
   // 保温材厚さの配管径選択を現在の選択サイズ(呼び径)に同期
@@ -5186,7 +5249,7 @@ document.querySelectorAll('[data-wm]').forEach(t=>t.onclick=()=>{
   const el=$(id);
   if(el){el.addEventListener('input',wtCalc);el.addEventListener('change',wtCalc);}
 });
-['wt-pipe','wt-local'].forEach(id=>$(id).addEventListener('change',wtCalc));
+['wt-pipe','wt-local','wt-rmax'].forEach(id=>$(id)?.addEventListener('change',wtCalc));
 
 /* ========== TOOL 08: 屋外騒音 ========== */
 let nzMode='a';
