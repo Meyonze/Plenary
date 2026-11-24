@@ -461,9 +461,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div>
       <label>用途(風速上限)</label>
       <select id="d-use">
-        <option value="10">低速・主ダクト (10 m/s)</option>
-        <option value="6">低速・分岐 (6 m/s)</option>
-        <option value="5">居室系・静粛 (5 m/s)</option>
+        <option value="8" selected>主ダクト・一般空調 (8 m/s)</option>
+        <option value="6">居室系 主ダクト (6 m/s)</option>
+        <option value="5">分岐ダクト (5 m/s)</option>
         <option value="20">高速ダクト (20 m/s)</option>
         <option value="custom">任意入力</option>
       </select>
@@ -540,10 +540,10 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="kv" style="margin-top:2px"><span>推奨フランジ工法</span><b id="d-flange" style="font-size:13px">-</b></div>
   <div class="row" style="margin-top:6px;align-items:center">
     <div>
-      <label>ボルトピッチ</label>
+      <label>フランジ工法(ボルト)</label>
       <select id="d-bolt-pitch">
-        <option value="150" selected>150mm以下(一般)</option>
-        <option value="200">200mm以下(低圧・緩め)</option>
+        <option value="corner" selected>共板・スライドオン(コーナーボルト4本)</option>
+        <option value="100">アングルフランジ(M8・間隔100mm以下)</option>
       </select>
     </div>
     <div class="kv" style="margin-top:18px"><span>ボルト本数(概算)</span><b id="d-bolt-n">-</b></div>
@@ -586,8 +586,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <b>許容風速法</b>: D = √(4Q/(π·v))<br><br>
   <b>粗さ係数 ε</b>: 亜鉛鉄板0.15mm / ステンレス0.045mm / 塩ビ1.5mm / グラスウール0.9mm / コンクリート3.0mm<br><br>
   <b>フランジボルト本数(概算)</b><br>
-  本数 = max(4, 周長 ÷ ピッチ) を切り上げ。四隅は各1本必須。<br>
-  共板フランジ工法は一般にピッチ150mm以下が目安(工法・メーカー仕様により異なる)。
+  アングルフランジ: 本数 = max(4, 周長 ÷ 100mm) を切り上げ(M8・最大間隔100mm、公共建築工事標準仕様書 表3.2.4)。<br>
+  共板・スライドオンフランジ(コーナーボルト工法): 四隅のコーナーボルト4本＋辺はフランジ押え金具(取付間隔は標準図・メーカー仕様による)。
 </div>
 </div><!-- /tool-duct -->
 
@@ -697,6 +697,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div class="tab" data-vm="co2" style="white-space:nowrap;flex-shrink:0">CO₂基準法</div>
     <div class="tab" data-vm="fire" style="white-space:nowrap;flex-shrink:0">火気使用室</div>
     <div class="tab" data-vm="law" style="white-space:nowrap;flex-shrink:0">建築基準法(居室)</div>
+    <div class="tab" data-vm="park" style="white-space:nowrap;flex-shrink:0">駐車場</div>
   </div>
 
   <div id="v-sec-vol">
@@ -721,7 +722,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div id="v-sec-nc">
     <label>必要換気回数 N [回/h]</label>
     <select id="v-nc-preset">
-      <optgroup label="居室系 (HASS102)">      <option value="2" selected>2 — 事務室・一般居室</option>      <option value="3">3 — 会議室・小会議室</option>      <option value="1">1 — 住宅・ホテル客室</option>      </optgroup>      <optgroup label="店舗・飲食 (HASS102)">      <option value="4">4 — 商店・デパート一般</option>      <option value="6">6 — レストラン・食堂(営業)</option>      <option value="8">8 — バー・宴会場</option>      <option value="10">10 — デパート特売場</option>      </optgroup>      <optgroup label="水廻り・特殊 (HASS102/オーム社)">      <option value="10">10 — 便所(使用頻度大)</option>      <option value="5">5 — 便所(使用頻度少)</option>      <option value="15">15 — 浴室</option>      <option value="20">20 — 洗濯室</option>      <option value="5">5 — 美容室・理髪室</option>      </optgroup>      <optgroup label="機械・設備室">      <option value="5">5 — 機械室・オイルタンク室</option>      <option value="10">10 — エレベータ機械室</option>      <option value="12">12 — ボイラ室</option>      <option value="15">15 — 自動車車庫(消防法)</option>      <option value="10">10 — バッテリー室</option>      <option value="40">40 — 厨房(大)</option>      <option value="35">35 — 厨房(小)</option>      <option value="40">40 — 発電機室</option>      </optgroup>      <optgroup label="その他">      <option value="0.5">0.5 — 建基法最低(居室)</option>      <option value="5">5 — 書庫・地階倉庫</option>      <option value="custom">任意入力</option>      </optgroup>
+      <optgroup label="居室系 (参考。居室は人員によるCO₂基準法・建築基準法で決めるのが基本)">      <option value="2">2 — 事務室・一般居室</option>      <option value="3">3 — 会議室・小会議室</option>      <option value="1">1 — 住宅・ホテル客室</option>      </optgroup>      <optgroup label="店舗・飲食 (HASS102)">      <option value="4">4 — 商店・デパート一般</option>      <option value="6">6 — レストラン・食堂(営業)</option>      <option value="8">8 — バー・宴会場</option>      <option value="10">10 — デパート特売場</option>      </optgroup>      <optgroup label="水廻り・特殊 (HASS102/オーム社)">      <option value="10" selected>10 — 便所(使用頻度大)</option>      <option value="5">5 — 便所(使用頻度少)</option>      <option value="15">15 — 浴室</option>      <option value="20">20 — 洗濯室</option>      <option value="5">5 — 美容室・理髪室</option>      </optgroup>      <optgroup label="機械・設備室">      <option value="5">5 — 機械室・オイルタンク室</option>      <option value="10">10 — エレベータ機械室</option>      <option value="12">12 — ボイラ室</option>      <option value="10">10 — バッテリー室</option>      <option value="40">40 — 厨房(大)</option>      <option value="35">35 — 厨房(小)</option>      <option value="40">40 — 発電機室</option>      </optgroup>      <optgroup label="その他">      <option value="0.5">0.5 — シックハウス対策(住宅等の居室)</option>      <option value="0.3">0.3 — シックハウス対策(その他の居室)</option>      <option value="5">5 — 書庫・地階倉庫</option>      <option value="custom">任意入力</option>      </optgroup>
     </select>
     <div id="v-nc-custom-box" class="hidden">
       <label>換気回数 N [回/h]</label>
@@ -738,8 +739,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <div>
         <label>1人当たり換気量 [m³/h]</label>
         <select id="v-co2-rate">
-          <option value="25">25 — 最低基準(建基法)</option>
-          <option value="30" selected>30 — 標準(ASHRAE基準)</option>
+          <option value="20">20 — 建基法の最低(令第20条の2)</option>
+          <option value="30" selected>30 — 実務標準(CO₂ 1000ppm相当)</option>
           <option value="36">36 — 高品質オフィス</option>
           <option value="50">50 — 病院・医療系</option>
           <option value="custom">詳細設定(下欄)</option>
@@ -766,17 +767,26 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div id="v-sec-fire" class="hidden">
     <div class="row">
       <div>
-        <label>理論廃ガス量 K [m³/kWh]</label>
+        <label>燃料(理論廃ガス量 K)</label>
         <select id="v-fire-k">
-          <option value="0.93">0.93 — 都市ガス(13A)</option>
+          <option value="0.93">都市ガス K=0.93</option>
+          <option value="0.93lp">LPガス K=0.93</option>
+          <option value="12.1">灯油 K=12.1(kg) ※要確認</option>
         </select>
       </div>
       <div>
-        <label>発熱量 Q_fuel [kW]</label>
-        <input id="v-fire-q" type="number" inputmode="decimal" value="10" step="0.5">
+        <label>排気の方式</label>
+        <select id="v-fire-hood">
+          <option value="30" selected>フードⅠ型 30KQ</option>
+          <option value="20">フードⅡ型 20KQ</option>
+          <option value="40">フードなし 40KQ</option>
+          <option value="2">煙突 2KQ</option>
+        </select>
       </div>
     </div>
-    <div class="note" style="margin-top:8px">V=40KQ (建基法施行令 第20条の3)</div>
+    <label id="v-fire-q-label">燃料消費量 Q [kW]</label>
+    <input id="v-fire-q" type="number" inputmode="decimal" value="10" step="0.5">
+    <div class="note" style="margin-top:8px" id="v-fire-note">V=n·K·Q（建基法施行令 第20条の3・昭和45年建設省告示第1826号）。K=理論廃ガス量(都市ガス・LPガスはm³/kWh、灯油はm³/kg)、Q=器具の燃料消費量の合計(灯油はkg/h)。</div>
   </div>
 
   <div id="v-sec-law" class="hidden">
@@ -789,8 +799,31 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <div class="kv"><span>必要開口比(法定)</span><b>1/20 (5.0%)</b></div>
     </div>
     <div id="v-law-judge" style="margin-top:8px;padding:8px 10px;border-radius:6px;font-size:13px;font-weight:700;text-align:center"></div>
-    <label style="margin-top:10px">床面積/人 N [m²/人] <span style="font-size:10px;color:var(--sub)">(実況による。不明な場合は10)</span></label>
-    <input id="v-law-n" type="number" inputmode="decimal" value="10" step="1">
+    <div class="row" style="margin-top:10px">
+      <div>
+        <label>居室の区分</label>
+        <select id="v-law-use">
+          <option value="10" selected>その他の居室 (Nの上限10)</option>
+          <option value="3">特殊建築物の居室 (Nの上限3)</option>
+        </select>
+      </div>
+      <div>
+        <label>1人当たりの占有面積 N [m²/人]</label>
+        <input id="v-law-n" type="number" inputmode="decimal" value="5" step="1">
+      </div>
+    </div>
+    <div style="font-size:10.5px;color:var(--sub);margin-top:2px;line-height:1.4">Nは実況による値。上限(その他の居室10・特殊建築物の居室3)を超える場合は上限値で計算します。例: 事務所5、飲食店3</div>
+  </div>
+</div>
+
+<div id="v-sec-park" class="hidden" style="margin-top:-6px">
+  <div class="card">
+    <div class="row">
+      <div><label>駐車場の床面積 [m²] <span style="font-size:10px;color:var(--sub)">車路・スロープ含む</span></label><input id="v-park-a" class="q-input" type="number" inputmode="decimal" value="500"></div>
+      <div><label>換気に有効な開口部の面積 [m²]</label><input id="v-park-open" type="number" inputmode="decimal" value="0" step="1"></div>
+    </div>
+    <div id="v-park-judge" style="margin-top:8px;padding:8px 10px;border-radius:6px;font-size:13px;font-weight:700;text-align:center"></div>
+    <div class="note" style="margin-top:6px">駐車場法施行令 第12条: 床面積1m²につき毎時14m³以上を直接外気と交換する換気装置。開口部の換気に有効な部分が床面積の1/10以上の階は除く(平成28年改正、旧基準は10回/h)。条例(東京都建築安全条例等)の規定も確認のこと。</div>
   </div>
 </div>
 
@@ -808,36 +841,38 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="note" id="v-note"></div>
 </div>
 
-<div class="note">出典: 建築基準法施行令 第20条の2・3 / ASHRAE Standard 62.1 / 空気調和・衛生工学会(SHASE)。概算用であり、最終決定は建築基準法・消防法・設計図書・機器仕様書によること。</div>
+<div class="note">出典: 建築基準法施行令 第20条の2・3・8 / 駐車場法施行令 第12条 / 空気調和・衛生工学会(SHASE)。概算用であり、最終決定は建築基準法・消防法・設計図書・機器仕様書によること。</div>
 
 <div class="card">
   <div class="card-title">用途別 換気量・法定値 参考</div>
   <table class="rp-table">
-    <thead><tr><th>用途</th><th>換気回数目安</th><th>建基法最低</th></tr></thead>
+    <thead><tr><th>用途</th><th>換気回数目安</th><th>法令等の最低</th></tr></thead>
     <tbody>
-      <tr><td>事務室・一般居室</td><td>2〜3 回/h</td><td>0.5 回/h</td></tr>
-      <tr><td>会議室</td><td>3〜5 回/h</td><td>0.5 回/h</td></tr>
-      <tr><td>飲食店・レストラン</td><td>6〜10 回/h</td><td>—</td></tr>
-      <tr><td>自動車車庫</td><td>10〜15 回/h</td><td>15 回/h(消防法)</td></tr>
+      <tr><td>事務室・一般居室</td><td>2〜3 回/h</td><td>20 m³/h・人(建基法)<br>0.3 回/h(シックハウス)</td></tr>
+      <tr><td>会議室</td><td>3〜5 回/h</td><td>20 m³/h・人(建基法)<br>0.3 回/h(シックハウス)</td></tr>
+      <tr><td>住宅の居室</td><td>—</td><td>0.5 回/h(シックハウス)</td></tr>
+      <tr><td>飲食店・レストラン</td><td>6〜10 回/h</td><td>20 m³/h・人(N上限3)</td></tr>
+      <tr><td>自動車車庫</td><td>—</td><td>床面積×14 m³/h(駐車場法施行令12条)</td></tr>
       <tr><td>便所(一般)</td><td>5〜10 回/h</td><td>—</td></tr>
       <tr><td>厨房(大)</td><td>30〜40 回/h</td><td>火気計算による</td></tr>
     </tbody>
   </table>
-  <div class="note">建基法居室最低: N ≧ 0.5 回/h（令第20条の2）。在室密度が高い用途はCO₂基準法(30 m³/h・人)も確認すること。</div>
+  <div class="note">居室の換気量は建基法 V=20Af/N(令第20条の2)とCO₂基準(30 m³/h・人が実務の目安)で決める。0.5／0.3回/hはシックハウス対策(令第20条の8)の必要換気回数で、住宅等の居室0.5・その他の居室0.3。電気室・機械室は発熱量からの算定も確認すること。</div>
 </div>
 
 <button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
 <div class="formula-box">
   <b>換気回数法</b>: Q = V × N　[m³/h]<br>
-  建基法居室最低基準: N ≧ 0.5 回/h<br><br>
-  <b>CO₂基準法</b>: Q = P × q　(q: 用途により異なる。一般事務25〜36、会議室36〜50、ASHRAE 62.1で用途別規定)<br>
-  ※建基法の居室換気量はq固定でなく告示で用途別に規定。上記は概算入力値。<br><br>
-  <b>火気使用室</b>: Q = 40KQ_fuel　(建基法施行令 第20条の3)<br>
-  K: 理論廃ガス量 [m³/kWh]　0.93（都市ガス13A、発熱量[kW]入力時）　出典: 昭和45年建設省告示第1826号 別表<br><br>
+  シックハウス対策(令第20条の8): 住宅等の居室 0.5回/h以上、その他の居室 0.3回/h以上<br><br>
+  <b>CO₂基準法</b>: Q = P × q　(建基法の最低は20 m³/h・人。実務は30 m³/h・人(CO₂ 1000ppm相当)が目安)<br><br>
+  <b>火気使用室</b>: V = n·K·Q　(建基法施行令 第20条の3・昭和45年建設省告示第1826号)<br>
+  n: 排気フードⅠ型30 / Ⅱ型20 / フードなし40 / 煙突2<br>
+  K: 理論廃ガス量　都市ガス・LPガス 0.93 m³/kWh / 灯油 12.1 m³/kg(要確認)<br><br>
+  <b>駐車場</b>: V = 14 × 床面積　[m³/h]　(駐車場法施行令 第12条。開口部が床面積の1/10以上の階は除く)<br><br>
   <b>建築基準法(居室の自然/機械換気区分)</b><br>
   自然換気: 開口部の有効面積 Aw ≧ 床面積 Af × 1/20(建築基準法第28条・施行令第20条の2)<br>
   これを満たさない場合は機械換気設備が必要。最低必要換気量 V=20Af/N<br>
-  N: 床面積/人 [m²/人](実況による。不明な場合は10として算出)<br><br>
+  N: 1人当たりの占有面積 [m²/人](実況による。特殊建築物の居室は3、その他の居室は10を超えるときはその値)<br><br>
   <b>各算定法の優先関係</b>: 建築基準法・消防法に基づく数値(火気使用室・建築基準法居室)は法的に必須の最低値。換気回数法・CO₂基準法・厨房フードは室内環境(快適性・IAQ)の目安であり、法令値を下回らない範囲で設計値を決定すること。
 </div>
 </div><!-- /tool-vent -->
@@ -1176,6 +1211,19 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <div class="note">飽和水蒸気圧はBuck式(1981/1996改良版、0℃以上・未満で係数切替)による近似計算。基準気圧101.325 kPa。ASHRAE Fundamentalsの計算法と同系統。概算用。</div>
 <div class="card">
+  <div class="card-title">建築物環境衛生管理基準（建築物衛生法・空気調和設備を設けている場合）</div>
+  <table class="rp-table">
+    <thead><tr><th>項目</th><th>基準値</th></tr></thead>
+    <tbody>
+      <tr><td>温度</td><td>18℃以上 28℃以下（令和4年4月から下限17→18℃）</td></tr>
+      <tr><td>相対湿度</td><td>40%以上 70%以下</td></tr>
+      <tr><td>二酸化炭素</td><td>1000 ppm以下</td></tr>
+      <tr><td>気流</td><td>0.5 m/s以下</td></tr>
+    </tbody>
+  </table>
+  <div class="note">居室の中央部・床上75〜150cmで、おおむね適合するよう管理する基準。出典: 厚生労働省「建築物環境衛生管理基準について」。</div>
+</div>
+<div class="card">
   <div class="card-title">快適域 参考（ASHRAE 55-2020）</div>
   <table class="rp-table">
     <thead><tr><th>条件</th><th>乾球温度</th><th>相対湿度</th></tr></thead>
@@ -1215,7 +1263,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       </div>
       <div class="kv" style="border-top:none;opacity:.7;padding:2px 2px 0"><span>床面積</span><b id="ld-area-calc">-</b></div>
     </div>
-    <label>用途(単位熱負荷の目安)</label>
+    <label>用途(単位熱負荷の目安・機器選定用の余裕込みの値)</label>
     <select id="ld-use">
       <option value="150">事務所・オフィス (150 W/m²)</option>
       <option value="170">会議室 (170 W/m²)</option>
@@ -1380,7 +1428,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="note">出典: 各空調機メーカー単位熱負荷目安(ダイキン/パナソニック/三菱) / SHASE-S112。馬力換算 1HP≒2.8kW は空調機の呼称馬力（物理馬力0.746kWとは異なる慣用値）。<br>概算用であり、最終決定は詳細負荷計算(SHASE-S112等)によること。</div>
 
 <div class="card">
-  <div class="card-title">用途別 概算熱負荷 原単位 参考</div>
+  <div class="card-title">用途別 概算熱負荷 原単位 参考（設計計算の原単位。上の機器選定用の値より小さい）</div>
   <table class="rp-table">
     <thead><tr><th>用途</th><th>冷房 W/m²</th><th>暖房 W/m²</th></tr></thead>
     <tbody>
@@ -1520,6 +1568,20 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       <input id="wt-eff" type="number" inputmode="decimal" value="60" step="5">
     </div>
   </div>
+  <div class="row">
+    <div>
+      <label>実揚程 [m] <span style="font-size:10px;color:var(--sub)">開放回路(冷却水等)の落差</span></label>
+      <input id="wt-static" type="number" inputmode="decimal" value="0" step="1">
+    </div>
+    <div>
+      <label>揚程の余裕</label>
+      <select id="wt-hmargin">
+        <option value="0" selected>なし</option>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+      </select>
+    </div>
+  </div>
   <div class="kv-grid" style="margin-top:8px">
     <div class="kv"><span>管摩擦損失</span><b id="wt-r-pfric">-</b></div>
     <div class="kv"><span>全揚程</span><b id="wt-r-head">-</b></div>
@@ -1535,7 +1597,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <b>管内流速</b>: v = Q / A,　A = πd²/4<br>
   <b>摩擦損失</b>: ヘーゼン・ウィリアムス式 (C値: SGP=130 / 銅管=140 / ステンレス=130 / VP=150)<br>
   R = 1.22×10¹⁰ × Q^1.85 / (C^1.85 × d^4.87) [Pa/m]<br><br>
-  <b>全揚程</b>: H = (管摩擦×実長×局部係数 + 機器圧損) / (ρg)<br>
+  <b>全揚程</b>: H = [(管摩擦×実長×局部係数 + 機器圧損) / (ρg) + 実揚程] × (1 + 余裕)<br>
+  　密閉回路(冷温水)は実揚程0。開放回路(冷却水・揚水)は水面からの落差を実揚程に入れる<br>
   <b>軸動力</b>: P[kW] = ρg·Q·H / (η×1000)
 </div>
 </div><!-- /tool-water -->
@@ -2024,7 +2087,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   空調ドレン: メーカー指定があれば優先。指定がない場合は1/100以上を推奨(機内ドレンパンからの取出しは1/50程度の場合あり)。<br>
   雑排水・汚水横管(SHASE-S206): 65A以下 1/50(2.0%) / 75A・100A 1/100(1.0%) / 125A 1/150(0.67%) / 150A以上 1/200(0.5%)<br>
   雨水横走り管: 1/100を標準とする(規模・地域降雨量により別途検討)。<br><br>
-  <b>支持間隔</b>: 1.0〜1.5m(塩ビ管40A以下は1.0m以下、50A以下は1.2m以下が目安)<br>
+  <b>支持間隔</b>: 硬質ポリ塩化ビニル管の吊り間隔(公共建築工事標準仕様書 表2.2.20)。80A以下 1.0m以下、100A以上 2.0m以下(100A以上は解説資料で1.5mとするものもあり要確認)。鋼管は100A以下2.0m以下<br>
   <b>支持点数</b> = ⌈L / 支持間隔⌉ + 1(両端含む)
 </div>
 </div><!-- /tool-drain -->
@@ -2043,9 +2106,10 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div id="hg-sec-duct">
     <label>ダクト工法(吊りボルト間隔)</label>
     <select id="hg-duct-type">
-      <option value="3680">アングル工法・スライド工法 (吊間隔3,680mm以下)</option>
-      <option value="3000" selected>共板工法 (吊間隔3,000mm以下)</option>
-      <option value="3000s">スパイラルダクト工法 (吊間隔3,000mm以下)</option>
+      <option value="3640">アングルフランジ工法 (吊間隔3,640mm以下)</option>
+      <option value="3000">スライドオンフランジ工法 (吊間隔3,000mm以下)</option>
+      <option value="2000c" selected>共板フランジ工法 (吊間隔2,000mm以下)</option>
+      <option value="4000">スパイラルダクト (吊間隔4,000mm以下)</option>
       <option value="2000">機械室内・長辺450mm以下 (吊間隔2,000mm以下)</option>
     </select>
     <div class="row">
@@ -2073,12 +2137,27 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div id="hg-pipe-horiz">
       <label>呼び径区分(吊りボルト間隔・振れ止め間隔)</label>
       <select id="hg-pipe-size">
-        <option value="2:0">15A〜40A (鋼管・SUS・銅管・ビニル管等)</option>
-        <option value="2:8">50A (鋼管・SUS鋼管)</option>
-        <option value="3:8" selected>65A〜150A (鋼管・SUS鋼管)</option>
-        <option value="3:12">200A以上 (鋼管・SUS鋼管)</option>
-        <option value="1.5:6">冷媒用銅管 9.52mm以下(2分・3分)</option>
-        <option value="2:8b">冷媒用銅管 12.7mm以上(4分〜)</option>
+        <optgroup label="鋼管・ステンレス鋼管">
+        <option value="2:0:s1">15A〜40A (吊2.0m・振れ止め不要)</option>
+        <option value="2:8:s2" selected>50A〜100A (吊2.0m・振れ止め8m)</option>
+        <option value="3:12:s3">125A〜300A (吊3.0m・振れ止め12m)</option>
+        </optgroup>
+        <optgroup label="硬質ポリ塩化ビニル管・耐火二層管・ポリエチレン管">
+        <option value="1:0:v1">15A〜20A (吊1.0m・振れ止め不要)</option>
+        <option value="1:6:v2">25A〜40A (吊1.0m・振れ止め6m)</option>
+        <option value="1:8:v3">50A〜80A (吊1.0m・振れ止め8m)</option>
+        <option value="2:12:v4">100A〜300A (吊2.0m・振れ止め12m) ※要確認</option>
+        </optgroup>
+        <optgroup label="銅管">
+        <option value="1:0:c1">15A〜20A (吊1.0m・振れ止め不要)</option>
+        <option value="1:6:c2">25A〜40A (吊1.0m・振れ止め6m)</option>
+        <option value="1:8:c3">50A〜80A (吊1.0m・振れ止め8m)</option>
+        <option value="2:12:c4">100A〜300A (吊2.0m・振れ止め12m) ※要確認</option>
+        </optgroup>
+        <optgroup label="冷媒用銅管">
+        <option value="1.5:6">外径9.52mm以下(2分・3分) (吊1.5m)</option>
+        <option value="2:8b">外径12.7mm以上(4分〜) (吊2.0m)</option>
+        </optgroup>
       </select>
       <label>横走り配管長さ L [m]</label>
       <input id="hg-pipe-len" type="number" inputmode="decimal" class="q-input" value="10" step="0.5">
@@ -2131,11 +2210,11 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
   <div class="card-title">耐震・荷重補正</div>
   <div class="row">
     <div>
-      <label>耐震区分</label>
+      <label>耐震支持の種別(振れ止め部材)</label>
       <select id="hg-seismic">
-        <option value="standard">一般設備 (×1.0)</option>
-        <option value="seismic">耐震重要設備 (×1.3)</option>
-        <option value="critical">防災・重要設備 (×1.5)</option>
+        <option value="A" selected>A種 形鋼 (配管重量×0.6)</option>
+        <option value="B">B種 引張り材 (配管重量×0.6)</option>
+        <option value="SA">SA種 形鋼 (配管重量×1.0)</option>
       </select>
     </div>
     <div>
@@ -2181,8 +2260,8 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div class="kv"><span>許容荷重（ボルト）</span><b id="hg-r-allow">-</b></div>
     <div class="kv"><span>許容荷重（アンカー）</span><b id="hg-r-anchor">-</b></div>
     <div class="kv"><span>判定に使う許容荷重</span><b id="hg-r-govern">-</b></div>
-    <div class="kv" style="border-top:1px solid var(--line)"><span>耐震考慮荷重（1本）</span><b id="hg-r-seismicload" style="color:var(--ac)">-</b></div>
-    <div class="kv"><span>耐震余裕度</span><b id="hg-r-seismicok">-</b></div>
+    <div class="kv"><span>ボルト余裕度</span><b id="hg-r-seismicok">-</b></div>
+    <div class="kv" style="border-top:1px solid var(--line)"><span>耐震支持1箇所の設計用水平力</span><b id="hg-r-seismicload" style="color:var(--ac)">-</b></div>
   </div>
   <div class="bar"><i id="hg-vb"></i></div>
   <div class="note" id="hg-note"></div>
@@ -2201,26 +2280,28 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <div class="note">出典: 公共建築工事標準仕様書(機械設備工事編) 表2.2.20「配管の支持間隔」/ 2.2.5「ダクトの吊り及び支持」/ SHASE規格。ダクト重量は鋼板+保温で概算8kg/m²。ボルト許容荷重は強度区分4.6・安全率4の目安値。<br>概算用であり、最終決定は設計図書・メーカー指針によること。</div>
 
 <div class="card">
-  <div class="card-title">耐震設計 重要度係数 参考（建築設備耐震設計・施工指針）</div>
+  <div class="card-title">配管・ダクトの耐震支持の種別 参考（建築設備耐震設計・施工指針の考え方）</div>
   <table class="rp-table">
-    <thead><tr><th>用途・条件</th><th>重要度係数 I</th></tr></thead>
+    <thead><tr><th>種別</th><th>支持部材の強度</th><th>形状</th></tr></thead>
     <tbody>
-      <tr><td>学校・病院・避難所・消防署</td><td>1.5</td></tr>
-      <tr><td>一般事務所・住宅・商業施設</td><td>1.0</td></tr>
+      <tr><td>SA種</td><td>全配管重量 × 1.0</td><td>形鋼</td></tr>
+      <tr><td>A種</td><td>全配管重量 × 0.6</td><td>形鋼</td></tr>
+      <tr><td>B種</td><td>全配管重量 × 0.6</td><td>引張り材(斜材)</td></tr>
     </tbody>
   </table>
-  <div class="note">水平地震力 = 機器重量 × 設計水平震度（I×k）。振れ止めは特定天井（高さ6m超・面積200m²超等）では別途告示基準を確認のこと。斜め吊り・両端固定が基本。</div>
+  <div class="note">地震の水平力は吊りボルトの引張りではなく、振れ止め(耐震支持)の部材で受ける。全配管重量は保温材・流体を含む、耐震支持の間隔分の重量。どの種別を何mごとに設けるかは、耐震クラス(S・A・B)と設置階(上層階・中間階・地階1階)で設計図書・指針により決めること。出典: 静岡県「防災拠点等における設備地震対策ガイドライン」表4.1.1-3(建築設備検査資格者講習会テキストより)。</div>
 </div>
 
 <button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
 <div class="formula-box">
   <b>吊りボルト間隔(公共建築工事標準仕様書)</b><br>
-  ダクト: アングル・スライド工法 3,680mm以下 / 共板工法・スパイラル工法 3,000mm以下 / 機械室内・長辺450mm以下 2,000mm以下<br>
-  配管: 鋼管・SUS鋼管 15A〜50A→2.0m以下、65A以上→3.0m以下 / 冷媒銅管 9.52mm以下→1.5m以下、12.7mm以上→2.0m以下(目安)<br><br>
+  ダクト: アングルフランジ工法 3,640mm以下 / スライドオンフランジ工法(コーナーボルト工法) 3,000mm以下 / 共板フランジ工法(コーナーボルト工法) 2,000mm以下 / スパイラルダクト 4,000mm以下 / 機械室内・長辺450mm以下 2,000mm以下<br>
+  配管(表2.2.20): 鋼管・SUS鋼管 15A〜100A→2.0m以下、125A〜300A→3.0m以下 / 塩ビ管・耐火二層管・ポリエチレン管 15A〜80A→1.0m以下、100A以上→2.0m以下 / 銅管 15A〜80A→1.0m以下、100A以上→2.0m以下 / 冷媒銅管 9.52mm以下→1.5m以下、12.7mm以上→2.0m以下<br>
+  ※塩ビ管・銅管の100A以上は解説資料により1.5m／2.0mと差があるため、設計図書・最新の標準仕様書で確認すること。<br><br>
   <b>振れ止め支持(形鋼)の要否・間隔(目安)</b><br>
   ダクト: 横走り主ダクトは12m以下ごとに振れ止め支持を行うほか、末端部にも設ける。<br>
-  配管(鋼管・SUS等): 呼び径40以下は不要 / 50A〜150Aは8.0m以下ごと / 200A以上は12.0m以下ごと。<br>
-  銅管・ビニル管等: 呼び径20以下は不要 / 25A以上は6〜8m以下ごと(口径により増加)。<br>
+  配管(鋼管・SUS等): 呼び径40以下は不要 / 50A〜100Aは8.0m以下ごと / 125A以上は12.0m以下ごと。<br>
+  銅管・ビニル管等: 呼び径20以下は不要 / 25A〜40Aは6.0m以下 / 50A〜80Aは8.0m以下 / 100A以上は12.0m以下ごと。<br>
   各階1箇所以上、曲がり・分岐・重量物(電動弁等)の直近にも別途支持を追加する。<br><br>
   <b>1本あたり荷重</b> = 総荷重 ÷ 吊りボルト本数<br>
   <b>吊りボルト本数</b> = ⌈配管・ダクト長/吊り間隔⌉ + 1<br>
@@ -2416,7 +2497,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 <!-- 平座金 -->
 <div class="card" style="padding:10px">
   <div class="card-title" style="margin-bottom:4px">平座金（JIS B 1256）</div>
-  <div style="font-size:10px;color:var(--sub);margin-bottom:6px">並型（小形）。</div>
+  <div style="font-size:10px;color:var(--sub);margin-bottom:6px">並形（ISO 7089 相当）。</div>
   <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto 8px"><defs><marker id="wA" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto-start-reverse"><path d="M0,0 L7,3 L0,6 Z" fill="var(--sub)"/></marker></defs><circle cx="58" cy="88" r="34" fill="none" stroke="var(--tx)" stroke-width="1.3"/><circle cx="58" cy="88" r="13" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="12" y1="88" x2="104" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="58" y1="42" x2="58" y2="134" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="24" y1="88" x2="24" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="92" y1="88" x2="92" y2="25" stroke="var(--sub)" stroke-width="0.5"/><line x1="24" y1="28" x2="92" y2="28" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="24" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">D</text><line x1="45" y1="88" x2="45" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="71" y1="88" x2="71" y2="38" stroke="var(--sub)" stroke-width="0.5"/><line x1="45" y1="41" x2="71" y2="41" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="58.0" y="37" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">d</text><rect x="204" y="54" width="8" height="68" fill="none" stroke="var(--tx)" stroke-width="1.3"/><line x1="204" y1="75.0" x2="212" y2="75.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="204" y1="101.0" x2="212" y2="101.0" stroke="var(--tx)" stroke-width="0.7150000000000001"/><line x1="192" y1="88" x2="224" y2="88" stroke="var(--sub)" stroke-width="0.5" stroke-dasharray="9 2 1.5 2"/><line x1="204" y1="54" x2="204" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="212" y1="54" x2="212" y2="37" stroke="var(--sub)" stroke-width="0.5"/><line x1="204" y1="40" x2="212" y2="40" stroke="var(--sub)" stroke-width="0.65" marker-start="url(#wA)" marker-end="url(#wA)"/><text x="208.0" y="36" fill="var(--sub)" font-size="10" text-anchor="middle" font-family="Georgia,serif" font-style="italic">t</text></svg>
   <div style="overflow-x:auto">
     <table style="border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;width:100%">
@@ -2446,7 +2527,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       </tbody>
     </table>
   </div>
-  <div style="font-size:10px;color:var(--sub);margin-top:6px">単位 mm。並型（小形）= JIS B 1256 Table 3</div>
+  <div style="font-size:10px;color:var(--sub);margin-top:6px">単位 mm。並形 = JIS B 1256（ISO 7089 相当）。小形丸・並丸など旧来の呼びとは寸法が異なる</div>
 </div>
 
 </div><!-- /steel-sec-bolt -->
@@ -2678,7 +2759,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <div class="card">
   <div class="card-title">プリセットから選ぶ（ビル用マルチ室外機）</div>
-  <div class="note" style="margin-bottom:8px">ビル用マルチエアコン(VRF)の室外機を選定する場合、下の一覧から馬力・機種を選ぶと消費電力(kW)が自動入力されます。単独機器や動力盤で複数電動機をまとめる場合は、下の「単機器/動力盤」タブへ直接進んでください。</div>
+  <div class="note" style="margin-bottom:8px">ビル用マルチエアコン(VRF)の室外機を選定する場合、下の一覧から馬力・機種を選ぶと消費電力(kW)が自動入力されます。単独機器や動力盤で複数電動機をまとめる場合は、下の「単機器/動力盤」タブへ直接進んでください。メーカーの据付説明書には機種ごとに電線太さ・配線用遮断器・漏電遮断器（インバーター対応品）の指定があるので、そちらを優先してください。</div>
   <div class="card-title" style="margin-bottom:4px">ダイキン VRV-A（RXYPシリーズ）<span style="font-size:10px;color:var(--sub);margin-left:6px">出典: CP22187-3（2022年8月）</span></div>
   <select id="el-daikin-sel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--tx);padding:8px 10px;font-size:14px;font-family:inherit;margin-bottom:8px">
     <option value="">-- 馬力・機種を選択 --</option>
@@ -2718,21 +2799,34 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div style="grid-column:1/-1">
       <label>起動方式</label>
       <select id="el-start">
-        <option value="direct">直入れ始動（始動倍率 6.5）</option>
-        <option value="yd">スターデルタ（始動倍率 2.5）</option>
+        <option value="direct">直入れ始動（始動倍率 9.0）</option>
+        <option value="yd">スターデルタ（始動倍率 3.0）</option>
         <option value="soft">ソフトスタータ（始動倍率 3.0）</option>
         <option value="inverter">インバーター始動（始動倍率 1.2）</option>
       </select>
     </div>
   </div>
   <div class="row">
-    <div><label>消費電力 P [kW]</label><input id="el-kw" type="number" inputmode="decimal" value="3.7" step="0.1"></div>
+    <div><label id="el-kw-label">定格出力 P [kW]（銘板値）</label><input id="el-kw" type="number" inputmode="decimal" value="3.7" step="0.1"></div>
     <div><label>力率 cosφ</label><input id="el-pf" type="number" inputmode="decimal" value="0.85" step="0.01" min="0.1" max="1"></div>
     <div><label>効率 η</label><input id="el-eff" type="number" inputmode="decimal" value="0.85" step="0.01" min="0.1" max="1"></div>
   </div>
   <div class="row">
     <div><label>配線長 L [m]</label><input id="el-len" type="number" inputmode="decimal" value="20" step="1"></div>
     <div><label>許容電圧降下 [%]</label><input id="el-vd" type="number" inputmode="decimal" value="2" step="0.5"></div>
+  </div>
+  <div class="row">
+    <div style="grid-column:1/-1">
+      <label>電圧降下の基準（内線規程）</label>
+      <select id="el-vd-basis">
+        <option value="br-low" selected>分岐回路・低圧で受電（60m以下 2%）</option>
+        <option value="tr-low">幹線・低圧で受電（60m以下 2%）</option>
+        <option value="br-tr">分岐回路・構内の変圧器から供給（60m以下 2%）</option>
+        <option value="tr-tr">幹線・構内の変圧器から供給（60m以下 3%）</option>
+        <option value="manual">手入力</option>
+      </select>
+      <div id="el-vd-note" style="font-size:10.5px;color:var(--sub);margin-top:2px;line-height:1.4"></div>
+    </div>
   </div>
   <div style="background:rgba(255,180,60,0.12);border:1px solid rgba(255,180,60,0.35);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:12px;font-weight:600;color:#e8b84b">
     ⚠️ 許容電流は下記「標準布設条件」（布設方式・周囲温度・条数）で変わります。実際の現場条件を必ず入力してください。
@@ -2801,7 +2895,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <thead>
       <tr style="border-bottom:2px solid var(--line)">
         <th style="text-align:right;padding:4px 8px;color:var(--sub);font-weight:400">断面積 mm²</th>
-        <th style="text-align:right;padding:4px 6px;color:var(--sub);font-weight:400">許容電流 A<br><span style="font-size:9px">(管内・30°C・単管)</span></th>
+        <th style="text-align:right;padding:4px 6px;color:var(--sub);font-weight:400">許容電流 A<br><span style="font-size:9px">(管内・40°C・1条)</span></th>
         <th style="text-align:right;padding:4px 6px;color:var(--sub);font-weight:400">三相200V<br>目安 kW</th>
         <th style="text-align:right;padding:4px 6px;color:var(--sub);font-weight:400">単相200V<br>目安 kW</th>
       </tr>
@@ -2815,14 +2909,17 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 
 <button class="formula-btn" onclick="toggleFormula(this)">▼ 計算式・根拠</button>
 <div class="formula-box">
-  <b>定格電流（三相）</b>: Ir = P×1000 / (√3 × V × cosφ × η) [A]<br>
+  <b>定格電流（三相の電動機）</b>: 内線規程の規約電流表（銘板の定格出力から。400Vは200V値の1/2）<br>
+  <b>定格電流（三相・インバーター機器/一般負荷）</b>: Ir = P×1000 / (√3 × V × cosφ × η) [A]<br>
   <b>定格電流（単相）</b>: Ir = P×1000 / (V × cosφ × η) [A]<br><br>
   <b>設計電流</b>（電動機幹線・内線規程3705節）:<br>
   　Id = Ir × 1.25（単独電動機）<br>
   　Id = I_max × 1.25 + ΣI_other（複数電動機の場合）<br><br>
   <b>電圧降下から必要断面積</b>:<br>
-  　三相: A = √3 × ρ × Id × L / (V × ΔV/100) [mm²]<br>
-  　単相: A = 2 × ρ × Id × L / (V × ΔV/100) [mm²]<br>
+  　三相: A = √3 × ρ × Ir × L / (V × ΔV/100) [mm²]<br>
+  　単相: A = 2 × ρ × Ir × L / (V × ΔV/100) [mm²]<br>
+  　電流は実際に流れる負荷電流（定格電流 Ir）を使う<br>
+  　許容電圧降下（内線規程）: こう長60m以下は幹線・分岐それぞれ2%（構内の変圧器から供給する幹線は3%）。60m超は幹線＋分岐の合計で 120m以下4%(5%)・200m以下5%(6%)・200m超6%(7%)。（ ）は構内の変圧器から供給する場合<br>
   　ρ（銅）= 1/56 ≈ 0.01786 Ω·mm²/m（内線規程 常用温度基準、簡易式係数30.8/35.6と整合）<br><br>
   <b>過電流遮断器</b>（参考）: MCCB ≥ Id、かつ電動機の場合は最大電動機Ir × 3 + ΣIr_other 以下<br>
   出典: 内線規程 JEAC 8001（電動機幹線・過電流保護）
@@ -3568,7 +3665,7 @@ document.getElementById('report-modal').onclick=function(e){if(e.target.id==='re
 const TOOL_USAGE={
   duct:{title:"ダクトサイズ計算",body:"計算方法(等摩擦法/許容風速法)とダクト材質・用途を選び、風量Qを入力すると推奨径・風速・摩擦損失が表示されます。候補リストをタップすると矩形変換・板厚・フランジ工法・ダクト重量(kg/m・kg/m²)の詳細が確認できます。<br><br>「＋ この条件をストック」で検討案を積み上げておき、2案を選んで横並び比較することができます。"},
   ductloss:{title:"ダクト圧損",body:"直管部と局部の圧力損失をそれぞれ計算し、まとめて積算できます。<br><br>直管部: 風速・ダクト形状(丸/角)・材質(粗度)・長さを入力すると、摩擦損失R[Pa/m]と区間の圧損[Pa]が算出されます。<br><br>局部: エルボ・分岐・拡大縮小・ダンパー・入口出口など、種類と条件を選ぶと局部抵抗係数ζが自動でセットされ、風速から局部圧損(ΔP=ζ×Pv)が算出されます。<br><br>それぞれ「＋ このリストに追加」で積算リストに追加でき、系統全体の合計圧損を計算できます。「コピー」でExcelに貼り付けられるTSV形式で取得できます。"},
-  vent:{title:"換気量計算",body:"上のタブで算定法を選びます(換気回数法/CO₂基準法/火気使用室/建築基準法)。室容積は直接入力かW×D×Hのどちらでも指定できます。<br><br>建築基準法(居室)タブでは、開口部の有効面積から自然換気の可否判定も行われます。"},
+  vent:{title:"換気量計算",body:"上のタブで算定法を選びます(換気回数法/CO₂基準法/火気使用室/建築基準法/駐車場)。換気回数法は便所・倉庫などの非居室向けで、居室は人員(CO₂基準法・建築基準法)で決めるのが基本です。室容積は直接入力かW×D×Hのどちらでも指定できます。<br><br>建築基準法(居室)タブでは、開口部の有効面積から自然換気の可否判定も行われます。"},
   grille:{title:"吹出・吸込口計算",body:"①ネック径選定: 風量とネック風速(目安3〜5m/s)から、ダクト接続部の首径を算出します。<br><br>②本体サイズ選定: 種別(VHS/HS/ラインディフューザー/丸形・角形アネモ等)を選ぶと標準の有効面積率・面風速が自動セットされます(任意入力にも変更可)。ラインディフューザーは線数タイプ(幅固定)ごとの長さL、丸形アネモは呼び径φで候補を算出します。個数を増やすと1個あたりの必要面積が小さくなります。<br><br>候補リストから規格サイズの詳細を確認できます。ネック風速(首部の実風速)と面風速(本体開口の見かけ風速)は別の概念です。"},
   conv:{title:"単位換算",body:"変換したい項目のいずれか1マスに数値を入力すると、同じカード内の他の単位へ自動で変換されます。<br><br>圧力・熱量/冷凍能力・風量・温度・長さ・質量・流量・熱貫流率・比エンタルピーの9種類を収録しています。"},
   stl:{title:"透過損失",body:"各種建築材料の音響透過損失資料を、オクターブバンド別(63〜8kHz)の一覧表で表示します。検索欄またはカテゴリのチップで絞り込みできます。<br><br>収録: サッシT等級、コンクリート・鉄板(質量則で任意厚さを推定)、ガラス・窓サッシ、木質/合板、セメント板/スレート、金属板、ALC/気泡コンクリート、コンクリートブロック/組積、モルタル/ラス塗り壁、石膏ボード(単板・中空壁・岩綿吸音板組合せ)。<br><br>コンクリート・鉄板は実測データのある厚さ以外、面密度スケーリングによる推定値(整数丸め)です。「推定」タグ付きの値は参考値としてください。"},
@@ -3578,7 +3675,7 @@ const TOOL_USAGE={
   noise:{title:"屋外騒音(距離・回折減衰)",body:"A特性(一点)モードでは、音源パワーレベル・水平距離・音源高さ・受音点高さ・指向性Qを入力すると、斜距離を自動算出して受音点レベルを計算します。<br><br>「回折壁を考慮する」をONにすると、前川チャートによる回折減衰を含めた計算ができます。オクターブバンドモードでは帯域別パワーレベルから合成dB(A)をグラフ・表で確認できます。"},
   noisesum:{title:"騒音合成",body:"上のタブで「単一」(レベル1つで合成)か「オクターブバンド」(帯域ごとに合成)を選びます。<br><br>単一モードは音源ごとのレベル[dB]を入力欄に並べ、「＋追加」で音源を増やせます。オクターブバンドモードは音源ごとに63Hz〜8000Hzの帯域レベルを入力すると、帯域別の合成スペクトルと総合dB(A)が出ます。どちらもEnterキーで次の欄へ移動できます。"},
   drain:{title:"排水勾配",body:"配管長さLと用途・呼び径(採用したい勾配)を選ぶと、必要な高低差と支持間隔・支持点数が出ます。<br><br>「任意勾配」を選ぶと1/nを直接指定できます。"},
-  hanger:{title:"吊り支持・振れ止め",body:"上のタブでダクト/配管を選びます。配管はさらに「横引き配管/立て管」で分かれ、それぞれ支持間隔の考え方が異なります(横引き=吊りボルト、立て管=各階固定支持)。ダクトは工法と幅・高さ・長さ、配管は呼び径区分・長さ・質量を入力すると、吊りボルトの本数・許容荷重と、振れ止め支持の要否・箇所数が算出されます。"},
+  hanger:{title:"吊り支持・振れ止め",body:"上のタブでダクト/配管を選びます。配管はさらに「横引き配管/立て管」で分かれ、それぞれ支持間隔の考え方が異なります(横引き=吊りボルト、立て管=各階固定支持)。ダクトは工法と幅・高さ・長さ、配管は呼び径区分・長さ・質量を入力すると、吊りボルトの本数・許容荷重と、振れ止め支持の要否・箇所数、耐震支持1箇所の設計用水平力(SA種・A種・B種)が算出されます。"},
   nc:{title:"NC判定",body:"63Hz〜8000Hzのオクターブバンドレベルを入力します(空欄のバンドは判定から除外)。入力中にEnterキーで次のバンドへ移動できます。<br><br>入力に応じてNC値とdB(A)参考値、グラフ上の入力レベル(太線)が自動更新されます。"},
   steel:{title:"鋼材・ボルト",body:"【鋼材重量】種類(H形鋼・角形鋼管・プレート等)とサイズを選ぶと断面図と単位重量が決まります。同一鋼材で仕様違いを追加するときは「＋ 同じ鋼材で追加」、別種類は「＋ 別の鋼材を追加」を使います。鋼材一覧リストが自動生成され、「コピー」ボタンでExcelに貼り付けられるTSV形式でクリップボードに取得できます。<br><br>【ボルト規格】六角ボルト(JIS B 1180)・六角ナット(JIS B 1181)・平座金(JIS B 1256)の標準寸法表を収録。現場の締結部材選定や確認に使用します。"},
   airconv:{title:"風速・動圧・圧力損失 変換",body:"風量Q・風速v・断面のうち、入力した直近2項目から残り1項目が自動算出されます(矩形/円形を選択可)。<br><br>下のカードでは静圧・局部損失係数から動圧・全圧・局部損失も計算できます。"},
@@ -3817,16 +3914,16 @@ function dPlateCalc(c){
   let flange, note;
   if(c.type!=="rect"){
     flange="—(円形は甲はぜ/差込継手)";
-    note=sideLabel+"。スパイラルダクトは継手(差込・フランジ)で接続。";
+    note=sideLabel+"。スパイラルダクトは継手(差込・フランジ)で接続。板厚は角ダクトの表による参考値で、スパイラルダクトの板厚は標準仕様書の円形ダクトの表・メーカー仕様で確認すること(重量もこの板厚での概算)。";
   } else if(smoke){
     flange="アングルフランジ(共板不可)";
     note=sideLabel+"。排煙ダクトはピッツバーグはぜ+アングルフランジ。共板フランジ・グラスウールは使用不可。高圧1・2の区分はSHASE-S010(送風機・ダクト設計規格)およびJIS A4009による常用圧力区分(高圧1:500Pa超1000Pa以下、高圧2:1000Pa超2500Pa以下)に対応。";
   } else if(side<=750){
     flange="共板フランジ(TDC/TDF)可";
-    note=sideLabel+"。長辺2200mm以下は共板フランジ適用範囲。";
+    note=sideLabel+"。共板フランジの適用長辺は標準仕様書・メーカー仕様で確認(標準仕様書のコーナー金具の規定は長辺1,500mmまで)。";
   } else if(side<=2200){
     flange="共板フランジ / アングルフランジ";
-    note=sideLabel+"。共板フランジは長辺2200mmまで。大型・補強要時はアングル併用。";
+    note=sideLabel+"。共板フランジの適用長辺は標準仕様書・メーカー仕様で確認(コーナー金具の規定は長辺1,500mmまで)。大型・補強要時はアングルフランジ。";
   } else {
     flange="アングルフランジ(長辺>2200)";
     note=sideLabel+"。長辺2200mm超は共板不可、アングルフランジを使用。";
@@ -3835,11 +3932,17 @@ function dPlateCalc(c){
   $("d-plate-note").textContent=note;
 
   // フランジボルト本数(概算): 矩形=周長/ピッチ(最低4本=四隅各1本)、円形は継手のため対象外
-  const pitch=+$("d-bolt-pitch").value||150;
+  // 共板・スライドオン(コーナーボルト工法)は四隅のコーナーボルト4本＋辺はフランジ押え金具。
+  // アングルフランジは辺にもボルトが並ぶ(M8・最大間隔100mm、標準仕様書 表3.2.4)
+  const pitchSel=$("d-bolt-pitch").value;
   if(c.type==="rect"){
     const peri=2*(c.a+c.b);
-    const n=Math.max(4, Math.ceil(peri/pitch));
-    $("d-bolt-n").textContent=n+" 本";
+    if(pitchSel==="corner"){
+      $("d-bolt-n").textContent="4 本＋押え金具";
+    } else {
+      const n=Math.max(4, Math.ceil(peri/(+pitchSel||100)));
+      $("d-bolt-n").textContent=n+" 本";
+    }
   } else {
     $("d-bolt-n").textContent="—(継手による)";
   }
@@ -4149,8 +4252,10 @@ dlRenderList();
 
 /* ========== TOOL 02: 換気量 ========== */
 let vMode="nc";
-const vSecs={nc:["v-sec-vol","v-sec-nc"],co2:["v-sec-vol","v-sec-co2"],fire:["v-sec-fire"],law:["v-sec-law"]};
-const vAllSecs=["v-sec-vol","v-sec-nc","v-sec-co2","v-sec-fire","v-sec-law"];
+const vSecs={nc:["v-sec-vol","v-sec-nc"],co2:["v-sec-vol","v-sec-co2"],fire:["v-sec-fire"],law:["v-sec-law"],park:["v-sec-park"]};
+const vAllSecs=["v-sec-vol","v-sec-nc","v-sec-co2","v-sec-fire","v-sec-law","v-sec-park"];
+// シックハウス対策の必要換気回数(令第20条の8): 住宅等の居室0.5、その他の居室0.3。0.3未満=赤、0.5未満=注意
+const vBarColor=n=>n<0.3?"var(--ng)":n<0.5?"var(--warn)":"var(--ac)";
 
 function vShowSecs(){vAllSecs.forEach(id=>$(id).classList.toggle("hidden",!vSecs[vMode].includes(id)));}
 
@@ -4162,8 +4267,8 @@ function vCalc(){
     Q=V*N;extra={label:"換気回数",val:N.toFixed(1)+" 回/h"};note=`V×N = ${V} m³ × ${N} 回/h`;
     barShow=true;const pct=Math.min(N/10*100,100);
     $("v-bar-fill").style.width=pct+"%";
-    $("v-bar-fill").style.background=N<0.5?"var(--ng)":N<1?"var(--warn)":"var(--ac)";
-    $("v-bar-min").textContent="建基法最低 0.5回/h";$("v-bar-cur").textContent=N.toFixed(1)+" 回/h";
+    $("v-bar-fill").style.background=vBarColor(N);
+    $("v-bar-min").textContent="シックハウス 住宅0.5／その他0.3回/h";$("v-bar-cur").textContent=N.toFixed(1)+" 回/h";
   } else if(vMode==="co2"){
     const V=vGetVol(),P=+$("v-co2-p").value||0,rSel=$("v-co2-rate").value;
     let r, noteRate;
@@ -4177,17 +4282,21 @@ function vCalc(){
     }
     Q=P*r;const Nact=V>0?Q/V:0;showN=true;
     $("v-res-n").textContent=Nact.toFixed(2)+" 回/h";
-    $("v-res-n").className=Nact<0.5?"ng":Nact<1?"warn":"ok";
+    $("v-res-n").className=Nact<0.3?"ng":Nact<0.5?"warn":"ok";
     extra={label:"在室人員",val:P+" 人 × "+r.toFixed(1)+" m³/h"};note=noteRate;
     barShow=true;const pct=Math.min(Nact/5*100,100);
     $("v-bar-fill").style.width=pct+"%";
-    $("v-bar-fill").style.background=Nact<0.5?"var(--ng)":Nact<1?"var(--warn)":"var(--ac)";
+    $("v-bar-fill").style.background=vBarColor(Nact);
     $("v-bar-min").textContent="換気回数";$("v-bar-cur").textContent=Nact.toFixed(2)+" 回/h";
   } else if(vMode==="fire"){
-    const K=+$("v-fire-k").value||0.93,Qf=+$("v-fire-q").value||0;
-    Q=40*K*Qf;extra={label:"発熱量 × 40K",val:`40 × ${K} × ${Qf.toFixed(1)} kW`};note="建基法 第20条の3: V=40KQ";
+    const kSel=$("v-fire-k").value, K=parseFloat(kSel)||0.93, Qf=+$("v-fire-q").value||0;
+    const nH=+($("v-fire-hood")?.value)||30, isKero=kSel==="12.1", qU=isKero?"kg/h":"kW";
+    $("v-fire-q-label").textContent=`燃料消費量 Q [${qU}]`;
+    const hoodName={30:"排気フードⅠ型",20:"排気フードⅡ型",40:"フードなし",2:"煙突"}[nH]||"";
+    Q=nH*K*Qf;extra={label:`${hoodName} ${nH}KQ`,val:`${nH} × ${K} × ${Qf.toFixed(1)} ${qU}`};note=`建基法施行令 第20条の3・告示1826号: V=${nH}KQ`;
   } else if(vMode==="law"){
-    const Af=+$("v-law-af").value||0, Aw=+$("v-law-aw").value||0, N=+$("v-law-n").value||10;
+    const Af=+$("v-law-af").value||0, Aw=+$("v-law-aw").value||0, Nin=+$("v-law-n").value||10;
+    const Ncap=+($("v-law-use")?.value)||10, N=Math.min(Nin,Ncap);
     const ratio=Af>0?Aw/Af:0, needRatio=1/20, natOk=ratio>=needRatio;
     $("v-law-ratio").innerHTML=`<b class="${natOk?"ok":"ng"}" style="font-size:inherit">${(ratio*100).toFixed(2)}%</b>`;
     $("v-law-judge").innerHTML=natOk
@@ -4195,10 +4304,20 @@ function vCalc(){
       :'<span style="color:var(--ng)">機械換気が必要(開口比が1/20未満)</span>';
     $("v-law-judge").style.background=natOk?"rgba(101,212,154,.12)":"rgba(240,105,122,.12)";
     Q=N>0?Math.round(20*Af/N):0;
-    extra={label:"床面積Af ÷ N",val:`${Af} m² ÷ ${N} m²/人`};
+    extra={label:"床面積Af ÷ N",val:`${Af} m² ÷ ${N} m²/人`+(Nin>Ncap?`（入力${Nin}→上限${Ncap}）`:"")};
     note=natOk
       ?`参考: 機械換気を行う場合の最低必要量 V=20Af/N(現状は自然換気で法定開口基準1/20を満たす)`
       :`V=20Af/N(建築基準法施行令 第20条の2)。自然換気の開口基準(床面積の1/20以上)を満たさないため機械換気設備が必要`;
+  } else if(vMode==="park"){
+    const A=+$("v-park-a").value||0, Ao=+$("v-park-open").value||0;
+    const exempt=A>0&&Ao>=A/10;
+    $("v-park-judge").innerHTML=exempt
+      ?'<span style="color:var(--ok)">開口部が床面積の1/10以上: 換気装置の設置義務なし(施行令12条ただし書)</span>'
+      :'<span style="color:var(--ng)">換気装置が必要(開口部が床面積の1/10未満)</span>';
+    $("v-park-judge").style.background=exempt?"rgba(101,212,154,.12)":"rgba(240,105,122,.12)";
+    Q=14*A;
+    extra={label:"床面積 × 14",val:`${A} m² × 14 m³/h`};
+    note=exempt?"参考: 換気装置を設ける場合の能力 14 m³/h・m²(駐車場法施行令 第12条)":"駐車場法施行令 第12条: 床面積1m²につき毎時14m³以上";
   }
   $("v-res-q").textContent=Math.round(Q).toLocaleString();
   $("v-kv-n").style.display=showN?"flex":"none";
@@ -4230,8 +4349,8 @@ function vGetVol(){
 $("v-nc-preset").addEventListener("change",()=>{
   $("v-nc-custom-box").classList.toggle("hidden",$("v-nc-preset").value!=="custom");vCalc();
 });
-["v-vol","v-nc-custom","v-co2-p","v-fire-q","v-w","v-d","v-h","v-law-af","v-law-aw","v-law-n"].forEach(id=>$(id).addEventListener("input",vCalc));
-["v-co2-rate","v-fire-k"].forEach(id=>$(id).addEventListener("change",vCalc));
+["v-vol","v-nc-custom","v-co2-p","v-fire-q","v-w","v-d","v-h","v-law-af","v-law-aw","v-law-n","v-park-a","v-park-open"].forEach(id=>$(id).addEventListener("input",vCalc));
+["v-co2-rate","v-fire-k","v-fire-hood","v-law-use"].forEach(id=>$(id).addEventListener("change",vCalc));
 ["v-co2-gen","v-co2-out","v-co2-in"].forEach(id=>$(id)?.addEventListener("input",vCalc));
 $("v-co2-rate").addEventListener("change",()=>{
   $("v-co2-detail").classList.toggle("hidden",$("v-co2-rate").value!=="custom");
@@ -4315,6 +4434,9 @@ function gCalc(){
       if(cands.length>=12)break;
     }
   } else {
+  // 現場の制気口は高さ100〜300mmの横長サイズ(400×150、500×150など)から選ぶことが多いので、
+  // 高さ300以下・横長(幅/高さ≧2)の候補を先に、その中で有効面積の小さい順に並べる
+  const all=[];
   for(const w of GRILLE_W){
     for(const h of GRILLE_W){
       if(h>w)break;
@@ -4326,11 +4448,11 @@ function gCalc(){
       const vReal=Q1/(3600*(w/1000)*(h/1000)*(ratio/100));
       // 有効面積がAreqの3倍以上は除外(過大サイズ)
       if(Aeff>Areq*3)continue;
-      cands.push({w,h,Aeff,vReal,label:w+"×"+h});
-      if(cands.length>=12)break;
+      all.push({w,h,Aeff,vReal,label:w+"×"+h,pref:(h<=300&&w/h>=2)?0:1});
     }
-    if(cands.length>=12)break;
   }
+  all.sort((x,y)=>x.pref-y.pref||x.Aeff-y.Aeff);
+  cands.push(...all.slice(0,12));
   }
 
   const list=$("g-sel-list");list.innerHTML="";
@@ -5240,12 +5362,14 @@ function wtPump(c,Qls){
   const local=+$('wt-local').value||2.0;
   const equip=+$('wt-equip').value||0;
   const eff=(+$('wt-eff').value||60)/100;
+  const hStatic=+($('wt-static')?.value)||0;           // 実揚程 [m]（開放回路のみ）
+  const hMargin=(+($('wt-hmargin')?.value)||0)/100;    // 揚程の余裕
   // 管摩擦損失 [kPa] = R[Pa/m] × L × 局部係数 / 1000
   const pfric=c.R*L*local/1000;
   // 全圧損 [kPa]
   const totalKpa=pfric+equip;
-  // 全揚程 [m] = totalKpa*1000 / (ρg)
-  const head=totalKpa*1000/(1000*9.80665);
+  // 全揚程 [m] = (損失水頭 + 実揚程) × (1+余裕)
+  const head=(totalKpa*1000/(1000*9.80665)+hStatic)*(1+hMargin);
   // 軸動力 [kW] = ρg·Q·H / (η·1000), Q[m3/s]
   const Qm3s=Qls/1000;
   const power=1000*9.80665*Qm3s*head/(eff*1000);
@@ -5265,11 +5389,11 @@ document.querySelectorAll('[data-wm]').forEach(t=>t.onclick=()=>{
   else{$('wt-t1').value=50;$('wt-t2').value=45;}
   wtCalc();
 });
-['wt-q','wt-t1','wt-t2','wt-len','wt-equip','wt-eff'].forEach(id=>{
+['wt-q','wt-t1','wt-t2','wt-len','wt-equip','wt-eff','wt-static'].forEach(id=>{
   const el=$(id);
   if(el){el.addEventListener('input',wtCalc);el.addEventListener('change',wtCalc);}
 });
-['wt-pipe','wt-local','wt-rmax'].forEach(id=>$(id)?.addEventListener('change',wtCalc));
+['wt-pipe','wt-local','wt-rmax','wt-hmargin'].forEach(id=>$(id)?.addEventListener('change',wtCalc));
 
 /* ========== TOOL 08: 屋外騒音 ========== */
 let nzMode='a';
@@ -5943,8 +6067,8 @@ function drCalc(){
   $('dr-r-grade').textContent='1/'+n;
   $('dr-r-pct').textContent=pct.toFixed(2)+' %';
 
-  // 支持間隔: 配管が長いほど標準1.2~1.5mを採用(簡易: 1.2m)
-  const supportSpan=1.2;
+  // 支持間隔: 塩ビ管の吊り間隔(公共仕様 表2.2.20)。勾配1/50・1/100(80A以下想定)=1.0m、1/150・1/200(125A以上)=2.0m
+  const supportSpan=(sizeVal!=='custom'&&n>=150)?2.0:1.0;
   $('dr-r-support').textContent=supportSpan.toFixed(1)+' m';
   const points=Math.ceil(L/supportSpan)+1;
   $('dr-r-points').textContent=points+' 点';
@@ -6014,7 +6138,8 @@ const HG_ANCHOR_STD_KN={ s:2.5, m:4.5 };
 const HG_BOLTS=HG_BOLT_DEFS; // 互換用
 
 /* ---- 吊り支持 定数 ---- */
-const HG_SEISMIC_FACTOR  = { standard:1.0, seismic:1.3, critical:1.5 };
+// 耐震支持部材に求める強度（全配管重量に対する倍率）SA種1.0／A種0.6／B種0.6
+const HG_SEISMIC_FACTOR  = { A:0.6, B:0.6, SA:1.0 };
 const HG_ECCENTRIC_FACTOR= { none:1.0, valve:1.15, equipment:1.25, chamber:1.35 };
 const HG_INSUL_DENSITY   = 50; // 保温材概算密度 [kg/m³] (グラスウール24kg/m³等の平均)
 
@@ -6029,9 +6154,9 @@ function calculateInsulationWeight(pipeOD_mm, insulThick_mm, length_m) {
   return vol * HG_INSUL_DENSITY; // kg
 }
 
-/** 耐震考慮荷重 [kgf] */
-function calculateSeismicLoad(loadPerPoint, seismicKey) {
-  return loadPerPoint * (HG_SEISMIC_FACTOR[seismicKey] || 1.0);
+/** 耐震支持1箇所の設計用水平力 [kgf] = 耐震支持間隔分の重量 × 種別の倍率 */
+function calculateSeismicLoad(weightBetweenBraces, seismicKey) {
+  return weightBetweenBraces * (HG_SEISMIC_FACTOR[seismicKey] || 0.6);
 }
 
 /** 偏荷重補正後荷重 [kgf] */
@@ -6041,7 +6166,8 @@ function calculateEccentricLoad(totalLoad, eccentricKey) {
 
 function hgCalc(){
   let L, span, baseLoad, spanLabel, braceLabel, braceCount;
-  const seismicKey  = $('hg-seismic')?.value    || 'standard';
+  const seismicKey  = $('hg-seismic')?.value    || 'A';
+  let braceSpanM=0;
   const eccentricKey= $('hg-eccentric')?.value   || 'none';
   const eccK        = HG_ECCENTRIC_FACTOR[eccentricKey]||1.0;
 
@@ -6055,7 +6181,7 @@ function hgCalc(){
     const weightPerM=perimeter*8; // 鋼板+保温 8kg/m²
     baseLoad=weightPerM*L;
     $('hg-note').textContent=`ダクト周長 ${perimeter.toFixed(2)}m × 8kg/m² × ${L}m`;
-    braceLabel='12.0m以下ごと+末端';
+    braceLabel='12.0m以下ごと+末端'; braceSpanM=12;
     braceCount=L>0?Math.max(1,Math.ceil(L/12)):0;
     if($('hg-r-insul-row')) $('hg-r-insul-row').style.display='none';
   } else if(hgPipeSub==='riser'){
@@ -6104,10 +6230,11 @@ function hgCalc(){
     $('hg-note').textContent=`配管 ${massPerM}kg/m × ${L}m`+(insulWt>0?` + 保温 ${insulWt.toFixed(1)}kg`:'');
     const braceSpan=parseFloat(braceStr)||0;
     if(braceSpan>0){
+      braceSpanM=braceSpan;
       braceLabel=braceSpan.toFixed(1)+'m以下ごと';
       braceCount=L>0?Math.max(1,Math.ceil(L/braceSpan)):0;
     } else {
-      braceLabel='不要(目安: 鋼管40A以下等)';
+      braceLabel='不要(鋼管40A以下・銅管/塩ビ管20A以下)';
       braceCount=null;
     }
   }
@@ -6118,8 +6245,10 @@ function hgCalc(){
   // 偏荷重補正後総荷重
   const adjLoad=calculateEccentricLoad(baseLoad,eccentricKey);
   const loadPerPoint=adjLoad/points;
-  // 耐震考慮荷重（1本あたり）
-  const seismicLoad=calculateSeismicLoad(loadPerPoint,seismicKey);
+  // 吊りボルトは鉛直荷重で判定（地震の水平力は振れ止め＝耐震支持で受ける）
+  const seismicLoad=loadPerPoint;
+  // 耐震支持1箇所の設計用水平力 = 耐震支持間隔(長さがそれより短ければ全長)分の重量 × 種別の倍率
+  const hForce = braceSpanM>0 ? calculateSeismicLoad(adjLoad/L*Math.min(braceSpanM,L), seismicKey) : 0;
 
   $('hg-r-count').textContent=points;
   $('hg-r-span').textContent=spanLabel;
@@ -6146,12 +6275,13 @@ function hgCalc(){
     ? `${Math.floor(pick.an)} kgf（${(pick.an*9.80665/1000).toFixed(1)} kN）`
     : (anchorMode==='none' ? '判定しない（別途確認）' : '例なし（メーカー値で確認）');
   if($('hg-r-govern')) $('hg-r-govern').textContent = `${bolt.allow} kgf（${pick.anchorGov?'アンカーで決まる':'ボルト本体で決まる'}）`;
-  if($('hg-r-seismicload')) $('hg-r-seismicload').textContent=
-    seismicLoad.toFixed(1)+` kgf（×${HG_SEISMIC_FACTOR[seismicKey]}）`;
+  if($('hg-r-seismicload')) $('hg-r-seismicload').textContent = braceSpanM>0
+    ? `${hForce.toFixed(1)} kgf（${(hForce*9.80665/1000).toFixed(2)} kN・${seismicKey}種 重量×${HG_SEISMIC_FACTOR[seismicKey]}）`
+    : '—（振れ止め不要の区分・立て管）';
 
   const margin=bolt.allow>0?(1-seismicLoad/bolt.allow)*100:0;
   if($('hg-r-seismicok')) $('hg-r-seismicok').textContent=
-    margin>=0?`余裕 ${margin.toFixed(0)}%`:'⚠️ 耐震荷重超過';
+    margin>=0?`余裕 ${margin.toFixed(0)}%`:'⚠️ 許容荷重超過';
 
   const pct=Math.min(seismicLoad/bolt.allow*100,100);
   $('hg-vb').style.width=pct+'%';
@@ -6170,11 +6300,11 @@ function hgCalc(){
   // 警告
   const warns=[];
   if(seismicLoad>bolt.allow) warns.push(pick.anchorGov
-    ? '🔴 耐震考慮荷重がアンカーの許容引抜荷重を超過。アンカーの種類・埋込長さの変更、または吊り本数の追加を検討してください。'
-    : '🔴 耐震考慮荷重が吊りボルト許容荷重を超過。ボルトサイズアップまたは本数増を検討してください。');
+    ? '🔴 1本あたり荷重がアンカーの許容引抜荷重を超過。アンカーの種類・埋込長さの変更、または吊り本数の追加を検討してください。'
+    : '🔴 1本あたり荷重が吊りボルト許容荷重を超過。ボルトサイズアップまたは本数増を検討してください。');
   if(anchorMode!=='none' && pick.an==null) warns.push('ℹ️ このボルト径のアンカー許容荷重の例はありません。使うアンカーのメーカー値を「任意入力」で入れてください。');
   if(span>3.0) warns.push('⚠️ 支持間隔が3.0mを超えています。耐震ブレースを推奨します。');
-  if(seismicKey==='critical') warns.push('ℹ️ 防災設備（重要度係数1.5）: 耐震支持・ブレース詳細検討を行ってください。');
+  if(seismicKey==='SA') warns.push('ℹ️ SA種: 形鋼の耐震支持で全配管重量×1.0の水平力に耐える部材・取付けを選定してください。');
   if(eccK>1.2) warns.push('⚠️ 偏荷重係数が1.2超: 支持追加を検討してください。');
   const wDiv=$('hg-warns');
   if(wDiv) wDiv.innerHTML=warns.map(m=>`<div style="margin-bottom:4px;padding:5px 8px;background:rgba(255,160,0,.12);border-left:3px solid #f90;border-radius:4px;font-size:11px">${m}</div>`).join('');
@@ -8069,18 +8199,18 @@ function elDaikinSelect(){
 
 function elPreset(kw){
   $('el-phase').value='3p200';
-  $('el-type').value='motor';
+  $('el-type').value='inverter'; // VRV室外機はインバーター機器。消費電力から電流を出す
+  if($('el-start')) $('el-start').value='inverter';
   $('el-kw').value=kw;
   $('el-pf').value='0.90';
   $('el-eff').value='1.0';
   if($('el-circuits'))$('el-circuits').value='1';
   if($('el-cond-t'))$('el-cond-t').value='75';
-  elCalc();
+  elToggleStartMethod(); // 起動方式の行の表示も切り替えてから再計算
   // 結果カードまでスクロール
   document.querySelector('#tool-elec .card:nth-child(3)').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// CVケーブル参考許容電流（管内配線・30°C・単管の概算値。内線規程非準拠）
 // CV 3芯 許容電流（低圧・周囲温度40°C・管内）
 const EL_CV=[
   {size:2,   ia:23,  label:'2'},
@@ -8131,18 +8261,29 @@ const EL_INSTALL = {
 const EL_GROUP_F = [1.00, 0.80, 0.70, 0.65, 0.60, 0.55]; // 1条〜6条以上
 
 /* ---- ELBリスクテーブル ---- */
+// 分岐回路のELBは人体保護のため高速形（0.1秒以内）。時延形は幹線側との協調用で、分岐の推奨にはしない
+// インバーター機器はメーカーが「インバーター回路用（対応品）30mA または 100mA・0.1秒以内」を指定する例が多い
 const EL_ELB = {
-  general:     { sens:30,  type:'高速形', risk:null,
-                 note:'一般回路（電技解釈 36条準拠）' },
-  motor:       { sens:30,  type:'高速形', risk:null,
-                 note:'小容量電動機（<7.5kW）' },
-  motor_hv:    { sens:200, type:'時延形', risk:null,
-                 note:'大容量電動機（≥7.5kW）: 始動突入誤動作防止' },
-  inverter_sm: { sens:100, type:'時延形', risk:'誤動作リスク中',
-                 note:'INV機器（<22kW）: 高周波漏洩電流対策。INV対応品推奨' },
-  inverter_lg: { sens:200, type:'時延形', risk:'誤動作リスク高',
-                 note:'INV機器（≥22kW）: ZCT+OCR構成または高感度INV対応ELB要検討' },
+  general:     { sens:30,  type:'高速形（0.1秒以内）', risk:null,
+                 note:'一般回路（電技解釈 36条）。水気のある場所・屋外は30mA' },
+  motor:       { sens:30,  type:'高速形（0.1秒以内）', risk:null,
+                 note:'電動機回路。漏れ電流が大きく不要動作する場合は100mA高速形を検討' },
+  motor_hv:    { sens:30,  type:'高速形（0.1秒以内）', risk:null,
+                 note:'電動機回路。漏れ電流が大きく不要動作する場合は100mA高速形を検討' },
+  inverter_sm: { sens:'30／100', type:'高速形（0.1秒以内）・インバーター対応品', risk:null,
+                 note:'インバーター機器。メーカー指定の定格感度電流を優先' },
+  inverter_lg: { sens:'30／100', type:'高速形（0.1秒以内）・インバーター対応品', risk:null,
+                 note:'インバーター機器。メーカー指定の定格感度電流を優先' },
 };
+// 内線規程の許容電圧降下[%]。こう長60m以下は幹線・分岐それぞれ、60m超は幹線＋分岐の合計
+//（電気事業者から低圧で受電 / 構内の変圧器から供給）
+function elVdAllow(basis, L){
+  const tr = basis.endsWith('-tr'), trunk = basis.startsWith('tr-');
+  if (L<=60) return trunk ? (tr?3:2) : 2;
+  if (L<=120) return tr?5:4;
+  if (L<=200) return tr?6:5;
+  return tr?7:6;
+}
 
 /* ==============================================
    Core Functions — 純粋計算（UI非依存）
@@ -8155,6 +8296,12 @@ const EL_ELB = {
 function elCalcIr(kw, V, pf, eff, is3p) {
   const d = is3p ? Math.sqrt(3)*V*pf*eff : V*pf*eff;
   return d > 0 ? kw*1000/d : 0;
+}
+/** 三相電動機の規約電流 [A]（内線規程の規約電流表。動力盤タブと同じ表）。表の範囲外は null */
+function elYakudenIr(kw, V){
+  if (!(kw>0) || kw>EL_YAKUDEN.at(-1).kw) return null;
+  const row = EL_YAKUDEN.find(r=>kw<=r.kw);
+  return V===400 ? row.ia/2 : row.ia;
 }
 
 /** 設計電流 [A]  内線規程 3705-1
@@ -8336,9 +8483,7 @@ function elGenerateWarnings({ Id, Istart, vdPct, adoptedCv, mccbResult, Ik }) {
 
   // 電圧降下（内線規程 1360-1: 最終回路2%・幹線3%が目安）
   if (vdPct > 3)
-    w('warn', `許容電圧降下 ${vdPct}% は幹線基準 3% 超過。長距離回路はサイズアップを検討してください。`);
-  else if (vdPct > 2)
-    w('info', `許容電圧降下 ${vdPct}%。最終回路の標準は 2% 以内（内線規程 1360-1）。`);
+    w('info', `許容電圧降下 ${vdPct}%。60mを超える回路は内線規程で幹線＋分岐の合計（低圧受電 4〜6%、構内変圧器 5〜7%）で確認してください。`);
 
   // ケーブル未選定
   if (!adoptedCv)
@@ -8397,6 +8542,9 @@ function elCalc() {
   const pf          = +($('el-pf')?.value)   || 0.85;
   const eff         = +($('el-eff')?.value)  || 0.85;
   const L           = +($('el-len')?.value)  || 0;
+  const vdBasis     = $('el-vd-basis')?.value || 'manual';
+  if (vdBasis!=='manual' && $('el-vd')) $('el-vd').value = elVdAllow(vdBasis, +($('el-len')?.value)||0);
+  if ($('el-vd')) $('el-vd').readOnly = vdBasis!=='manual';
   const vdPct       = +($('el-vd')?.value)   || 2;
   const ambTemp     = +($('el-amb')?.value)  || 40;
   const circuits    = +($('el-circuits')?.value) || 1;
@@ -8409,10 +8557,16 @@ function elCalc() {
   const isMotor     = loadType==='motor'||loadType==='inverter';
 
   // --- 計算 ---
-  const Ir        = elCalcIr(kw, V, pf, eff, is3p);
+  // 三相の電動機は規約電流表（銘板の定格出力から）。インバーター機器・一般負荷・単相は消費電力と力率から計算
+  const yIr       = (loadType==='motor' && is3p) ? elYakudenIr(kw, V) : null;
+  const Ir        = yIr ?? elCalcIr(kw, V, pf, eff, is3p);
   const Id        = elCalcId(Ir, loadType);
   const Istart    = elCalcIstart(Ir, loadType, startMethod);
-  const vdMin     = elVdMinSize(Id, L, V, vdPct, condTemp, is3p);
+  // 電圧降下は実際に流れる負荷電流（定格電流 Ir）で計算する（×1.25の設計電流は使わない）
+  const vdMin     = elVdMinSize(Ir, L, V, vdPct, condTemp, is3p);
+  if ($('el-kw-label')) $('el-kw-label').textContent = loadType==='motor' ? '定格出力 P [kW]（銘板値）' : '消費電力 P [kW]';
+  if ($('el-vd-note')) $('el-vd-note').textContent = vdBasis==='manual' ? '手入力の値を使います。'
+    : `こう長 ${L}m → 許容 ${vdPct}%（${L<=60?'60m以下は幹線・分岐それぞれの値':'60m超は幹線＋分岐の合計の値'}）`;
   const cableByI  = elSelectCable(Id, ambTemp, installM, circuits);
   const cableByVd = EL_CV.find(r => r.size >= vdMin);
   // 電流・電圧降下の両条件を満たす最小サイズ
@@ -8445,7 +8599,7 @@ function elCalc() {
   const set = (id, v) => { const el=$(id); if(el) el.textContent=v; };
 
   // 定格・設計電流
-  set('el-r-ir', kw>0 ? fA(Ir) : '—');
+  set('el-r-ir', kw>0 ? fA(Ir)+(yIr!=null?'（規約電流表）':'') : '—');
   set('el-r-id-label', isMotor ? `設計電流（Ir × ${EL_MOTOR_K}）` : '設計電流');
   set('el-r-id', kw>0 ? fA(Id) : '—');
 
@@ -8464,12 +8618,12 @@ function elCalc() {
   set('el-r-ia-corr', adoptedCv?.ia_corr
     ? `${adoptedCv.ia_corr.toFixed(1)} A（${EL_INSTALL[installM]?.name}・${ambTemp}°C・${circuits}条）` : '—');
   set('el-r-aca', cableByI ? `${cableByI.size} mm²` : '—');
-  set('el-r-avd', vdMin>0 ? `${vdMin.toFixed(2)} mm²（導体${condTemp}°C補正）` : '—');
+  set('el-r-avd', vdMin>0 ? `${vdMin.toFixed(2)} mm²（定格電流・導体${condTemp}°C補正）` : '—');
 
   // 採用サイズ・配線仕様
   if (adoptedCv) {
     set('el-r-size', adoptedCv.label+' mm²');
-    set('el-r-spec', is3p ? `CV ${adoptedCv.label}mm²-3C` : `CV ${adoptedCv.label}mm²-2C`);
+    set('el-r-spec', is3p ? `CV ${adoptedCv.label}mm²-3C（接地線は別途）`+(adoptedCv.size>=22?'／CVT も可（許容電流はメーカー表で確認）':'') : `CV ${adoptedCv.label}mm²-3C（2心＋接地線）`);
   } else {
     set('el-r-size', '表範囲外'); set('el-r-spec', '—');
   }
@@ -8532,6 +8686,7 @@ function elCalc() {
 }
 
 // --- イベントリスナー ---
+$('el-vd-basis')?.addEventListener('change', elCalc);
 ['el-kw','el-pf','el-eff','el-len','el-vd','el-amb','el-circuits','el-cond-t','el-kva','el-pctz']
   .forEach(id=>{ if($(id)) $(id).addEventListener('input', elCalc); });
 ['el-phase','el-type','el-install','el-start','el-start-sec']
