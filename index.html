@@ -201,12 +201,12 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--pill:#fff}
 .plm-fig svg{width:100%;height:auto;display:block}
 .plm-row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:2px 6px 4px}
-.plm-planbox{flex:0 0 42%;min-width:150px;max-width:190px}
-.plm-legend{flex:1 1 150px;display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--sub)}
-.plm-legend .plm-k{color:var(--tx);font-size:13px}
+.plm-planbox{flex:0 0 40%;min-width:140px;max-width:190px}
+.plm-legend{flex:1 1 0;min-width:max-content;display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--sub);white-space:nowrap}
+.plm-legend .plm-k{color:var(--tx);font-size:12px}
 .plm-legend .plm-mono{font-family:monospace}
 .plm-legend .plm-it{font-style:italic}
-.plm-legend .plm-note{font-size:10.5px;line-height:1.5;margin-top:2px}
+.plm-legend .plm-note{font-size:9.5px;margin-top:2px}
 .plm-key{display:flex;flex-wrap:wrap;gap:2px 14px}
 .plm-key>span{white-space:nowrap}
 .plm-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
@@ -3111,10 +3111,10 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   </g>
 </svg></div>
   <div class="plm-legend">
-    <span><b class="plm-k plm-mono">d</b>　出入口距離（入口の中心から出口の中心までの距離）</span>
-    <span><b class="plm-k plm-it">θ</b>　角度（出口ダクトの中心線と d のなす角）</span>
+    <span><b class="plm-k plm-mono">d</b>　出入口の中心間距離</span>
+    <span><b class="plm-k plm-it">θ</b>　出口の軸と d のなす角</span>
     <span class="plm-key"><span><i style="border-color:var(--in)"></i>音が入る</span><span><i style="border-color:var(--ac)"></i>音が出る</span></span>
-    <span class="plm-note">左下は真上から見た平面図です。θ と d は、こちらが実寸の形です。</span>
+    <span class="plm-note">左下：真上から見た実寸の図</span>
   </div>
 </div>
 </div>
