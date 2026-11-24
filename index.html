@@ -2148,6 +2148,24 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
       </select>
     </div>
   </div>
+  <div class="row">
+    <div>
+      <label>吊りボルトの種類</label>
+      <select id="hg-bolt-series">
+        <option value="W" selected>インチ（W3/8・W1/2・W5/8）</option>
+        <option value="M">ミリ（M10・M12・M16）</option>
+      </select>
+    </div>
+    <div>
+      <label>天井側の取付け（アンカー）</label>
+      <select id="hg-anchor">
+        <option value="std" selected>あと施工アンカー（標準図の例: 3分 2.5kN／4分 4.5kN）</option>
+        <option value="custom">任意入力（メーカーの長期許容引抜荷重）</option>
+        <option value="none">インサート・形鋼など（ここでは判定しない）</option>
+      </select>
+      <input id="hg-anchor-custom" class="hidden" type="number" inputmode="decimal" step="0.1" placeholder="長期許容引抜荷重 kN" style="margin-top:4px">
+    </div>
+  </div>
 </div>
 
 <div class="card">
@@ -2160,7 +2178,9 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
     <div class="kv"><span>偏荷重考慮後 総荷重</span><b id="hg-r-adjload">-</b></div>
     <div class="kv"><span>1本あたり荷重</span><b id="hg-r-load">-</b></div>
     <div class="kv"><span>推奨ボルト</span><b id="hg-r-bolt">-</b></div>
-    <div class="kv"><span>許容荷重</span><b id="hg-r-allow">-</b></div>
+    <div class="kv"><span>許容荷重（ボルト）</span><b id="hg-r-allow">-</b></div>
+    <div class="kv"><span>許容荷重（アンカー）</span><b id="hg-r-anchor">-</b></div>
+    <div class="kv"><span>判定に使う許容荷重</span><b id="hg-r-govern">-</b></div>
     <div class="kv" style="border-top:1px solid var(--line)"><span>耐震考慮荷重（1本）</span><b id="hg-r-seismicload" style="color:var(--ac)">-</b></div>
     <div class="kv"><span>耐震余裕度</span><b id="hg-r-seismicok">-</b></div>
   </div>
@@ -5974,12 +5994,24 @@ $('dr-size').addEventListener('change',()=>{
 let hgMode='duct';
 let hgPipeSub='horiz';
 // ボルト許容引張荷重[kgf] (強度区分4.6・安全率4 目安)
-const HG_BOLTS=[
-  {name:'W3/8(3分)/M9',allow:150},
-  {name:'M10',allow:200},
-  {name:'M12',allow:290},
-  {name:'M16',allow:540},
+// 吊りボルト本体の長期許容引張荷重 [kgf]
+//  SS400: 基準強度 F=235 N/mm²、長期許容引張応力 ft=F/1.5（平12建告2464号の考え方）
+//  断面積はねじの谷径（JIS のねじ寸法から算出）で安全側に評価: 許容荷重 = 谷径断面積 × ft
+//  （旧値 W3/8:150, M10:200, M12:290, M16:540kgf は出典不明で、ボルト本体の約1/4〜1/5だった）
+const HG_FT_LONG = 235/1.5; // N/mm²
+const HG_BOLT_DEFS=[
+  {name:'W3/8（3分）', series:'W', d:9.525,  rootA:44.1,  anchorKey:'s'},
+  {name:'W1/2（4分）', series:'W', d:12.7,   rootA:78.4,  anchorKey:'m'},
+  {name:'W5/8（5分）', series:'W', d:15.875, rootA:131.1, anchorKey:null},
+  {name:'M10',         series:'M', d:10,     rootA:52.3,  anchorKey:'s'},
+  {name:'M12',         series:'M', d:12,     rootA:76.2,  anchorKey:'m'},
+  {name:'M16',         series:'M', d:16,     rootA:144.1, anchorKey:null},
 ];
+HG_BOLT_DEFS.forEach(b=>{ b.allow=Math.floor(b.rootA*HG_FT_LONG/9.80665); });
+// あと施工アンカーの長期許容引抜荷重の例 [kN]（公共建築設備工事標準図の値として紹介されている例）
+//  s: M10・W3/8 用 埋込45mm 2.5kN / m: M12・W1/2 用 埋込60mm 4.5kN。実際は使うアンカーのメーカー値で確認
+const HG_ANCHOR_STD_KN={ s:2.5, m:4.5 };
+const HG_BOLTS=HG_BOLT_DEFS; // 互換用
 
 /* ---- 吊り支持 定数 ---- */
 const HG_SEISMIC_FACTOR  = { standard:1.0, seismic:1.3, critical:1.5 };
@@ -6095,9 +6127,25 @@ function hgCalc(){
   if($('hg-r-adjload'))  $('hg-r-adjload').textContent=adjLoad.toFixed(1)+` kgf（×${eccK}）`;
   $('hg-r-load').textContent=loadPerPoint.toFixed(1)+' kgf';
 
-  const bolt=HG_BOLTS.find(b=>b.allow>=seismicLoad)||HG_BOLTS[HG_BOLTS.length-1];
-  $('hg-r-bolt').textContent=bolt.name;
-  $('hg-r-allow').textContent=bolt.allow+' kgf';
+  // ボルト本体とアンカー（天井側の取付け）を分けて判定し、弱い方で決める
+  const series=$('hg-bolt-series')?.value||'W';
+  const anchorMode=$('hg-anchor')?.value||'std';
+  const anchorCustomKgf=(+($('hg-anchor-custom')?.value)||0)*1000/9.80665;
+  const anchorAllowOf=b=>{
+    if(anchorMode==='none') return null;
+    if(anchorMode==='custom') return anchorCustomKgf>0?anchorCustomKgf:null;
+    return b.anchorKey?HG_ANCHOR_STD_KN[b.anchorKey]*1000/9.80665:null;
+  };
+  const evalBolt=b=>{const an=anchorAllowOf(b);return {b,an,gov:an!=null?Math.min(b.allow,an):b.allow,anchorGov:an!=null&&an<b.allow};};
+  const cands=HG_BOLT_DEFS.filter(b=>b.series===series).map(evalBolt);
+  const pick=cands.find(c=>c.gov>=seismicLoad)||cands[cands.length-1];
+  const bolt={name:pick.b.name, allow:Math.floor(pick.gov)};
+  $('hg-r-bolt').textContent=pick.b.name;
+  $('hg-r-allow').textContent=`ボルト本体 ${pick.b.allow} kgf（長期）`;
+  if($('hg-r-anchor')) $('hg-r-anchor').textContent = pick.an!=null
+    ? `${Math.floor(pick.an)} kgf（${(pick.an*9.80665/1000).toFixed(1)} kN）`
+    : (anchorMode==='none' ? '判定しない（別途確認）' : '例なし（メーカー値で確認）');
+  if($('hg-r-govern')) $('hg-r-govern').textContent = `${bolt.allow} kgf（${pick.anchorGov?'アンカーで決まる':'ボルト本体で決まる'}）`;
   if($('hg-r-seismicload')) $('hg-r-seismicload').textContent=
     seismicLoad.toFixed(1)+` kgf（×${HG_SEISMIC_FACTOR[seismicKey]}）`;
 
@@ -6121,7 +6169,10 @@ function hgCalc(){
 
   // 警告
   const warns=[];
-  if(seismicLoad>bolt.allow) warns.push('🔴 耐震考慮荷重が吊りボルト許容荷重を超過。ボルトサイズアップまたは本数増を検討してください。');
+  if(seismicLoad>bolt.allow) warns.push(pick.anchorGov
+    ? '🔴 耐震考慮荷重がアンカーの許容引抜荷重を超過。アンカーの種類・埋込長さの変更、または吊り本数の追加を検討してください。'
+    : '🔴 耐震考慮荷重が吊りボルト許容荷重を超過。ボルトサイズアップまたは本数増を検討してください。');
+  if(anchorMode!=='none' && pick.an==null) warns.push('ℹ️ このボルト径のアンカー許容荷重の例はありません。使うアンカーのメーカー値を「任意入力」で入れてください。');
   if(span>3.0) warns.push('⚠️ 支持間隔が3.0mを超えています。耐震ブレースを推奨します。');
   if(seismicKey==='critical') warns.push('ℹ️ 防災設備（重要度係数1.5）: 耐震支持・ブレース詳細検討を行ってください。');
   if(eccK>1.2) warns.push('⚠️ 偏荷重係数が1.2超: 支持追加を検討してください。');
@@ -6147,9 +6198,14 @@ document.querySelectorAll('[data-hgps]').forEach(t=>t.onclick=()=>{
   const el=$(id);
   if(el){el.addEventListener('input',hgCalc);el.addEventListener('change',hgCalc);}
 });
-['hg-duct-type','hg-pipe-size','hg-riser-size','hg-seismic','hg-eccentric','hg-insul-t'].forEach(id=>{
+['hg-duct-type','hg-pipe-size','hg-riser-size','hg-seismic','hg-eccentric','hg-insul-t','hg-bolt-series'].forEach(id=>{
   const el=$(id); if(el) el.addEventListener('change',hgCalc);
 });
+$('hg-anchor')?.addEventListener('change',()=>{
+  $('hg-anchor-custom').classList.toggle('hidden',$('hg-anchor').value!=='custom');
+  hgCalc();
+});
+$('hg-anchor-custom')?.addEventListener('input',hgCalc);
 if($('hg-insul-chk')) $('hg-insul-chk').addEventListener('change',()=>{
   const show=$('hg-insul-chk').checked;
   if($('hg-insul-detail')) $('hg-insul-detail').classList.toggle('hidden',!show);
