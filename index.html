@@ -85,7 +85,7 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .res-main{display:flex;align-items:baseline;gap:0;padding:2px 0}
 .res-main b{font-size:29px;color:var(--ac);font-variant-numeric:tabular-nums;font-weight:700}
 .res-main span{color:var(--sub);font-size:13px}
-.kv{display:flex;justify-content:space-between;align-items:baseline;padding:5px 2px;border-top:1px solid var(--line);font-size:14px;gap:6px}
+.kv{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;padding:5px 2px;border-top:1px solid var(--line);font-size:14px;gap:2px 6px}
 .st-dim-table{line-height:1.2}
 .st-dim-table .kv{padding:3px 2px;font-size:11.5px;border-right:none!important;flex-wrap:wrap}
 .st-dim-table .kv span{color:var(--sub);white-space:nowrap;flex:0 0 auto}
@@ -93,8 +93,11 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;min-width:0}
 .kv-grid .kv{min-width:0;border-top:1px solid var(--line);padding:5px 6px 5px 2px}
 .kv-grid .kv:nth-child(odd){border-right:1px solid var(--line)}
-.kv span:first-child{color:var(--sub);flex:1;min-width:0}
-.kv b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;text-align:right}
+/* スマホ幅で値が長いとき、項目名が1文字幅に潰れないよう値を次の行へ回す */
+.kv span:first-child{color:var(--sub);flex:1 1 min(6em,40%);min-width:0}
+.kv b{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;margin-left:auto;max-width:100%;overflow-wrap:anywhere}
+/* 鋼材の寸法表は項目名を折り返さず、入りきらない値は次の行の右寄せにする（「断面二次モーメント Ix」と値の重なり対策） */
+.st-dim-table .kv span:first-child{flex:0 0 auto}
 .kv b.ok{color:var(--ok)}.kv b.warn{color:var(--warn)}.kv b.ng{color:var(--ng)}
 .note{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.6}
 .bar{height:5px;border-radius:2px;background:var(--line);position:relative;overflow:hidden;margin-top:6px}
@@ -111,10 +114,16 @@ input:focus,select:focus{outline:none;border-color:var(--ac)}
 #ns-ref-table th,#ns-add-table th,#ns-sub-table th,#ns-oct-table th,#nc-ref-table th{color:var(--sub);font-size:11px;font-weight:400;text-align:center;padding:3px 2px;border:1px solid var(--tbl-line)}
 #ns-ref-table td,#ns-add-table td,#ns-sub-table td,#ns-oct-table td,#nc-ref-table td{text-align:center;padding:3px 2px;border:1px solid var(--tbl-line);font-size:11px}
 #ns-ref-table th:first-child,#ns-ref-table td:first-child,#ns-add-table th:first-child,#ns-add-table td:first-child,#ns-sub-table th:first-child,#ns-sub-table td:first-child,#ns-oct-table th:first-child,#ns-oct-table td:first-child,#nc-ref-table th:first-child,#nc-ref-table td:first-child{text-align:left;color:var(--sub);font-size:10px;width:52px}
+@media (max-width:380px){#ns-add-table th:first-child,#ns-add-table td:first-child,#ns-sub-table th:first-child,#ns-sub-table td:first-child{width:46px}#ns-add-table th,#ns-add-table td,#ns-sub-table th,#ns-sub-table td{padding-left:1px;padding-right:1px}#ns-add-table th,#ns-sub-table th{font-size:10px}}
 .sel-list{display:flex;flex-direction:column;gap:3px;margin-top:6px}
 .sel-row:active{opacity:.7}
 .sel-row.active{border-color:var(--ac);background:var(--ac-bg)}
 .sel-row .sr-name{flex:1;font-weight:600;color:var(--tx);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 吹出口の候補リスト: スマホ幅ではサイズ名を1行目、風速・面積を2行目にして「50…」と切れないようにする */
+@media (max-width:440px){#g-sel-list .sel-row{flex-wrap:wrap;row-gap:2px}#g-sel-list .sel-row .sr-name{flex-basis:100%}}
+/* 保温材の行表: 固定px列だと360〜430px幅で右端(重量)が切れるので、幅に合わせて縮む列にする */
+.ins-grid-p{display:grid;grid-template-columns:minmax(60px,72px) repeat(3,minmax(0,1fr)) repeat(2,minmax(0,1.25fr)) 28px}
+.ins-grid-d{display:grid;grid-template-columns:minmax(36px,40px) repeat(5,minmax(0,1fr)) repeat(2,minmax(0,1.25fr)) 28px}
 .sel-row .sr-badge{font-size:11px;padding:1px 5px;border-radius:4px;background:var(--line);color:var(--sub);white-space:nowrap;flex-shrink:0}
 .sel-row.active .sr-badge{background:var(--ac-bg2);color:var(--ac)}
 .formula-box{display:none;margin-top:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--sub);line-height:1.75}
@@ -715,12 +724,12 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
 <h2>換気量計算<small>EQ-03</small></h2>
 
 <div class="card">
-  <div class="tabs" id="v-tabs" style="overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none">
-    <div class="tab on" data-vm="nc" style="white-space:nowrap;flex-shrink:0">換気回数法</div>
-    <div class="tab" data-vm="co2" style="white-space:nowrap;flex-shrink:0">CO₂基準法</div>
-    <div class="tab" data-vm="fire" style="white-space:nowrap;flex-shrink:0">火気使用室</div>
-    <div class="tab" data-vm="law" style="white-space:nowrap;flex-shrink:0">建築基準法(居室)</div>
-    <div class="tab" data-vm="park" style="white-space:nowrap;flex-shrink:0">駐車場</div>
+  <div class="tabs" id="v-tabs" style="flex-wrap:wrap">
+    <div class="tab on" data-vm="nc" style="white-space:nowrap;flex:1 1 auto">換気回数法</div>
+    <div class="tab" data-vm="co2" style="white-space:nowrap;flex:1 1 auto">CO₂基準法</div>
+    <div class="tab" data-vm="fire" style="white-space:nowrap;flex:1 1 auto">火気使用室</div>
+    <div class="tab" data-vm="law" style="white-space:nowrap;flex:1 1 auto">建築基準法(居室)</div>
+    <div class="tab" data-vm="park" style="white-space:nowrap;flex:1 1 auto">駐車場</div>
   </div>
 
   <div id="v-sec-vol">
@@ -1728,7 +1737,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
     <div class="card-title" style="margin-top:6px">バンド別結果グラフ</div>
     <svg id="nz-result-svg" viewBox="0 0 320 225" style="width:100%;display:block" xmlns="http://www.w3.org/2000/svg"></svg>
     <div class="card-title" style="margin-top:10px">バンド別結果 [dB]</div>
-    <div style="overflow-x:auto"><table id="nz-oct-table" style="min-width:340px"></table></div>
+    <div style="overflow-x:auto"><table id="nz-oct-table" style="min-width:300px"></table></div>
   </div>
 </div>
 
@@ -2678,7 +2687,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
 <!-- 配管モード -->
 <div id="ins-sec-pipe">
   <div class="card" style="padding:0;overflow:hidden">
-    <div style="display:grid;grid-template-columns:72px 52px 60px 44px 64px 60px 32px;gap:0;background:var(--bg);border-bottom:1px solid var(--line)">
+    <div class="ins-grid-p" style="gap:0;background:var(--bg);border-bottom:1px solid var(--line)">
       <div style="padding:5px 6px;font-size:11px;color:var(--sub)">呼び径</div>
       <div style="padding:5px 4px;font-size:11px;color:var(--sub);text-align:right">厚さ mm</div>
       <div style="padding:5px 4px;font-size:11px;color:var(--sub);text-align:right">長さ m</div>
@@ -2695,7 +2704,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
 <!-- ダクトモード -->
 <div id="ins-sec-duct" class="hidden">
   <div class="card" style="padding:0;overflow:hidden">
-    <div style="display:grid;grid-template-columns:40px 56px 50px 52px 60px 44px 64px 60px 32px;gap:0;background:var(--bg);border-bottom:1px solid var(--line)">
+    <div class="ins-grid-d" style="gap:0;background:var(--bg);border-bottom:1px solid var(--line)">
       <div style="padding:5px 6px;font-size:11px;color:var(--sub)">形状</div>
       <div style="padding:5px 4px;font-size:11px;color:var(--sub);text-align:right">W mm</div>
       <div style="padding:5px 4px;font-size:11px;color:var(--sub);text-align:right">H mm</div>
@@ -2912,7 +2921,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   <div class="kv" style="background:var(--panel);margin:6px -10px;padding:8px 10px;border-radius:6px"><span style="font-weight:600">採用推奨サイズ</span><b id="el-r-size" style="font-size:20px;color:var(--ac)">—</b></div>
   <div class="kv"><span>推奨配線仕様例</span><b id="el-r-spec">—</b></div>
   <div class="kv"><span>配線用遮断器（MCCB）参考</span><b id="el-r-mccb">—</b></div>
-  <div class="kv"><span>MCCB 選定根拠</span><b id="el-r-mccb-basis" style="font-weight:400;font-size:12px;text-align:right">—</b></div>
+  <div class="kv"><span>MCCB 選定根拠</span><b id="el-r-mccb-basis" style="font-weight:400;font-size:12px;text-align:left;line-height:1.5">—</b></div>
   <div id="el-r-ik-row" class="kv" style="display:none"><span>系統短絡電流 Ik</span><b id="el-r-ik">—</b></div>
   <div id="el-r-iku-row" class="kv" style="display:none"><span>MCCB 必要Icu</span><b id="el-r-iku">—</b></div>
   <div style="padding:6px 2px;border-top:1px solid var(--line)">
@@ -3010,7 +3019,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   <div class="kv"><span>合計規約電流 ΣIr</span><b id="el-p-total-ir">—</b></div>
   <div class="kv"><span>幹線設計電流 Id</span><b id="el-p-design-i">—</b></div>
   <div class="kv"><span>MCCB 上限 AT</span><b id="el-p-mccb-max">—</b></div>
-  <div class="kv"><span>MCCB 選定根拠</span><b id="el-p-mccb-basis" style="font-weight:400;font-size:12px;text-align:right">—</b></div>
+  <div class="kv"><span>MCCB 選定根拠</span><b id="el-p-mccb-basis" style="font-weight:400;font-size:12px;text-align:left;line-height:1.5">—</b></div>
 
   <div style="margin:10px 0 4px;font-size:11.5px;font-weight:600;color:var(--sub)">選定表（太枠が推奨選定行）</div>
   <div style="overflow-x:auto;font-size:11.5px">
@@ -3080,7 +3089,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
       </label>
     </div>
     <div style="overflow-x:auto;margin-top:4px">
-      <table style="border-collapse:collapse;width:100%;min-width:340px">
+      <table style="border-collapse:collapse;width:100%;min-width:300px">
         <thead><tr>
           <th style="padding:2px 4px;font-size:9px;color:var(--sub);font-weight:400;text-align:center;border-bottom:1px solid var(--line)">63 Hz</th>
           <th style="padding:2px 4px;font-size:9px;color:var(--sub);font-weight:400;text-align:center;border-bottom:1px solid var(--line)">125</th>
@@ -3325,7 +3334,7 @@ html.light .plm-fig{--in:#2b6cb0;--box:#5c6b80;--boxfill:rgba(60,90,130,.07);--p
   </label>
   -->
   <div style="overflow-x:auto">
-  <table style="width:100%;min-width:340px;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;text-align:right">
+  <table style="width:100%;min-width:300px;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;text-align:right">
     <thead><tr style="border-bottom:2px solid var(--line)">
       <th style="text-align:left;padding:4px 6px;color:var(--sub);font-weight:400">項目</th>
       <th style="padding:4px 3px;color:var(--sub);font-weight:400">63</th>
@@ -7607,10 +7616,10 @@ function stCalc(){
   if(allLines.length===0){listCard.style.display='none';return;}
   listCard.style.display='';
 
-  const th=s=>`<th style="padding:4px 8px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:right">${s}</th>`;
-  const thL=s=>`<th style="padding:4px 8px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:left">${s}</th>`;
-  const td=(s,bold)=>`<td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right${bold?';font-weight:700':''}">` +s+`</td>`;
-  const tdL=(s)=>`<td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:left">`+s+`</td>`;
+  const th=s=>`<th style="padding:4px 6px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:right">${s}</th>`;
+  const thL=s=>`<th style="padding:4px 6px;border-bottom:2px solid var(--line);color:var(--sub);font-weight:400;text-align:left">${s}</th>`;
+  const td=(s,bold)=>`<td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:right${bold?';font-weight:700':''}">` +s+`</td>`;
+  const tdL=(s)=>`<td style="padding:4px 6px;border-bottom:1px solid var(--line);text-align:left">`+s+`</td>`;
 
   $('st-list-thead').innerHTML=`<tr>${thL('品名')}${th('寸法')}${th('数量')}${th('単位重量')}${th('重量 kg')}</tr>`;
   $('st-list-tbody').innerHTML=allLines.map(({shapeName,sizeLabel,isSheet,uw,ln,sub})=>{
@@ -7950,7 +7959,7 @@ function insRender(){
     const vol=Math.PI/4*(Math.pow((od+2*r.t)/1000,2)-Math.pow(od/1000,2))*r.len*r.qty;
     const wt=vol*density;
     const row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:72px 52px 60px 44px 64px 60px 32px;border-bottom:1px solid var(--line);align-items:center';
+    row.className='ins-grid-p';row.style.cssText='border-bottom:1px solid var(--line);align-items:center';
     const sOpts=PIPE_SIZES.map(s=>`<option value="${s}"${s===r.size?' selected':''}>${s}</option>`).join('');
     row.innerHTML=
       `<select style="background:none;border:none;padding:5px 6px;font-size:12px;color:var(--tx);width:100%;font-family:inherit" data-pi="${i}" data-pf="size">${sOpts}</select>`+
@@ -7980,7 +7989,7 @@ function insRender(){
     }
     const wt=vol*density;
     const row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:40px 56px 50px 52px 60px 44px 64px 60px 32px;border-bottom:1px solid var(--line);align-items:center';
+    row.className='ins-grid-d';row.style.cssText='border-bottom:1px solid var(--line);align-items:center';
     const hDim=isRound?`<div style="padding:5px 4px;font-size:12px;text-align:right;color:var(--sub)">—</div>`
       :`<input type="number" inputmode="decimal" value="${r.h}" style="background:none;border:none;padding:5px 4px;font-size:12px;color:var(--tx);text-align:right;width:100%;font-family:inherit" data-di="${i}" data-df="h">`;
     row.innerHTML=
