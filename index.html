@@ -8975,6 +8975,155 @@ $('plm-lowcorr-on')?.addEventListener('change',plmCalc);
 /* ========== 初期化 ========== */
 dCalc();vShowSecs();vCalc();gCalc();psCalc();psRenderList();ldCalc();wtCalc();nzCalc();nsCalc();drCalc();hgCalc();ncCalc();acCalc();insRender();elCalc();plmCalc();
 </script>
+<!-- ==================== ホーム: カード並べ替え ==================== -->
+<style>
+#reorder-btn{height:28px;padding:0 12px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--tx);font-size:12px;font-weight:700;cursor:pointer;flex:0 0 auto}
+#reorder-btn.on{background:var(--ac);border-color:var(--ac);color:#fff}
+#reorder-bar{display:none;align-items:center;gap:8px;margin:0 0 10px;padding:8px 10px;border:1px dashed var(--ac);border-radius:8px;font-size:11.5px;color:var(--sub)}
+#reorder-bar.on{display:flex}
+#reorder-bar span{flex:1;line-height:1.4}
+#reorder-reset{flex:0 0 auto;padding:4px 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:11.5px;cursor:pointer}
+#home-grid.reordering .home-card[data-tool]{position:relative;border-style:dashed;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#home-grid.reordering .home-card[data-tool]::after{content:"⠿";position:absolute;top:6px;right:8px;font-size:15px;line-height:1;color:var(--sub)}
+#home-grid.reordering .home-card[data-tool]:active{transform:none}
+#home-grid.reordering .home-card.dragging[data-tool]{z-index:50;cursor:grabbing;border-color:var(--ac);border-style:solid;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:.95;transition:none}
+</style>
+<script>
+/* カテゴリ見出し内でのカード並べ替え。順番は localStorage 'plenary_card_order' に
+   { "カテゴリ名": ["data-tool", ...], ... } の形で保存する。
+   対象は #home-grid 直下の .home-card[data-tool] のみ（お気に入り欄の複製カードは data-fav-tool なので対象外）。 */
+(function(){
+  var ORDER_KEY='plenary_card_order';
+  var grid=document.getElementById('home-grid');
+  if(!grid) return;
+  var CARD_SEL='.home-card[data-tool]';
+
+  /* 直下の子要素を順に見て、カード以外の要素をカテゴリ見出しとみなす */
+  function scan(){
+    var cats=[],cur=null;
+    Array.prototype.forEach.call(grid.children,function(el){
+      if(el.matches(CARD_SEL)){
+        if(cur){el.dataset.cat=cur.name;cur.cards.push(el);}
+      }else if(!el.matches('.home-card')){
+        var name=(el.textContent||'').trim();
+        cur={name:name,head:el,cards:[]};
+        cats.push(cur);
+      }
+    });
+    return cats.filter(function(c){return c.cards.length&&c.name;});
+  }
+  function loadOrder(){
+    try{var o=JSON.parse(localStorage.getItem(ORDER_KEY)||'{}');return (o&&typeof o==='object')?o:{};}catch(e){return {};}
+  }
+  function saveOrder(){
+    var o={};
+    scan().forEach(function(c){o[c.name]=c.cards.map(function(el){return el.dataset.tool;});});
+    try{localStorage.setItem(ORDER_KEY,JSON.stringify(o));}catch(e){}
+  }
+  /* ids の順に並べ、ids に無いカード（新しく追加されたツール）は元の順で末尾へ */
+  function applyOrder(cat,ids){
+    var byId={};cat.cards.forEach(function(el){byId[el.dataset.tool]=el;});
+    var sorted=[];
+    (ids||[]).forEach(function(id){if(byId[id]){sorted.push(byId[id]);delete byId[id];}});
+    cat.cards.forEach(function(el){if(byId[el.dataset.tool]) sorted.push(el);});
+    var ref=cat.head;
+    sorted.forEach(function(el){ref.after(el);ref=el;});
+  }
+
+  var defaults={};
+  var initCats=scan();
+  initCats.forEach(function(c){defaults[c.name]=c.cards.map(function(el){return el.dataset.tool;});});
+  var saved=loadOrder();
+  initCats.forEach(function(c){if(Array.isArray(saved[c.name])) applyOrder(c,saved[c.name]);});
+
+  /* ---- UI: ボタンと案内バー ---- */
+  var btn=document.createElement('button');
+  btn.id='reorder-btn';btn.type='button';btn.textContent='並べ替え';
+  var titleRow=grid.previousElementSibling&&grid.previousElementSibling.querySelector('[style*="space-between"]');
+  if(titleRow) titleRow.appendChild(btn); else grid.parentNode.insertBefore(btn,grid);
+  var bar=document.createElement('div');
+  bar.id='reorder-bar';
+  bar.innerHTML='<span>カードをドラッグして、同じカテゴリ内で並べ替えできます</span><button type="button" id="reorder-reset">初期順に戻す</button>';
+  grid.parentNode.insertBefore(bar,grid);
+
+  var active=false;
+  function setMode(on){
+    active=on;
+    grid.classList.toggle('reordering',on);
+    bar.classList.toggle('on',on);
+    btn.classList.toggle('on',on);
+    btn.textContent=on?'完了':'並べ替え';
+  }
+  btn.addEventListener('click',function(){setMode(!active);});
+  document.getElementById('reorder-reset').addEventListener('click',function(){
+    scan().forEach(function(c){applyOrder(c,defaults[c.name]);});
+    try{localStorage.removeItem(ORDER_KEY);}catch(e){}
+  });
+  /* 並べ替え中はカードのタップでツールを開かない（キャプチャ段階で止める） */
+  grid.addEventListener('click',function(e){
+    if(active&&e.target.closest(CARD_SEL)){e.stopPropagation();e.preventDefault();}
+  },true);
+
+  /* ---- ドラッグ（Pointer Events: マウス・指・ペン共通） ---- */
+  var drag=null;
+  function place(){
+    var c=drag.card;
+    c.style.transform='';
+    var r=c.getBoundingClientRect();
+    c.style.transform='translate('+(drag.x-drag.gx-r.left)+'px,'+(drag.y-drag.gy-r.top)+'px)';
+  }
+  function hitTest(){
+    var cat=drag.card.dataset.cat;
+    var others=Array.prototype.filter.call(grid.querySelectorAll(':scope > '+CARD_SEL),function(el){return el!==drag.card&&el.dataset.cat===cat;});
+    for(var i=0;i<others.length;i++){
+      var r=others[i].getBoundingClientRect();
+      if(drag.x>=r.left&&drag.x<=r.right&&drag.y>=r.top&&drag.y<=r.bottom){
+        var t=others[i];
+        if(drag.card.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING) t.after(drag.card);
+        else t.before(drag.card);
+        return;
+      }
+    }
+  }
+  function autoScroll(){
+    if(!drag) return;
+    var edge=70,h=window.innerHeight,v=0;
+    if(drag.y<edge) v=-Math.ceil((edge-drag.y)/6);
+    else if(drag.y>h-edge) v=Math.ceil((drag.y-(h-edge))/6);
+    if(v){window.scrollBy(0,v);hitTest();place();}
+    drag.raf=requestAnimationFrame(autoScroll);
+  }
+  grid.addEventListener('pointerdown',function(e){
+    if(!active||drag) return;
+    if(e.pointerType==='mouse'&&e.button!==0) return;
+    var card=e.target.closest(CARD_SEL);
+    if(!card||card.parentNode!==grid) return;
+    var r=card.getBoundingClientRect();
+    drag={card:card,id:e.pointerId,x:e.clientX,y:e.clientY,gx:e.clientX-r.left,gy:e.clientY-r.top,raf:0};
+    card.classList.add('dragging');
+    try{card.setPointerCapture(e.pointerId);}catch(_){}
+    drag.raf=requestAnimationFrame(autoScroll);
+    e.preventDefault();
+  });
+  grid.addEventListener('pointermove',function(e){
+    if(!drag||e.pointerId!==drag.id) return;
+    drag.x=e.clientX;drag.y=e.clientY;
+    hitTest();place();
+    e.preventDefault();
+  });
+  function end(e){
+    if(!drag||e.pointerId!==drag.id) return;
+    cancelAnimationFrame(drag.raf);
+    drag.card.classList.remove('dragging');
+    drag.card.style.transform='';
+    try{drag.card.releasePointerCapture(drag.id);}catch(_){}
+    drag=null;
+    saveOrder();
+  }
+  grid.addEventListener('pointerup',end);
+  grid.addEventListener('pointercancel',end);
+})();
+</script>
 <!-- AdSense script: publisher IDを設定後にコメント解除 -->
 <!--
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
